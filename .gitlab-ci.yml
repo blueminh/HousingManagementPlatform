@@ -1,0 +1,4 @@
+include:
+  - Code/authentication-microservice/.gitlab-ci.yml
+  - Code/example-microservice/.gitlab-ci.yml
+  - Code/voting-microservice/.gitlab-ci.yml
