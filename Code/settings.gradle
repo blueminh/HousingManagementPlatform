@@ -3,5 +3,6 @@ rootProject.name = 'SEM 22b'
 include 'authentication-microservice'
 include 'example-microservice'
 include 'voting-microservice'
+include 'users-microservice'
 include 'hoa-microservice'
 
