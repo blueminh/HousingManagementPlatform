@@ -1,11 +1,14 @@
 package sem.hoa.domain.entities;
 
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @IdClass(MembershipID.class)
-@Table(name = "userManagements")
+@Table(name = "memberManagements")
+@NoArgsConstructor
 public class Membership {
 
   @Id
@@ -17,7 +20,7 @@ public class Membership {
   private int hoaID;
 
   // Enum type is complicated to be persisted in the database -> simply use a boolean value
-  @Column(name = "boardmember")
+  @Column(name = "isboardmember")
   private boolean isBoardMember;
 
   public Membership(String username, int hoaID, boolean isBoardMember) {
