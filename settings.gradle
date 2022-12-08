@@ -7,10 +7,7 @@
  * in the user manual at https://docs.gradle.org/7.4/userguide/multi_project_builds.html
  */
 
-include ':code'
-
-rootProject.name = 'code'
-project(':code').name = 'SEM 22b'
+rootProject.name = 'SEM 22b'
 
 include 'Code:authentication-microservice'
 include 'Code:example-microservice'
