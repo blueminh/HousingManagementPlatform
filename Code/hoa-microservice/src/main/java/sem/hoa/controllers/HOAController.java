@@ -1,10 +1,21 @@
 package sem.hoa.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import sem.hoa.authentication.AuthManager;
+import sem.hoa.domain.entities.HOA;
+import sem.hoa.domain.entities.Membership;
+import sem.hoa.domain.services.HOAService;
+import sem.hoa.domain.services.MemberManagementService;
+import sem.hoa.models.JoiningRequestModel;
+
+import java.util.Optional;
 
 /**
  * Hello World example controller.
@@ -16,6 +27,8 @@ import sem.hoa.authentication.AuthManager;
 public class HOAController {
 
     private final transient AuthManager authManager;
+    private final transient MemberManagementService memberManagementService;
+    private final transient HOAService hoaService;
 
     /**
      * Instantiates a new controller.
@@ -23,8 +36,10 @@ public class HOAController {
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public HOAController(AuthManager authManager) {
+    public HOAController(AuthManager authManager, MemberManagementService memberManagementService, HOAService hoaService) {
         this.authManager = authManager;
+        this.memberManagementService = memberManagementService;
+        this.hoaService = hoaService;
     }
 
     /**
@@ -38,4 +53,22 @@ public class HOAController {
 
     }
 
+    @PostMapping("/joining")
+    public ResponseEntity joiningHOA(@RequestBody JoiningRequestModel request){
+        try {
+            if (!request.username.equals(authManager.getNetId()))
+                throw new Exception("Wrong username");
+
+            Optional<HOA> hoa = hoaService.findHOAByName(request.hoaName);
+            if (hoa.isEmpty()) throw new Exception("No such HOA with this name: " + request.hoaName);
+
+            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.username, hoa.get().getId());
+            if (membership.isPresent()) throw new Exception("User is already in this HOA");
+
+            memberManagementService.addMembership(new Membership(request.username, hoa.get().getId(), false));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok().build();
+    }
 }
