@@ -12,24 +12,24 @@ variables:
 build-example-microservice:
   stage: build
   script:
-    gradle example-microservice:assemble example-microservice:testClasses
+    gradle code:example-microservice:assemble example-microservice:testClasses
 
 checkStyle-example-microservice:
   stage: staticAnalysis
   script:
-    gradle example-microservice:checkstyleMain example-microservice:checkStyleTest
+    gradle code:example-microservice:checkstyleMain example-microservice:checkStyleTest
   allow_failure: true
 
 
 PMD-example-microservice:
   stage: staticAnalysis
   script:
-    gradle example-microservice:pmdMain
+    gradle code:example-microservice:pmdMain
   allow_failure: true
 
 test-example-microservice:
   stage: test
   script:
-    - gradle example-microservice:test example-microservice:jacocoTestReport
+    - gradle code:example-microservice:test example-microservice:jacocoTestReport
     - cat example-microservice/build/reports/jacoco/test/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
   coverage: /([0-9]{1,3})%/
