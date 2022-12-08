@@ -8,7 +8,7 @@
  * This project uses @Incubating APIs which are subject to change.
  */
 
-rootProject.name = 'SEM22b'
+rootProject.name = 'SEM 22b'
 
 include 'Code:authentication-microservice'
 include 'Code:example-microservice'
