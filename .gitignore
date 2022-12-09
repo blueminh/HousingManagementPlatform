@@ -1,2 +1,4 @@
 
 .idea/
+# ignore database files
+*.mv.db
