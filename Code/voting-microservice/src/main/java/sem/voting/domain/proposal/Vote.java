@@ -1,4 +1,4 @@
-package sem.voting.domain;
+package sem.voting.domain.proposal;
 
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -42,5 +42,9 @@ public class Vote {
 
     public int getVoter() {
         return user;
+    }
+
+    public int getProposal() {
+        return proposal;
     }
 }

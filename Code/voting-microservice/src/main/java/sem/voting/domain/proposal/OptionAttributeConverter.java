@@ -1,4 +1,4 @@
-package sem.voting.domain;
+package sem.voting.domain.proposal;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

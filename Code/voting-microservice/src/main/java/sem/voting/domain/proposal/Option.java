@@ -1,4 +1,4 @@
-package sem.voting.domain;
+package sem.voting.domain.proposal;
 
 import lombok.EqualsAndHashCode;
 

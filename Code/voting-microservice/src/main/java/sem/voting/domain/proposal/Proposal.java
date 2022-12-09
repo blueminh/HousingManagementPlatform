@@ -1,4 +1,4 @@
-package sem.voting.domain;
+package sem.voting.domain.proposal;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import lombok.NoArgsConstructor;
+import sem.voting.domain.services.VoteValidationService;
+import sem.voting.domain.services.VotingRightsService;
 
 /**
  * Entity representing a proposal people can vote on.
@@ -27,6 +29,9 @@ public class Proposal {
 
     @ElementCollection
     private Set<Vote> votes = new HashSet<>();
+
+    private VotingRightsService votingRightsService;
+    private VoteValidationService voteValidationService;
 
     /* It should contain
     - Date to end voting

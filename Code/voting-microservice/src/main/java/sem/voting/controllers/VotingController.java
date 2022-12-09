@@ -35,7 +35,15 @@ public class VotingController {
     @PostMapping("/propose")
     public ResponseEntity<String> addProposal() {
         return ResponseEntity.ok("Hello " + authManager.getNetId());
-
     }
+
+    // ToDo: add APIs
+    /*
+    - send results (i.e. all expired proposals of an HOA)
+    - cast a vote
+    - remove a vote
+    - add a new proposal
+    - get all proposals of an HOA
+     */
 
 }
