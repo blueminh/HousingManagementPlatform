@@ -1,6 +1,8 @@
 package sem.voting.domain.proposal;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -23,6 +25,8 @@ public class Proposal {
     @Column(name = "id", nullable = false)
     private int id;
 
+    private int hoaId;
+
     @ElementCollection
     @Convert(converter = OptionAttributeConverter.class)
     private Set<Option> availableOptions = new HashSet<>();
@@ -35,6 +39,7 @@ public class Proposal {
 
     /* It should contain
     - Date to end voting
+    - HOA of reference
     - People that have voting rights on it (or a service that validates that)
     - List of possible votes (e.g. candidates)
     - Counter of current votes
@@ -44,5 +49,29 @@ public class Proposal {
 
     public int getId() {
         return id;
+    }
+
+    /**
+     * Returns the number of votes each option got.
+     *
+     * @return Set of Result (option-number tuple).
+     */
+    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
+    public Set<Result> getResults() {
+        Set<Result> results = new HashSet<>();
+        if (votes.isEmpty() || availableOptions.isEmpty()) {
+            return results;
+        }
+        Map<Option, Integer> myMap;
+        myMap = new HashMap<>();
+        for (Vote v : votes) {
+            int newVal = myMap.getOrDefault(v.getChoice(), -1) + 1;
+            myMap.put(v.getChoice(), newVal);
+        }
+        for (Option o : availableOptions) {
+            int val = myMap.getOrDefault(o, 0);
+            results.add(new Result(o, val));
+        }
+        return results;
     }
 }
