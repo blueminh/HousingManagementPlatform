@@ -9,6 +9,8 @@ import java.util.Optional;
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity, Integer> {
     Optional<Activity> findByActivityId(Integer activityId);
+
     List<Activity> findActivitiesByHoaId(Integer hoaId);
+
     boolean existsActivityByActivityId(Integer activityId);
 }

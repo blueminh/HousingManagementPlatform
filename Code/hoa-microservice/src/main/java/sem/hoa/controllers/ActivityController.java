@@ -25,8 +25,17 @@ public class ActivityController {
         this.activityService = activityService;
     }
 
+    /**
+     * API call for adding new a new Activity.
+     *
+     * @param req It is the request model for taking all the required information about a new Activity.
+     *
+     * @return Returns 200 OK Response
+     *
+     * @throws Exception In case the addition of Activity fails, it throws a BAD REQUEST Exception
+     */
     @PostMapping("/activity/add")
-    public ResponseEntity addActivity(@RequestBody ActivityCreationRequestModel req) throws Exception{
+    public ResponseEntity addActivity(@RequestBody ActivityCreationRequestModel req) throws Exception {
         try {
             activityService.addActivity(req.getHoaId(), req.getDate(), req.getDesc());
         } catch (Exception e) {

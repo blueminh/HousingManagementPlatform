@@ -3,7 +3,12 @@ package sem.hoa.domain.activity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
 import java.util.Date;
 
 @Entity
@@ -18,7 +23,7 @@ public class Activity {
     @Column(name = "hoaId", nullable = false)
     private Integer hoaId;
 
-    @Column(name="date", nullable=false, unique=false)
+    @Column(name = "date", nullable = false, unique = false)
     @JsonFormat
             (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date date;
@@ -27,9 +32,12 @@ public class Activity {
     private String description;
 
     /**
-     * Create a new Activity
+     * Create a new Activity.
+     *
      * @param activityId unique id used for identifying an Activity
+     *
      * @param date date on which the activity takes place
+     *
      * @param description description about the activity
      */
     public Activity(Integer activityId, Integer hoaId, Date date, String description) {
@@ -40,8 +48,10 @@ public class Activity {
     }
 
     /**
-     * Create a new Activity but without activityId
+     * Create a new Activity but without activityId.
+     *
      * @param date date on which the activity takes place
+     *
      * @param description description about the activity
      */
     public Activity(Integer hoaId, Date date, String description) {

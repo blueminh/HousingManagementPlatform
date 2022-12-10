@@ -17,9 +17,12 @@ public class ActivityService {
 
 
     /**
-     * It tries to add an activity to the repository
+     * It tries to add an activity to the repository.
      *
-     * @param activity Activity to add to the repo
+     * @param hoaId hoa ID of the HOA the activity belongs to.
+     * @param date Date of the activity.
+     * @param desc Description of the Activity.
+     * @throws Exception This exception is thrown if we try to add an Activity that already exists. (I'll have to check this again because we do not generate activity Id)
      */
     public void addActivity(int hoaId, Date date, String desc) throws Exception {
         Activity activity = new Activity(hoaId, date, desc);
