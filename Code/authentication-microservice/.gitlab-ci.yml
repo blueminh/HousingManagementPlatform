@@ -12,23 +12,23 @@ variables:
 build-authentication-microservice:
   stage: build
   script:
-    gradle authentication-microservice:assemble authentication-microservice:testClasses
+    gradle Code:authentication-microservice:assemble Code:authentication-microservice:testClasses
 
 checkStyle-authentication-microservice:
   stage: staticAnalysis
   script:
-    gradle authentication-microservice:checkstyleMain authentication-microservice:checkStyleTest
+    gradle Code:authentication-microservice:checkstyleMain Code:authentication-microservice:checkStyleTest
   allow_failure: true
 
 PMD-authentication-microservice:
   stage: staticAnalysis
   script:
-    gradle authentication-microservice:pmdMain
+    gradle Code:authentication-microservice:pmdMain
   allow_failure: true
 
 test-authentication-microservice:
   stage: test
   script:
-    - gradle authentication-microservice:test authentication-microservice:jacocoTestReport
-    - cat authentication-microservice/build/reports/jacoco/test/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
+    - gradle Code:authentication-microservice:test Code:authentication-microservice:jacocoTestReport
+    - cat Code/authentication-microservice/build/reports/jacoco/test/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
   coverage: /([0-9]{1,3})%/

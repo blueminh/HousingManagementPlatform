@@ -26,7 +26,7 @@ plugins {
 	id 'info.solidsoft.pitest' version '1.5.2'
 }
 
-group = 'nl.tudelft.cse.sem.template'
+group = 'sem.voting'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -65,7 +65,7 @@ test {
 	useJUnitPlatform()
 	jacoco {
 		enabled = true
-		includes = ['nl.tudelft.sem.template.*']
+		includes = ['sem.voting.*']
 		excludes = []
 	}
 }
@@ -80,7 +80,7 @@ jacocoTestCoverageVerification() {
 		rule {
 			enabled = true
 			element = 'CLASS'
-			includes = ['nl.tudelft.sem.template.*']
+			includes = ['sem.voting.*']
 
 			limit {
 				counter = 'BRANCH'
@@ -93,7 +93,7 @@ jacocoTestCoverageVerification() {
 
 checkstyle {
 	toolVersion "8.37"
-	configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+	configFile = file("${rootDir}/Code/config/checkstyle/checkstyle.xml")
 	ignoreFailures = false
 	maxErrors = 0
 	maxWarnings = 0
@@ -109,7 +109,7 @@ pitest {
 	//adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
 	junit5PluginVersion = '0.12'
 
-	targetClasses = ['nl.tudelft.sem.template.*']  //by default "${project.group}.*"
+	targetClasses = ['sem.voting.*']  //by default "${project.group}.*"
 	pitestVersion = '1.5.1' //not needed when a default PIT version should be used
 	threads = 4
 	outputFormats = ['XML', 'HTML']

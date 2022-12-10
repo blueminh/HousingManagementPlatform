@@ -19,7 +19,7 @@ public class JwtTokenGenerator {
     /**
      * Time in milliseconds the JWT token is valid for.
      */
-    public static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60 * 1000;
+    public static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60 * 1000; // 1 day
 
     @Value("${jwt.secret}")  // automatically loads jwt.secret from resources/application.properties
     private transient String jwtSecret;
