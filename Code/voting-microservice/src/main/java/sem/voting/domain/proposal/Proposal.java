@@ -1,5 +1,7 @@
 package sem.voting.domain.proposal;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,6 +12,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sem.voting.domain.services.VoteValidationService;
 import sem.voting.domain.services.VotingRightsService;
@@ -19,6 +22,7 @@ import sem.voting.domain.services.VotingRightsService;
  */
 @Entity
 @NoArgsConstructor
+@Getter
 public class Proposal {
     @Id
     @GeneratedValue
@@ -26,6 +30,23 @@ public class Proposal {
     private int id;
 
     private int hoaId;
+
+    /**
+     * Title of the proposal.
+     */
+    private String title;
+
+    /**
+     * Content of the proposal.
+     */
+    private String motion;
+
+    /**
+     * Date at which the proposal will not accept new votes.
+     */
+    private Date votingDeadline;
+
+    private ProposalStage status = ProposalStage.UnderConstruction;
 
     @ElementCollection
     @Convert(converter = OptionAttributeConverter.class)
@@ -37,20 +58,6 @@ public class Proposal {
     private VotingRightsService votingRightsService;
     private VoteValidationService voteValidationService;
 
-    /* It should contain
-    - Date to end voting
-    - HOA of reference
-    - People that have voting rights on it (or a service that validates that)
-    - List of possible votes (e.g. candidates)
-    - Counter of current votes
-    - Rules of what a certain person can vote on (e.g. cannot vote for themselves) (service)
-    - Callback to what to do once voting is done
-     */
-
-    public int getId() {
-        return id;
-    }
-
     /**
      * Returns the number of votes each option got.
      *
@@ -60,6 +67,10 @@ public class Proposal {
     public Set<Result> getResults() {
         Set<Result> results = new HashSet<>();
         if (votes.isEmpty() || availableOptions.isEmpty()) {
+            return results;
+        }
+        updateStatus();
+        if (this.status != ProposalStage.Ended) {
             return results;
         }
         Map<Option, Integer> myMap;
@@ -73,5 +84,16 @@ public class Proposal {
             results.add(new Result(o, val));
         }
         return results;
+    }
+
+    /**
+     * Check if the deadline has been reached and update the proposal status accordingly.
+     */
+    public void updateStatus() {
+        Date now = Date.from(Instant.now());
+        if (!now.before(this.votingDeadline)) {
+            // Voting has ended
+            this.status = ProposalStage.Ended;
+        }
     }
 }

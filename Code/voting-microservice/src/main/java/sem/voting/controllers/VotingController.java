@@ -43,6 +43,7 @@ public class VotingController {
     - cast a vote
     - remove a vote
     - add a new proposal
+    - start voting on a new proposal
     - get all proposals of an HOA
      */
 
