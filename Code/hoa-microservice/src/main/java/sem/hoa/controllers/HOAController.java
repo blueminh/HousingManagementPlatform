@@ -3,14 +3,13 @@ package sem.hoa.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import sem.hoa.authentication.AuthManager;
 import sem.hoa.domain.entities.HOA;
 import sem.hoa.domain.entities.Membership;
+import sem.hoa.domain.entities.MembershipID;
 import sem.hoa.domain.services.HOAService;
 import sem.hoa.domain.services.MemberManagementService;
 import sem.hoa.dtos.UserNameHoaIDDTO;
@@ -116,6 +115,47 @@ public class HOAController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
+    @DeleteMapping("/leave")
+    public ResponseEntity leaveHOA(@RequestBody UserNameHoaNameDTO request) {
+        try {
+            if(!request.username.equals(authManager.getNetId())) {
+                throw new UsernameNotFoundException("User not found");
+            }
+
+            Optional<HOA> hoa = hoaService.findHOAByName(request.hoaName);
+            if(hoa.isEmpty()) throw new Exception("No such HOA with this name: " + request.hoaName);
+
+            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.username, hoa.get().getId());
+            if(membership.isEmpty()) throw new Exception("User not found");
+            MembershipID toBeRemoved = new MembershipID(request.username, hoa.get().getId());
+            memberManagementService.removeMembership(toBeRemoved);
+
+        }
+        catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok().build();
+    }
+
+//    // Membership
+//    @PostMapping("/joining")
+//    public ResponseEntity joiningHOA(@RequestBody UserNameHoaNameDTO request){
+//        try {
+//            if (!request.username.equals(authManager.getNetId()))
+//                throw new Exception("Wrong username");
+//
+//            Optional<HOA> hoa = hoaService.findHOAByName(request.hoaName);
+//            if (hoa.isEmpty()) throw new Exception("No such HOA with this name: " + request.hoaName);
+//
+//            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.username, hoa.get().getId());
+//            if (membership.isPresent()) throw new Exception("User is already in this HOA");
+//
+//            memberManagementService.addMembership(new Membership(request.username, hoa.get().getId(), false));
+//        } catch (Exception e) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+//        }
+//        return ResponseEntity.ok().build();
+//    }
 
     
 }
