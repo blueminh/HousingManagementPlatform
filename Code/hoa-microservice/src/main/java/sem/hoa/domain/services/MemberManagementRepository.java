@@ -8,5 +8,4 @@ import sem.hoa.domain.entities.MembershipID;
 
 @Repository
 public interface MemberManagementRepository extends JpaRepository<Membership, MembershipID> {
-
 }

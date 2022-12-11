@@ -52,7 +52,7 @@ public class HOAController {
         return ResponseEntity.ok("Hello " + authManager.getNetId() + "! \nWelcome to HOA!") ;
 
     }
-
+    //should add a check for the address of the hoa and the user
     // Membership
     @PostMapping("/joining")
     public ResponseEntity joiningHOA(@RequestBody UserNameHoaNameDTO request){
@@ -115,6 +115,12 @@ public class HOAController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
+
+    /**
+     * Allows the user to leave an HOA
+     * @param request contains hoa ID and username
+     * @return a message that confirms that the user has left the HOA or throws an exception
+     */
     @DeleteMapping("/leave")
     public ResponseEntity leaveHOA(@RequestBody UserNameHoaNameDTO request) {
         try {
@@ -129,33 +135,10 @@ public class HOAController {
             if(membership.isEmpty()) throw new Exception("User not found");
             MembershipID toBeRemoved = new MembershipID(request.username, hoa.get().getId());
             memberManagementService.removeMembership(toBeRemoved);
-
+            return ResponseEntity.ok("User has successfully left");
         }
         catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        return ResponseEntity.ok().build();
     }
-
-//    // Membership
-//    @PostMapping("/joining")
-//    public ResponseEntity joiningHOA(@RequestBody UserNameHoaNameDTO request){
-//        try {
-//            if (!request.username.equals(authManager.getNetId()))
-//                throw new Exception("Wrong username");
-//
-//            Optional<HOA> hoa = hoaService.findHOAByName(request.hoaName);
-//            if (hoa.isEmpty()) throw new Exception("No such HOA with this name: " + request.hoaName);
-//
-//            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.username, hoa.get().getId());
-//            if (membership.isPresent()) throw new Exception("User is already in this HOA");
-//
-//            memberManagementService.addMembership(new Membership(request.username, hoa.get().getId(), false));
-//        } catch (Exception e) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-//        }
-//        return ResponseEntity.ok().build();
-//    }
-
-    
 }
