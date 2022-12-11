@@ -12,18 +12,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import sem.voting.authentication.AuthManager;
 import sem.voting.authentication.JwtTokenVerifier;
+import sem.voting.domain.proposal.ProposalRepository;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 // activate profiles to have spring use mocks during auto-injection of certain beans.
 @ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager"})
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class ExampleTest {
 
@@ -36,7 +38,6 @@ public class ExampleTest {
     @Autowired
     private transient AuthManager mockAuthenticationManager;
 
-
     @Test
     public void helloWorld() throws Exception {
         // Arrange
@@ -48,7 +49,7 @@ public class ExampleTest {
 
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
-        ResultActions result = mockMvc.perform(post("/propose")
+        ResultActions result = mockMvc.perform(post("/example")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken"));
 

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import sem.voting.authentication.AuthManager;
-import sem.voting.domain.proposal.ProposalRepository;
+import sem.voting.domain.proposal.ProposalHandlingService;
 import sem.voting.models.ProposalCreationRequestModel;
 import sem.voting.models.ProposalCreationResponseModel;
 
@@ -20,15 +20,18 @@ import sem.voting.models.ProposalCreationResponseModel;
 public class VotingController {
 
     private final transient AuthManager authManager;
+    private final transient ProposalHandlingService proposalHandlingService;
 
     /**
      * Instantiates a new controller.
      *
-     * @param authManager        Spring Security component used to authenticate and authorize the user
+     * @param authManager Spring Security component used to authenticate and authorize the user
+     * @param proposalHandlingService Service to handle proposals
      */
     @Autowired
-    public VotingController(AuthManager authManager) {
+    public VotingController(AuthManager authManager, ProposalHandlingService proposalHandlingService) {
         this.authManager = authManager;
+        this.proposalHandlingService = proposalHandlingService;
     }
 
     /**
