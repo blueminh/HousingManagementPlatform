@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import sem.voting.domain.services.VoteValidationService;
 import sem.voting.domain.services.VotingRightsService;
 
@@ -23,6 +24,7 @@ import sem.voting.domain.services.VotingRightsService;
 @Entity
 @NoArgsConstructor
 @Getter
+@Setter
 public class Proposal {
     @Id
     @GeneratedValue

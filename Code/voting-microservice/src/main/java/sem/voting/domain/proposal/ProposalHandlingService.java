@@ -22,7 +22,7 @@ public class ProposalHandlingService {
      * Check if proposal with given id refers to given HOA.
      *
      * @param proposalId Id of the proposal
-     * @param hoaId Id of the HOA
+     * @param hoaId      Id of the HOA
      * @return true if the proposal refers to the HOA
      */
     public boolean checkHoa(int proposalId, int hoaId) {
@@ -31,5 +31,15 @@ public class ProposalHandlingService {
             return false;
         }
         return p.getHoaId() == hoaId;
+    }
+
+    /**
+     * Save or update a proposal in the repository.
+     *
+     * @param proposal proposal to save
+     * @return updated proposal, as stored in the database
+     */
+    public Proposal save(Proposal proposal) {
+        return this.proposalRepository.save(proposal);
     }
 }
