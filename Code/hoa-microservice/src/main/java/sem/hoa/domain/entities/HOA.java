@@ -18,11 +18,18 @@ public class HOA extends HasEvents {
   private String hoaName;
   // TODO Add the other fields of the HOA
 
+  @Column(name = "country", nullable = false, unique = false)
+  private String country;
+
+  @Column(name = "city", nullable = false, unique = false)
+  private String city;
+
   @Column(name = "election_start_time", nullable = false)
   private Long electionStartTime;
 
   @Column(name = "election_end_time", nullable = false)
   private Long electionEndTime;
+
   public int getId() {
     return id;
   }
