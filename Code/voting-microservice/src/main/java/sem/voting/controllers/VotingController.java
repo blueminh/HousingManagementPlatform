@@ -70,6 +70,7 @@ public class VotingController {
         if (request == null) {
             return ResponseEntity.badRequest().build();
         }
+
         // Check if Date is valid
         if (Date.from(Instant.now()).after(request.getDeadline())) {
             return ResponseEntity.badRequest().build();
@@ -142,8 +143,15 @@ public class VotingController {
         return ResponseEntity.ok("");
     }
 
-    @PostMapping("/info")
-    public ResponseEntity<String> listProposals(
+    @PostMapping("/active")
+    public ResponseEntity<String> listActiveProposals(
+            @RequestBody ProposalInfoRequestModel request) {
+        // ToDo
+        return ResponseEntity.ok("");
+    }
+
+    @PostMapping("/history")
+    public ResponseEntity<String> listExpiredProposals(
             @RequestBody ProposalInfoRequestModel request) {
         // ToDo
         return ResponseEntity.ok("");

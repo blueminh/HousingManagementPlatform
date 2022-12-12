@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import sem.voting.authentication.AuthManager;
 import sem.voting.authentication.JwtTokenVerifier;
-import sem.voting.domain.proposal.ProposalRepository;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -59,6 +58,10 @@ public class ExampleTest {
         String response = result.andReturn().getResponse().getContentAsString();
 
         assertThat(response).isEqualTo("Hello ExampleUser");
+    }
+
+    @Test
+    public void addProposal() {
 
     }
 }

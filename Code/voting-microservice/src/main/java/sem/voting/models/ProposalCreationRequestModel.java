@@ -1,5 +1,6 @@
 package sem.voting.models;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import lombok.Data;
@@ -13,7 +14,7 @@ public class ProposalCreationRequestModel {
     private int hoaId;
     private String title;
     private String motion;
-    private List<String> options;
+    private List<String> options = new ArrayList<>();
     private ProposalType type;
     private Date deadline;
 }
