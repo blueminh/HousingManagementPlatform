@@ -10,4 +10,6 @@ import sem.voting.domain.proposal.Option;
 @Data
 public class AddOptionResponseModel {
     private List<Option> options;
+    private int proposalId;
+    private int hoaId;
 }

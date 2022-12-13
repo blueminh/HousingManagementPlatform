@@ -23,42 +23,56 @@ import sem.voting.domain.services.VotingRightsService;
  */
 @Entity
 @NoArgsConstructor
-@Getter
-@Setter
 public class Proposal {
     @Id
     @GeneratedValue
     @Column(name = "id", nullable = false)
+    @Getter
     private int id;
 
+    @Getter
+    @Setter
     private int hoaId;
 
     /**
      * Title of the proposal.
      */
+    @Getter
+    @Setter
     private String title;
 
     /**
      * Content of the proposal.
      */
+    @Getter
+    @Setter
     private String motion;
 
     /**
      * Date at which the proposal will not accept new votes.
      */
+    @Getter
+    @Setter
     private Date votingDeadline;
 
+    @Getter
     private ProposalStage status = ProposalStage.UnderConstruction;
 
     @ElementCollection
     @Convert(converter = OptionAttributeConverter.class)
+    @Getter
     private Set<Option> availableOptions = new HashSet<>();
 
     @ElementCollection
     @Convert(converter = OptionAttributeConverter.class, attributeName = "value")
     private Map<Integer, Option> votes = new HashMap<>();
 
+    @Getter
+    @Setter
     private VotingRightsService votingRightsService;
+
+    @Getter
+    @Setter
     private VoteValidationService voteValidationService;
 
     /**
@@ -68,12 +82,12 @@ public class Proposal {
      */
     @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     public Set<Result> getResults() {
-        Set<Result> results = new HashSet<>();
-        if (votes.isEmpty() || availableOptions.isEmpty()) {
-            return results;
-        }
         updateStatus();
         if (this.status != ProposalStage.Ended) {
+            return null;
+        }
+        Set<Result> results = new HashSet<>();
+        if (votes.isEmpty() || availableOptions.isEmpty()) {
             return results;
         }
         Map<Option, Integer> myMap;
@@ -116,8 +130,10 @@ public class Proposal {
      * Add a vote to one of the options or updates it. This can be done only in the Voting stage of the proposal.
      *
      * @param newVote Vote to add.
+     * @return true if vote was edited successfully, false otherwise.
      */
-    public void addVote(Vote newVote) {
+    public boolean addVote(Vote newVote) {
+        updateStatus();
         if (this.status == ProposalStage.Voting
                 && this.availableOptions.contains(newVote.getChoice())
                 && this.votingRightsService.canVote(newVote.getVoter(), this)
@@ -127,6 +143,8 @@ public class Proposal {
             } else {
                 this.votes.put(newVote.getVoter(), newVote.getChoice());
             }
+            return true;
         }
+        return false;
     }
 }
