@@ -30,6 +30,12 @@ public class HOA extends HasEvents {
   @Column(name = "election_end_time", nullable = false)
   private Long electionEndTime;
 
+  public HOA(String name, String country, String city){
+    this.hoaName = name;
+    this.country = country;
+    this.city = city;
+  }
+
   public int getId() {
     return id;
   }
