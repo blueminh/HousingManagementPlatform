@@ -19,7 +19,7 @@ public class ProposalInformationResponseModel {
     private String motion;
     private Date deadline;
     private ProposalStage status;
-    private List<Option> options;
+    private List<String> options;
 
     /**
      * Constructor from a Proposal object.
@@ -33,6 +33,7 @@ public class ProposalInformationResponseModel {
         this.motion = proposal.getMotion();
         this.deadline = proposal.getVotingDeadline();
         this.status = proposal.getStatus();
-        this.options = proposal.getAvailableOptions().stream().collect(Collectors.toList());
+        this.options = proposal.getAvailableOptions().stream()
+                .map(Option::toString).collect(Collectors.toList());
     }
 }

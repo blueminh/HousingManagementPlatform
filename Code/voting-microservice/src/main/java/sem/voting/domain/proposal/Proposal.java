@@ -82,7 +82,7 @@ public class Proposal {
      */
     @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     public Set<Result> getResults() {
-        updateStatus();
+        checkDeadline();
         if (this.status != ProposalStage.Ended) {
             return null;
         }
@@ -94,7 +94,7 @@ public class Proposal {
         myMap = new HashMap<>();
         for (Integer user : votes.keySet()) {
             Option choice = votes.get(user);
-            int newVal = myMap.getOrDefault(choice, -1) + 1;
+            int newVal = myMap.getOrDefault(choice, 0) + 1;
             myMap.put(choice, newVal);
         }
         for (Option o : availableOptions) {
@@ -107,7 +107,7 @@ public class Proposal {
     /**
      * Check if the deadline has been reached and update the proposal status accordingly.
      */
-    public void updateStatus() {
+    public void checkDeadline() {
         Date now = Date.from(Instant.now());
         if (!now.before(this.votingDeadline)) {
             // Voting has ended
@@ -116,14 +116,27 @@ public class Proposal {
     }
 
     /**
+     * Go to voting stage.
+     */
+    public void startVoting() {
+        this.checkDeadline();
+        if (this.status == ProposalStage.UnderConstruction) {
+            this.status = ProposalStage.Voting;
+        }
+    }
+
+    /**
      * Add an option to vote on. This can be done only in the UnderConstruction stage of the proposal.
      *
      * @param newOption Option to add.
+     * @return true if the option was added, false otherwise.
      */
-    public void addOption(Option newOption) {
+    public boolean addOption(Option newOption) {
+        checkDeadline();
         if (this.status == ProposalStage.UnderConstruction) {
-            this.availableOptions.add(newOption);
+            return this.availableOptions.add(newOption);
         }
+        return false;
     }
 
     /**
@@ -133,17 +146,17 @@ public class Proposal {
      * @return true if vote was edited successfully, false otherwise.
      */
     public boolean addVote(Vote newVote) {
-        updateStatus();
+        checkDeadline();
         if (this.status == ProposalStage.Voting
-                && this.availableOptions.contains(newVote.getChoice())
                 && this.votingRightsService.canVote(newVote.getVoter(), this)
                 && this.voteValidationService.isVoteValid(newVote, this)) {
             if (newVote.getChoice() == null) {
-                this.votes.remove(newVote.getVoter());
-            } else {
-                this.votes.put(newVote.getVoter(), newVote.getChoice());
+                return this.votes.remove(newVote.getVoter()) != null;
             }
-            return true;
+            if (this.availableOptions.contains(newVote.getChoice())) {
+                this.votes.put(newVote.getVoter(), newVote.getChoice());
+                return true;
+            }
         }
         return false;
     }

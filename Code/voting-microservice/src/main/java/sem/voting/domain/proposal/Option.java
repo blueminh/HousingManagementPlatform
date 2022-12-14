@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode
 public class Option {
+    @EqualsAndHashCode.Include
     private final transient String optionValue;
 
     public Option(String option) {

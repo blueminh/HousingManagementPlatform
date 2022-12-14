@@ -1,8 +1,8 @@
 package sem.voting.controllers;
 
-import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,10 +36,7 @@ import sem.voting.models.ProposalResultsResponseModel;
 import sem.voting.models.ProposalStartVotingResponseModel;
 
 /**
- * Hello World example controller.
- * <p>
- * This controller shows how you can extract information from the JWT token.
- * </p>
+ * Controller of the Voting Microservice.
  */
 @RestController
 public class VotingController {
@@ -70,6 +67,19 @@ public class VotingController {
     }
 
     /**
+     * ToDo: remove.
+     * Endpoint to test APIs.
+     *
+     * @return stuff
+     */
+    @PostMapping("/test")
+    public ResponseEntity<ProposalInformationResponseModel> jsonTest() {
+        Proposal p = new Proposal();
+        p.setVotingDeadline(Date.from(Instant.now()));
+        return ResponseEntity.ok(new ProposalInformationResponseModel(p));
+    }
+
+    /**
      * Endpoint to create a new proposal.
      *
      * @param request model of the request
@@ -84,13 +94,19 @@ public class VotingController {
         }
 
         // Check if Date is valid
-        if (Date.from(Instant.now()).after(request.getDeadline())) {
+        Date deadline = request.getDeadline();
+        if (Date.from(Instant.now()).after(deadline)) {
             return ResponseEntity.badRequest().build();
         }
+
+        // Build proposal
         Proposal toAdd = new Proposal();
+        toAdd.setVotingDeadline(deadline);
         toAdd.setHoaId(request.getHoaId());
-        for (String s : request.getOptions()) {
-            toAdd.addOption(new Option(s));
+        if (request.getOptions() != null) {
+            for (String s : request.getOptions()) {
+                toAdd.addOption(new Option(s));
+            }
         }
         toAdd.setTitle(request.getTitle());
         toAdd.setMotion(request.getMotion());
@@ -120,6 +136,7 @@ public class VotingController {
      * @param request model of the request
      * @return 200 and the model of the response if everything went good
      *      404 if the proposal was not found
+     *      409 if the option could not be added
      *      401 otherwise
      */
     @PostMapping("/add-option")
@@ -134,12 +151,16 @@ public class VotingController {
         if (proposal.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        proposal.get().addOption(new Option(request.getOption()));
-        proposalHandlingService.save(proposal.get());
         AddOptionResponseModel response = new AddOptionResponseModel();
-        response.setOptions(new ArrayList<>(proposal.get().getAvailableOptions()));
         response.setProposalId(proposal.get().getId());
         response.setHoaId(proposal.get().getHoaId());
+        boolean added = proposal.get().addOption(new Option(request.getOption()));
+        proposal = Optional.of(proposalHandlingService.save(proposal.get()));
+        response.setOptions(proposal.get().getAvailableOptions().stream()
+                .map(Option::toString).collect(Collectors.toList()));
+        if (!added) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        }
         return ResponseEntity.ok(response);
     }
 
@@ -163,7 +184,8 @@ public class VotingController {
         if (proposal.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        proposal.get().updateStatus();
+        proposal.get().startVoting();
+        proposal = Optional.of(proposalHandlingService.save(proposal.get()));
         ProposalStartVotingResponseModel response = new ProposalStartVotingResponseModel();
         response.setProposalId(proposal.get().getId());
         response.setHoaId(proposal.get().getHoaId());
@@ -180,6 +202,7 @@ public class VotingController {
      * @param request model of the request
      * @return 200 if it was possible to cast the vote,
      *      404 if the proposal was not found,
+     *      401 if the user is not authorized to vote,
      *      400 otherwise.
      *      The response contains the information on the proposal being edited.
      */
@@ -195,19 +218,19 @@ public class VotingController {
         if (proposal.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        Option beingVoted = request.getOption() == null ? null : new Option(request.getOption());
+        Option beingVoted = request.getOption().equals("") ? null : new Option(request.getOption());
         Vote vote = new Vote(request.getUserId(), beingVoted);
         if (!proposal.get().addVote(vote)) {
             // Proposal needs to be saved because even if Vote wasn't successful, the status might have changed.
             proposalHandlingService.save(proposal.get());
-            return ResponseEntity.badRequest().body(new ProposalInformationResponseModel(proposal.get()));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ProposalInformationResponseModel(proposal.get()));
         }
         proposalHandlingService.save(proposal.get());
         return ResponseEntity.ok(new ProposalInformationResponseModel(proposal.get()));
     }
 
     /**
-     * Endpoint to remove a vote. Equivalent to /vote with a null option.
+     * Endpoint to remove a vote. Equivalent to /vote with an empty option.
      *
      * @param request model of the request.
      * @return same as /vote
@@ -215,7 +238,7 @@ public class VotingController {
     @PostMapping("/remove-vote")
     public ResponseEntity<ProposalInformationResponseModel> removeVote(
             @RequestBody CastVoteRequestModel request) {
-        request.setOption(null);
+        request.setOption("");
         return castVote(request);
     }
 
@@ -268,7 +291,7 @@ public class VotingController {
 
         List<Proposal> active = proposalHandlingService.getActiveProposals(request.getHoaId());
         return ResponseEntity.ok(active.stream().map(p -> {
-            p.updateStatus();
+            p.checkDeadline();
             return proposalHandlingService.save(p);
         }).map(ProposalInformationResponseModel::new).collect(Collectors.toList()));
     }
@@ -290,7 +313,7 @@ public class VotingController {
 
         List<Proposal> history = proposalHandlingService.getHistoryProposals(request.getHoaId());
         return ResponseEntity.ok(history.stream().map(p -> {
-            p.updateStatus();
+            p.checkDeadline();
             return proposalHandlingService.save(p);
         }).map(ProposalInformationResponseModel::new).collect(Collectors.toList()));
     }

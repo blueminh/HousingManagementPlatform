@@ -9,6 +9,6 @@ public class BoardElectionsVotingRightsService implements VotingRightsService {
     @Override
     public boolean canVote(int userId, Proposal proposal) {
         // ToDo: check if user is member of HOA
-        return false;
+        return true;
     }
 }
