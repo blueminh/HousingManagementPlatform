@@ -17,7 +17,7 @@ public class HOAService {
 
   public void createNewHOA(HOA hoa) {
     // TODO do some checks here
-//    hoaRepository.save(hoa);
+    hoaRepository.save(hoa);
   }
 
   /**
