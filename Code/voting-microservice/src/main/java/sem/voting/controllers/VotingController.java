@@ -1,6 +1,7 @@
 package sem.voting.controllers;
 
 import java.time.Instant;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +31,7 @@ import sem.voting.models.CastVoteRequestModel;
 import sem.voting.models.ProposalCreationRequestModel;
 import sem.voting.models.ProposalCreationResponseModel;
 import sem.voting.models.ProposalGenericRequestModel;
+import sem.voting.models.ProposalHistoryResponseModel;
 import sem.voting.models.ProposalInfoRequestModel;
 import sem.voting.models.ProposalInformationResponseModel;
 import sem.voting.models.ProposalResultsResponseModel;
@@ -70,13 +72,21 @@ public class VotingController {
      * ToDo: remove.
      * Endpoint to test APIs.
      *
+     * @param request aaaaaaah
      * @return stuff
      */
     @PostMapping("/test")
-    public ResponseEntity<ProposalInformationResponseModel> jsonTest() {
-        Proposal p = new Proposal();
-        p.setVotingDeadline(Date.from(Instant.now()));
-        return ResponseEntity.ok(new ProposalInformationResponseModel(p));
+    public ResponseEntity<ProposalInformationResponseModel> jsonTest(
+            @RequestBody ProposalGenericRequestModel request) {
+        Optional<Proposal> p = proposalHandlingService.getProposalById(request.getProposalId());
+        if (p.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        final long dayInSeconds = 24 * 60 * 60;
+        p.get().setVotingDeadline(Date.from(Instant.now().minusSeconds(dayInSeconds)));
+        p.get().checkDeadline();
+        p = Optional.of(proposalHandlingService.save(p.get()));
+        return ResponseEntity.ok(new ProposalInformationResponseModel(p.get()));
     }
 
     /**
@@ -270,7 +280,7 @@ public class VotingController {
         ProposalResultsResponseModel response = new ProposalResultsResponseModel();
         response.setProposalId(proposal.get().getId());
         response.setHoaId(proposal.get().getHoaId());
-        response.setResults(new ArrayList<>(results));
+        response.setAllResults(results);
         return ResponseEntity.ok(response);
     }
 
@@ -304,7 +314,7 @@ public class VotingController {
      *      400 otherwise
      */
     @PostMapping("/history")
-    public ResponseEntity<List<ProposalInformationResponseModel>> listExpiredProposals(
+    public ResponseEntity<List<ProposalHistoryResponseModel>> listExpiredProposals(
             @RequestBody ProposalInfoRequestModel request) {
         if (request == null) {
             ResponseEntity.badRequest().build();
@@ -315,6 +325,6 @@ public class VotingController {
         return ResponseEntity.ok(history.stream().map(p -> {
             p.checkDeadline();
             return proposalHandlingService.save(p);
-        }).map(ProposalInformationResponseModel::new).collect(Collectors.toList()));
+        }).map(ProposalHistoryResponseModel::new).collect(Collectors.toList()));
     }
 }
