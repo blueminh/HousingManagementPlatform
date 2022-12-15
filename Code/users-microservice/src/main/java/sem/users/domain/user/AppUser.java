@@ -35,6 +35,10 @@ public class AppUser extends HasEvents {
     @Convert(converter = HashedPasswordAttributeConverter.class)
     private HashedPassword password;
 
+    @Column(name = "fullname", nullable = false, unique = false)
+    @Convert(converter = FullnameAttributeConverter.class)
+    private Fullname fullname;
+
 
 
     /**
@@ -43,9 +47,10 @@ public class AppUser extends HasEvents {
      * @param username The username for the new user
      * @param password The password for the new user
      */
-    public AppUser(Username username, HashedPassword password) {
+    public AppUser(Username username, HashedPassword password, Fullname fullname) {
         this.username = username;
         this.password = password;
+        this.fullname = fullname;
         this.recordThat(new UserWasCreatedEvent(username));
 
     }
@@ -61,6 +66,10 @@ public class AppUser extends HasEvents {
 
     public HashedPassword getPassword() {
         return password;
+    }
+
+    public Fullname getFullname() {
+        return fullname;
     }
 
     /**
