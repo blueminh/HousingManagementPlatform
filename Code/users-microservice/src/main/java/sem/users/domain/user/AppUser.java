@@ -2,7 +2,13 @@ package sem.users.domain.user;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import lombok.NoArgsConstructor;
 import sem.users.HasEvents;
 
@@ -29,9 +35,6 @@ public class AppUser extends HasEvents {
     @Convert(converter = HashedPasswordAttributeConverter.class)
     private HashedPassword password;
 
-    @Column(name = "memberships", nullable = false)
-    @Convert(converter = MembershipAttributeConverter.class)
-    private Membership membership;
 
 
     /**
@@ -43,7 +46,6 @@ public class AppUser extends HasEvents {
     public AppUser(Username username, HashedPassword password) {
         this.username = username;
         this.password = password;
-        this.membership = new Membership(new ArrayList<HoaMembership>());
         this.recordThat(new UserWasCreatedEvent(username));
 
     }
@@ -59,50 +61,6 @@ public class AppUser extends HasEvents {
 
     public HashedPassword getPassword() {
         return password;
-    }
-
-    public Membership getMembership() {
-        return this.membership;
-    }
-
-    public void setMembership(Membership membership) {
-        this.membership = membership;
-    }
-
-    /**
-     * Updates the HOA membership for an existing membership of the user.
-     *
-     * @param hoa the HOA membership to update to.
-     *
-     * @return false if the user doesn't already have a membership for that HOA,
-     *          true if successfully updated.
-     *
-     *          Note: The equals method of HOAMembership only checks for the HOAID,
-     *          therefore the contains method will return a membership
-     *          for the same HOA even if the role is different. This is by design.
-     */
-    public boolean updateHoa(HoaMembership hoa) {
-        if (!this.membership.getMembershipList().contains(hoa)) {
-            return false;
-        }
-        this.membership.getMembershipList().remove(hoa);
-        return this.membership.getMembershipList().add(hoa);
-
-    }
-
-    /**
-     * Adds a new membership.
-     *
-     * @param hoa membership to add
-     *
-     * @return boolean whether it was successful
-     */
-    public boolean addMembership(HoaMembership hoa) {
-
-        if (this.membership.getMembershipList().contains(hoa)) {
-            return false;
-        }
-        return this.membership.getMembershipList().add(hoa);
     }
 
     /**
