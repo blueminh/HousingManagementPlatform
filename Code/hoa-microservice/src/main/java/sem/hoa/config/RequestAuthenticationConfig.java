@@ -32,6 +32,9 @@ public class RequestAuthenticationConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        // I added this to be able to work with h2 console at localhost:port/h2-console
+        // Without this option, for "safety issues" my browser wasn't allowed opening h2-console on the browser properly
+        http.headers().frameOptions().disable();
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 

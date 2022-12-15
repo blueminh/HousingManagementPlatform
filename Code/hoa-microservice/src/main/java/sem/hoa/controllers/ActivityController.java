@@ -1,19 +1,16 @@
 package sem.hoa.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import sem.hoa.domain.activity.Activity;
 import sem.hoa.domain.activity.ActivityService;
 import sem.hoa.models.ActivityCreationRequestModel;
+import sem.hoa.models.UserParticipateModel;
 
-import java.util.Date;
 
 @RestController
 public class ActivityController {
@@ -38,6 +35,23 @@ public class ActivityController {
     public ResponseEntity addActivity(@RequestBody ActivityCreationRequestModel req) throws Exception {
         try {
             activityService.addActivity(req.getHoaId(), req.getDate(), req.getDesc());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * API call for user participating in an activity.
+     *
+     * @param userParticipateModel it is the request model for taking all the information regarding which user participates in which activity
+     * @return returns 200 OK response if everything goes fine
+     * @throws Exception In case the user already participates in the activity or the activity does not exist or the user does not exist
+     */
+    @PostMapping("/activity/participate")
+    public ResponseEntity participate(@RequestBody UserParticipateModel userParticipateModel) throws Exception {
+        try {
+            activityService.participate(userParticipateModel.getUsername(), userParticipateModel.getActivityId());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

@@ -1,18 +1,19 @@
 package sem.hoa.domain.activity;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
+import javax.sound.midi.Soundbank;
 import java.util.Date;
 
 @Service
 public class ActivityService {
 
     private final transient ActivityRepository activityRepository;
+    private final transient ParticipationRepository participationRepository;
 
-    public ActivityService(ActivityRepository activityRepository) {
+    public ActivityService(ActivityRepository activityRepository, ParticipationRepository participationRepository) {
         this.activityRepository = activityRepository;
+        this.participationRepository = participationRepository;
     }
 
 
@@ -31,5 +32,26 @@ public class ActivityService {
         } else {
             throw new ActivityAlreadyExistsException();
         }
+    }
+
+    /**
+     * This service adds the userId and activityId to the Participation repository.
+     *
+     * @param username the unique username
+     * @param activityId the unique activity id
+     */
+    public void participate(String username, int activityId) throws Exception {
+        if (participationRepository.existsByActivityIdAndUsername(activityId, username)) {
+            System.out.println("Participation not added because user already participates in that activity.");
+            throw new UserAlreadyParticipatesException("User already participates in the given activity");
+        } else if (!activityRepository.existsActivityByActivityId(activityId)) {
+            System.out.println("Participation not added because there is no such activity");
+            throw new NoSuchActivityException("There is no activity with the id " + activityId);
+        } else {
+            participationRepository.save(new Participation(activityId, username));
+            System.out.println("User with the id " + username + " now participates in activity with the id " + activityId);
+        }
+        //TODO: I should add another test to check if the user exists but for that I need to communicates with the user microservice
+        //TODO: I should also add another check to see if the activity and the user belongs to the same HOA
     }
 }
