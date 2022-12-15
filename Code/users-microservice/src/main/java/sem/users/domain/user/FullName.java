@@ -6,15 +6,15 @@ import java.util.Objects;
  * A DDD value object representing the full name of a user in our domain.
  */
 public class FullName {
-    private final transient String full_name;
+    private final transient String name;
 
-    public FullName(String full_name) {
-        this.full_name = full_name;
+    public FullName(String name) {
+        this.name = name;
     }
 
     @Override
     public String toString() {
-        return full_name;
+        return name;
     }
 
     @Override
@@ -26,11 +26,11 @@ public class FullName {
             return false;
         }
         FullName fullname1 = (FullName) o;
-        return full_name.equals(fullname1.full_name);
+        return name.equals(fullname1.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(full_name);
+        return Objects.hash(name);
     }
 }
