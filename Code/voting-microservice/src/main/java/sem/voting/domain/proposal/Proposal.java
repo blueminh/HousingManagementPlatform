@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import sem.voting.domain.services.VoteValidationService;
-import sem.voting.domain.services.VotingRightsService;
+import sem.voting.domain.services.implementations.VotingException;
 
 /**
  * Entity representing a proposal people can vote on.
@@ -66,10 +66,6 @@ public class Proposal {
     @ElementCollection
     @Convert(converter = OptionAttributeConverter.class, attributeName = "value")
     private Map<String, Option> votes = new HashMap<>();
-
-    @Getter
-    @Setter
-    private VotingRightsService votingRightsService;
 
     @Getter
     @Setter
@@ -145,18 +141,18 @@ public class Proposal {
      * @param newVote Vote to add.
      * @return true if vote was edited successfully, false otherwise.
      */
-    public boolean addVote(Vote newVote) {
+    public boolean addVote(Vote newVote) throws VotingException {
         checkDeadline();
-        if (this.status == ProposalStage.Voting
-                && this.votingRightsService.canVote(newVote.getVoter(), this)
-                && this.voteValidationService.isVoteValid(newVote, this)) {
-            if (newVote.getChoice() == null) {
-                return this.votes.remove(newVote.getVoter()) != null;
-            }
-            if (this.availableOptions.contains(newVote.getChoice())) {
-                this.votes.put(newVote.getVoter(), newVote.getChoice());
-                return true;
-            }
+        if (this.status != ProposalStage.Voting || !this.voteValidationService.isVoteValid(newVote, this))
+            throw new VotingException("Proposal is not in Voting phase");
+
+        if (newVote.getChoice() == null) {
+            return this.votes.remove(newVote.getVoter()) != null;
+        }
+
+        if (this.availableOptions.contains(newVote.getChoice())) {
+            this.votes.put(newVote.getVoter(), newVote.getChoice());
+            return true;
         }
         return false;
     }

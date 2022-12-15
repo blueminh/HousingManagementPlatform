@@ -13,16 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import sem.voting.authentication.AuthManager;
-import sem.voting.domain.proposal.Option;
-import sem.voting.domain.proposal.Proposal;
-import sem.voting.domain.proposal.ProposalHandlingService;
-import sem.voting.domain.proposal.ProposalStage;
-import sem.voting.domain.proposal.Result;
-import sem.voting.domain.proposal.Vote;
+import sem.voting.domain.proposal.*;
 import sem.voting.domain.services.implementations.BoardElectionsVoteValidationService;
-import sem.voting.domain.services.implementations.BoardElectionsVotingRightsService;
 import sem.voting.domain.services.implementations.RuleChangesVoteValidationService;
-import sem.voting.domain.services.implementations.RuleChangesVotingRightsService;
+import sem.voting.domain.services.implementations.VotingException;
 import sem.voting.models.AddOptionRequestModel;
 import sem.voting.models.AddOptionResponseModel;
 import sem.voting.models.CastVoteRequestModel;
@@ -90,12 +84,10 @@ public class VotingController {
         switch (request.getType()) {
             case BoardElection: {
                 toAdd.setVoteValidationService(new BoardElectionsVoteValidationService());
-                toAdd.setVotingRightsService(new BoardElectionsVotingRightsService());
                 break;
             }
             case HoaRuleChange: {
                 toAdd.setVoteValidationService(new RuleChangesVoteValidationService());
-                toAdd.setVotingRightsService(new RuleChangesVotingRightsService());
                 break;
             }
             default: {
@@ -198,11 +190,18 @@ public class VotingController {
         }
         Option beingVoted = request.getOption().equals("") ? null : new Option(request.getOption());
         Vote vote = new Vote(request.getUsername(), beingVoted);
-        if (!proposal.get().addVote(vote)) {
-            // Proposal needs to be saved because even if Vote wasn't successful, the status might have changed.
-            proposalHandlingService.save(proposal.get());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ProposalInformationResponseModel(proposal.get()));
+
+
+        try {
+            if (!proposal.get().addVote(vote)) {
+                // Proposal needs to be saved because even if Vote wasn't successful, the status might have changed.
+                proposalHandlingService.save(proposal.get());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProposalInformationResponseModel(proposal.get()));
+            }
+        } catch (VotingException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+
         proposalHandlingService.save(proposal.get());
         return ResponseEntity.ok(new ProposalInformationResponseModel(proposal.get()));
     }
