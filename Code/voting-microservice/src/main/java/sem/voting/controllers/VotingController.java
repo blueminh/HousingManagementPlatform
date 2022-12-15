@@ -131,6 +131,7 @@ public class VotingController {
         AddOptionResponseModel response = new AddOptionResponseModel();
         response.setProposalId(proposal.get().getProposalId());
         response.setHoaId(proposal.get().getHoaId());
+        // ToDo: check validity of new option, either here or in Proposal
         boolean added = proposal.get().addOption(new Option(request.getOption()));
         proposal = Optional.of(proposalHandlingService.save(proposal.get()));
         response.setOptions(proposal.get().getAvailableOptions().stream()
