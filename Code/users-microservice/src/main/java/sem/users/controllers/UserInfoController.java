@@ -14,11 +14,11 @@ import sem.users.models.FullnameRequestModel;
 import sem.users.models.FullnameResponseModel;
 
 @RestController
-public class UserinfoController {
+public class UserInfoController {
     private final transient RegistrationService registrationService;
 
     @Autowired
-    public UserinfoController(RegistrationService registrationService) {
+    public UserInfoController(RegistrationService registrationService) {
         this.registrationService = registrationService;
     }
 
