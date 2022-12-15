@@ -57,27 +57,6 @@ public class VotingController {
     }
 
     /**
-     * ToDo: remove.
-     * Endpoint to test APIs.
-     *
-     * @param request aaaaaaah
-     * @return stuff
-     */
-    @PostMapping("/test")
-    public ResponseEntity<ProposalInformationResponseModel> jsonTest(
-            @RequestBody ProposalGenericRequestModel request) {
-        Optional<Proposal> p = proposalHandlingService.getProposalById(request.getProposalId());
-        if (p.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        final long dayInSeconds = 24 * 60 * 60;
-        p.get().setVotingDeadline(Date.from(Instant.now().minusSeconds(dayInSeconds)));
-        p.get().checkDeadline();
-        p = Optional.of(proposalHandlingService.save(p.get()));
-        return ResponseEntity.ok(new ProposalInformationResponseModel(p.get()));
-    }
-
-    /**
      * Endpoint to create a new proposal.
      *
      * @param request model of the request
