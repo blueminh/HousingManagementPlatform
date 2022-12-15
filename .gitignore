@@ -28,3 +28,6 @@ gradle-app.setting
 *.rar
 
 *.db
+
+# Ignore Gradle build output directory
+build
