@@ -1,14 +1,17 @@
 package sem.voting.domain.proposal;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  * A DDD value object representing a vote for a proposal.
  */
 @EqualsAndHashCode
 public class Vote {
-    private final transient int voter;
+    @Getter
+    private final transient String voter;
 
+    @Getter
     private final transient Option choice;
 
     /**
@@ -17,16 +20,8 @@ public class Vote {
      * @param voter Id of voter.
      * @param choice Selected choice.
      */
-    public Vote(int voter, Option choice) {
+    public Vote(String voter, Option choice) {
         this.voter = voter;
         this.choice = choice;
-    }
-
-    public Option getChoice() {
-        return choice;
-    }
-
-    public int getVoter() {
-        return voter;
     }
 }

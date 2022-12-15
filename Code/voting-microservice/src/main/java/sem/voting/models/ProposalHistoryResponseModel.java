@@ -29,7 +29,7 @@ public class ProposalHistoryResponseModel {
      * @param proposal the Proposal to get information on.
      */
     public ProposalHistoryResponseModel(Proposal proposal) {
-        this.proposalId = proposal.getId();
+        this.proposalId = proposal.getProposalId();
         this.hoaId = proposal.getHoaId();
         this.title = proposal.getTitle();
         this.motion = proposal.getMotion();

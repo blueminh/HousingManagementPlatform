@@ -28,7 +28,7 @@ public class Proposal {
     @GeneratedValue
     @Column(name = "id", nullable = false)
     @Getter
-    private int id;
+    private int proposalId;
 
     @Getter
     @Setter
@@ -65,7 +65,7 @@ public class Proposal {
 
     @ElementCollection
     @Convert(converter = OptionAttributeConverter.class, attributeName = "value")
-    private Map<Integer, Option> votes = new HashMap<>();
+    private Map<String, Option> votes = new HashMap<>();
 
     @Getter
     @Setter
@@ -92,7 +92,7 @@ public class Proposal {
         }
         Map<Option, Integer> myMap;
         myMap = new HashMap<>();
-        for (Integer user : votes.keySet()) {
+        for (String user : votes.keySet()) {
             Option choice = votes.get(user);
             int newVal = myMap.getOrDefault(choice, 0) + 1;
             myMap.put(choice, newVal);

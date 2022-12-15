@@ -1,8 +1,6 @@
 package sem.voting.controllers;
 
 import java.time.Instant;
-import java.time.temporal.TemporalUnit;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -136,7 +134,7 @@ public class VotingController {
             }
         }
         toAdd = proposalHandlingService.save(toAdd);
-        ProposalCreationResponseModel response = new ProposalCreationResponseModel(toAdd.getId());
+        ProposalCreationResponseModel response = new ProposalCreationResponseModel(toAdd.getProposalId());
         return ResponseEntity.ok(response);
     }
 
@@ -162,7 +160,7 @@ public class VotingController {
             return ResponseEntity.notFound().build();
         }
         AddOptionResponseModel response = new AddOptionResponseModel();
-        response.setProposalId(proposal.get().getId());
+        response.setProposalId(proposal.get().getProposalId());
         response.setHoaId(proposal.get().getHoaId());
         boolean added = proposal.get().addOption(new Option(request.getOption()));
         proposal = Optional.of(proposalHandlingService.save(proposal.get()));
@@ -197,7 +195,7 @@ public class VotingController {
         proposal.get().startVoting();
         proposal = Optional.of(proposalHandlingService.save(proposal.get()));
         ProposalStartVotingResponseModel response = new ProposalStartVotingResponseModel();
-        response.setProposalId(proposal.get().getId());
+        response.setProposalId(proposal.get().getProposalId());
         response.setHoaId(proposal.get().getHoaId());
         response.setStatus(proposal.get().getStatus());
         if (proposal.get().getStatus() != ProposalStage.Voting) {
@@ -229,7 +227,7 @@ public class VotingController {
             return ResponseEntity.notFound().build();
         }
         Option beingVoted = request.getOption().equals("") ? null : new Option(request.getOption());
-        Vote vote = new Vote(request.getUserId(), beingVoted);
+        Vote vote = new Vote(request.getUsername(), beingVoted);
         if (!proposal.get().addVote(vote)) {
             // Proposal needs to be saved because even if Vote wasn't successful, the status might have changed.
             proposalHandlingService.save(proposal.get());
@@ -278,7 +276,7 @@ public class VotingController {
             return ResponseEntity.badRequest().build();
         }
         ProposalResultsResponseModel response = new ProposalResultsResponseModel();
-        response.setProposalId(proposal.get().getId());
+        response.setProposalId(proposal.get().getProposalId());
         response.setHoaId(proposal.get().getHoaId());
         response.setAllResults(results);
         return ResponseEntity.ok(response);

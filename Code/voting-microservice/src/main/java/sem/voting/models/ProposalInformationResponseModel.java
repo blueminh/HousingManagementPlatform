@@ -27,7 +27,7 @@ public class ProposalInformationResponseModel {
      * @param proposal the Proposal to get information on.
      */
     public ProposalInformationResponseModel(Proposal proposal) {
-        this.proposalId = proposal.getId();
+        this.proposalId = proposal.getProposalId();
         this.hoaId = proposal.getHoaId();
         this.title = proposal.getTitle();
         this.motion = proposal.getMotion();

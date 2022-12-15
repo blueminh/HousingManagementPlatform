@@ -9,6 +9,6 @@ import lombok.Data;
 public class CastVoteRequestModel {
     private int proposalId;
     private int hoaId;
-    private int userId;
+    private String username;
     private String option;
 }

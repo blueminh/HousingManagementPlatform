@@ -10,8 +10,8 @@ public class Option {
     @EqualsAndHashCode.Include
     private final transient String optionValue;
 
-    public Option(String option) {
-        this.optionValue = option;
+    public Option(String optionValue) {
+        this.optionValue = optionValue;
     }
 
     @Override
