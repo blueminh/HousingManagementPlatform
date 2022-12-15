@@ -31,19 +31,21 @@ public class RegistrationService {
      * @param password The password of the user
      * @throws Exception if the user already exists
      */
+
     public AppUser registerUser(Username username, Password password, FullName fullname) throws Exception {
 
         if (checkUsernameIsUnique(username)) {
             // Hash password
             HashedPassword hashedPassword = passwordHashingService.hash(password);
 
-            // Create new account
-            AppUser user = new AppUser(username, hashedPassword, fullname);
-
             if (username == null || hashedPassword == null || fullname == null) {
                 throw new InvalidAttributesException("At least one of the properties is NULL!");
             }
-            userRepository.save(user);
+
+            // Create new account
+            AppUser user = new AppUser(username, hashedPassword, fullname);
+
+            user = userRepository.save(user);
 
             return user;
         } else {

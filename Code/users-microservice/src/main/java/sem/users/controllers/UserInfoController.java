@@ -30,6 +30,7 @@ public class UserInfoController {
      * @return The full name of the user if it was found.
      * @throws ResponseStatusException Exception if the user was not found.
      */
+    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     @PostMapping("/getfullname")
     public ResponseEntity<FullnameResponseModel> getFullName(@RequestBody FullnameRequestModel request) throws ResponseStatusException {
         final String fullname;

@@ -1,19 +1,20 @@
 package sem.users.domain.user;
+
 import java.util.Objects;
 
 /**
  * A DDD value object representing the full name of a user in our domain.
  */
 public class FullName {
-    private final transient String fullname;
+    private final transient String full_name;
 
-    public FullName(String fullname) {
-        this.fullname = fullname;
+    public FullName(String full_name) {
+        this.full_name = full_name;
     }
 
     @Override
     public String toString() {
-        return fullname;
+        return full_name;
     }
 
     @Override
@@ -25,11 +26,11 @@ public class FullName {
             return false;
         }
         FullName fullname1 = (FullName) o;
-        return fullname.equals(fullname1.fullname);
+        return full_name.equals(fullname1.full_name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fullname);
+        return Objects.hash(full_name);
     }
 }
