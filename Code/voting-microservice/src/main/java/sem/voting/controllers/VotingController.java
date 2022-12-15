@@ -284,7 +284,7 @@ public class VotingController {
     public ResponseEntity<List<ProposalHistoryResponseModel>> listExpiredProposals(
             @RequestBody ProposalInfoRequestModel request) {
         if (request == null) {
-            ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().build();
         }
         // ToDo: check if authentication and HOA are valid
 
