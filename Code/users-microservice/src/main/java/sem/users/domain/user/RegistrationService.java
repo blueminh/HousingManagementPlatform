@@ -2,6 +2,9 @@ package sem.users.domain.user;
 
 import org.springframework.stereotype.Service;
 
+import javax.naming.directory.InvalidAttributesException;
+import java.util.Optional;
+
 /**
  * A DDD service for registering a new user.
  */
@@ -24,24 +27,47 @@ public class RegistrationService {
     /**
      * Register a new user.
      *
-     * @param username    The username of the user
+     * @param username The username of the user
      * @param password The password of the user
      * @throws Exception if the user already exists
      */
-    public AppUser registerUser(Username username, Password password) throws Exception {
+    public AppUser registerUser(Username username, Password password, Fullname fullname) throws Exception {
 
         if (checkUsernameIsUnique(username)) {
             // Hash password
             HashedPassword hashedPassword = passwordHashingService.hash(password);
 
             // Create new account
-            AppUser user = new AppUser(username, hashedPassword);
+            AppUser user = new AppUser(username, hashedPassword, fullname);
+
+            if (username == null || hashedPassword == null || fullname == null) {
+                throw new InvalidAttributesException("At least one of the properties is NULL!");
+            }
             userRepository.save(user);
 
             return user;
+        } else {
+            throw new UsernameAlreadyInUseException(username);
         }
 
-        throw new UsernameAlreadyInUseException(username);
+
+    }
+
+    /**
+     * Fetch the full name of a user in the database.
+     *
+     * @param username user to fetch the full name of.
+     *
+     * @return full name of the user.
+     * @throws UserNotFoundException Exception to throw if the user was not found.
+     */
+    public Fullname getFullname(Username username) throws UserNotFoundException {
+        Optional<AppUser> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            return user.get().getFullname();
+        } else {
+            throw new UserNotFoundException(username);
+        }
     }
 
     public boolean checkUsernameIsUnique(Username username) {
