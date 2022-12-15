@@ -12,4 +12,12 @@ public class HOACommunication {
       throw new Exception(response.getBody());
     return response.getBody().equals("boardMember");
   }
+
+  public static boolean checkUserIsNotBoardMemberOfAnyHoa(String username) throws Exception {
+    String url = "";
+    ResponseEntity<Integer> response = restTemplate.getForEntity(url , Integer.class);
+    if (response.getStatusCode().isError() || response.getBody() == null)
+      throw new Exception();
+    return response.getBody() == -1;
+  }
 }

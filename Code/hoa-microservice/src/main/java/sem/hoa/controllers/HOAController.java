@@ -117,5 +117,19 @@ public class HOAController {
         }
     }
 
+    /**
+     * Check if user is a board member of any HOAs
+     * If yes, return the ID of the HOA
+     */
+    @GetMapping("/isaBoardMember")
+    public ResponseEntity<Integer> isBoardMember(@RequestBody String username) {
+        try {
+            if (username == null) throw new Exception();
+            int hoaID = memberManagementService.isBoardMemberOf(username);
+            return ResponseEntity.ok(hoaID);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
     
 }

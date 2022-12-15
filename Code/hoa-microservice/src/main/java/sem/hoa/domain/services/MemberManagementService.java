@@ -39,4 +39,15 @@ public class MemberManagementService {
   public Optional<Membership> findByUsernameAndHoaID(String username, int hoaID){
     return memberManagementRepository.findById(new MembershipID(username, hoaID));
   }
+
+  /**
+   * Find the ID of the HOA of which this user is a boardmember
+   * @param username
+   * @return the ID of the HOA or -1 if user is not a board member of any HOAs
+   */
+  public Integer isBoardMemberOf(String username){
+    Optional<Membership> membership = memberManagementRepository.findMembershipByUsernameAndBoardMemberIsTrue(username);
+    if (membership.isEmpty()) return -1;
+    return membership.get().getHoaID();
+  }
 }
