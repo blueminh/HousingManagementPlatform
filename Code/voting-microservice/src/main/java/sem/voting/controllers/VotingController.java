@@ -57,16 +57,6 @@ public class VotingController {
     }
 
     /**
-     * Example endpoint.
-     *
-     * @return 200 and say hi to the currently logged-in user.
-     */
-    @PostMapping("/example")
-    public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getNetId());
-    }
-
-    /**
      * ToDo: remove.
      * Endpoint to test APIs.
      *
