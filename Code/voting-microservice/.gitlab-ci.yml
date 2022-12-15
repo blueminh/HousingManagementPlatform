@@ -12,24 +12,24 @@ variables:
 build-voting-microservice:
   stage: build
   script:
-    gradle voting-microservice:assemble voting-microservice:testClasses
+    gradle Code:voting-microservice:assemble Code:voting-microservice:testClasses
 
 checkStyle-voting-microservice:
   stage: staticAnalysis
   script:
-    gradle voting-microservice:checkstyleMain voting-microservice:checkStyleTest
+    gradle Code:voting-microservice:checkstyleMain Code:voting-microservice:checkStyleTest
   allow_failure: true
 
 
 PMD-voting-microservice:
   stage: staticAnalysis
   script:
-    gradle voting-microservice:pmdMain
+    gradle Code:voting-microservice:pmdMain
   allow_failure: true
 
 test-voting-microservice:
   stage: test
   script:
-    - gradle voting-microservice:test voting-microservice:jacocoTestReport
-    - cat voting-microservice/build/reports/jacoco/test/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
+    - gradle Code:voting-microservice:test Code:voting-microservice:jacocoTestReport
+    - cat Code/voting-microservice/build/reports/jacoco/test/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
   coverage: /([0-9]{1,3})%/
