@@ -23,10 +23,18 @@ public class Membership {
   @Column(name = "isboardmember")
   private boolean isBoardMember;
 
-  public Membership(String username, int hoaID, boolean isBoardMember) {
+  @Column(name = "country")
+  private String country;
+
+  @Column(name = "city")
+  private String city;
+
+  public Membership(String username, int hoaID, boolean isBoardMember, String country, String city) {
     this.username = username;
     this.hoaID = hoaID;
     this.isBoardMember = isBoardMember;
+    this.country = country;
+    this.city = city;
   }
 
   public String getUsername() {
@@ -51,6 +59,14 @@ public class Membership {
 
   public void setBoardMember(boolean boardMember) {
     isBoardMember = boardMember;
+  }
+
+  public String getCountry() {
+    return country;
+  }
+
+  public String getCity() {
+    return city;
   }
 
   @Override

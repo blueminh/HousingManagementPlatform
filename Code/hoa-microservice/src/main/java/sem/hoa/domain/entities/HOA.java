@@ -61,4 +61,12 @@ public class HOA extends HasEvents {
   public void setElectionEndTime(Long electionEndTime) {
     this.electionEndTime = electionEndTime;
   }
+
+  public String getCountry() {
+    return country;
+  }
+
+  public String getCity() {
+    return city;
+  }
 }

@@ -48,4 +48,8 @@ public class MemberManagementService {
   public Optional<Membership> findByUsernameAndHoaID(String username, int hoaID){
     return memberManagementRepository.findById(new MembershipID(username, hoaID));
   }
+
+  public boolean addressCheck(HOA hoa, Membership membership) {
+    return hoa.getCountry().equals(membership.getCountry()) && hoa.getCity().equals(membership.getCity());
+  }
 }

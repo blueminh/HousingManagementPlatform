@@ -52,7 +52,6 @@ public class HOAController {
         return ResponseEntity.ok("Hello " + authManager.getNetId() + "! \nWelcome to HOA!") ;
 
     }
-    //should add a check for the address of the hoa and the user
     // Membership
     @PostMapping("/joining")
     public ResponseEntity joiningHOA(@RequestBody UserNameHoaNameDTO request){
@@ -64,9 +63,10 @@ public class HOAController {
             if (hoa.isEmpty()) throw new Exception("No such HOA with this name: " + request.hoaName);
 
             Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.username, hoa.get().getId());
-            if (membership.isPresent()) throw new Exception("User is already in this HOA");
-
-            memberManagementService.addMembership(new Membership(request.username, hoa.get().getId(), false));
+            if (membership.isPresent()) throw new Exception("User is already in this HOA");//need explanation
+            if(!memberManagementService.addressCheck(hoa.get(), membership.get())) throw new Exception("Invalid address");
+            //weird warning - should be resolved later (probably because of the isPresent() method)
+            memberManagementService.addMembership(new Membership(request.username, hoa.get().getId(), false, request.country, request.city));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
