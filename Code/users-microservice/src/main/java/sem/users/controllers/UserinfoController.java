@@ -3,7 +3,7 @@ package sem.users.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -30,7 +30,7 @@ public class UserinfoController {
      * @return The full name of the user if it was found.
      * @throws ResponseStatusException Exception if the user was not found.
      */
-    @GetMapping("/getfullname")
+    @PostMapping("/getfullname")
     public ResponseEntity<FullnameResponseModel> getFullName(@RequestBody FullnameRequestModel request) throws ResponseStatusException {
         final String fullname;
         try {
