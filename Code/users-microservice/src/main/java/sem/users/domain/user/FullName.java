@@ -5,10 +5,10 @@ import java.util.Objects;
 /**
  * A DDD value object representing the full name of a user in our domain.
  */
-public class Fullname {
+public class FullName {
     private final transient String fullname;
 
-    public Fullname(String fullname) {
+    public FullName(String fullname) {
         this.fullname = fullname;
     }
 
@@ -25,7 +25,7 @@ public class Fullname {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Fullname fullname1 = (Fullname) o;
+        FullName fullname1 = (FullName) o;
         return fullname.equals(fullname1.fullname);
     }
 

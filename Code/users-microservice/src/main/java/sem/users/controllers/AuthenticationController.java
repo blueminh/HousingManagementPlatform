@@ -8,14 +8,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import sem.users.authentication.JwtTokenGenerator;
 import sem.users.authentication.JwtUserDetailsService;
-import sem.users.domain.user.Fullname;
+import sem.users.domain.user.FullName;
 import sem.users.domain.user.Password;
 import sem.users.domain.user.RegistrationService;
 import sem.users.domain.user.Username;
@@ -93,7 +92,7 @@ public class AuthenticationController {
         try {
             Username username = new Username(request.getUsername());
             Password password = new Password(request.getPassword());
-            Fullname fullname = new Fullname(request.getFullname());
+            FullName fullname = new FullName(request.getFullname());
             registrationService.registerUser(username, password, fullname);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);

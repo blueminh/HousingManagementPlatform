@@ -4,15 +4,15 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 @Converter
-public class FullnameAttributeConverter implements AttributeConverter<Fullname, String> {
+public class FullnameAttributeConverter implements AttributeConverter<FullName, String> {
 
     @Override
-    public String convertToDatabaseColumn(Fullname attribute) {
+    public String convertToDatabaseColumn(FullName attribute) {
         return attribute.toString();
     }
 
     @Override
-    public Fullname convertToEntityAttribute(String dbData) {
-        return new Fullname(dbData);
+    public FullName convertToEntityAttribute(String dbData) {
+        return new FullName(dbData);
     }
 }

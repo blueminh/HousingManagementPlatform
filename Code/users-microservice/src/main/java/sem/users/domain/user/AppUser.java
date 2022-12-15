@@ -1,6 +1,5 @@
 package sem.users.domain.user;
 
-import java.util.ArrayList;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -37,7 +36,7 @@ public class AppUser extends HasEvents {
 
     @Column(name = "fullname", nullable = false, unique = false)
     @Convert(converter = FullnameAttributeConverter.class)
-    private Fullname fullname;
+    private FullName fullname;
 
 
 
@@ -47,7 +46,7 @@ public class AppUser extends HasEvents {
      * @param username The username for the new user
      * @param password The password for the new user
      */
-    public AppUser(Username username, HashedPassword password, Fullname fullname) {
+    public AppUser(Username username, HashedPassword password, FullName fullname) {
         this.username = username;
         this.password = password;
         this.fullname = fullname;
@@ -68,7 +67,7 @@ public class AppUser extends HasEvents {
         return password;
     }
 
-    public Fullname getFullname() {
+    public FullName getFullName() {
         return fullname;
     }
 

@@ -31,7 +31,7 @@ public class RegistrationService {
      * @param password The password of the user
      * @throws Exception if the user already exists
      */
-    public AppUser registerUser(Username username, Password password, Fullname fullname) throws Exception {
+    public AppUser registerUser(Username username, Password password, FullName fullname) throws Exception {
 
         if (checkUsernameIsUnique(username)) {
             // Hash password
@@ -61,10 +61,10 @@ public class RegistrationService {
      * @return full name of the user.
      * @throws UserNotFoundException Exception to throw if the user was not found.
      */
-    public Fullname getFullname(Username username) throws UserNotFoundException {
+    public FullName getFullname(Username username) throws UserNotFoundException {
         Optional<AppUser> user = userRepository.findByUsername(username);
         if (user.isPresent()) {
-            return user.get().getFullname();
+            return user.get().getFullName();
         } else {
             throw new UserNotFoundException(username);
         }
