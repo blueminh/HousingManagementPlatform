@@ -1,5 +1,4 @@
 package sem.users.domain.user;
-
 import java.util.Objects;
 
 /**
