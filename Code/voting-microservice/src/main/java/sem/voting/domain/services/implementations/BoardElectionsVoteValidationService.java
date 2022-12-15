@@ -11,6 +11,6 @@ public class BoardElectionsVoteValidationService implements VoteValidationServic
     public boolean isVoteValid(Vote vote, Proposal proposal) {
         // ToDo: check if user is member of HOA
         // ToDo: check if user is voting for themselves
-        return false;
+        return true;
     }
 }
