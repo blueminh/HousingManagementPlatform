@@ -4,7 +4,7 @@ import sem.voting.communication.HOACommunication;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.Vote;
 
-public class UserIsMemberForAtLeast10YearsValidators extends Validator{
+public class UserIsMemberForAtLeast3YearsValidator extends Validator{
   @Override
   public boolean handle(Vote vote, Proposal proposal) throws InvalidRequestException {
     try {
