@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode
 public class Username implements Comparable<Username> {
+    @EqualsAndHashCode.Include
     private final transient String usernamex;
 
     public Username(String username) {
