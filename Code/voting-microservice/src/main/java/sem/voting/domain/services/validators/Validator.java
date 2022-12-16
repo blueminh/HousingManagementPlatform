@@ -9,6 +9,8 @@ import sem.voting.domain.proposal.Vote;
 
 
 /**
+ * NEED TO FIND A WAY TO COMMUNICATE
+ * x - check if user is a member of a HOA
  * x - check if an election is going for a HOA ID: hoaID
  * half - check if a user is a board member: username, hoaID
  * half - check if a user is a board member of any hoas: username

@@ -42,7 +42,7 @@ public class BoardController {
    * Any users can apply for board election
    * @param hoaName name of the hoa
    */
-  @PostMapping("/apply")
+  @PostMapping("/apply")  
   public ResponseEntity applyForBoard(@RequestBody String hoaName) {
     try {
 

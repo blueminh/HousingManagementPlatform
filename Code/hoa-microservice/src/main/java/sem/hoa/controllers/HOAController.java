@@ -16,6 +16,7 @@ import sem.hoa.domain.services.MemberManagementService;
 import sem.hoa.dtos.UserNameHoaIDDTO;
 import sem.hoa.dtos.UserNameHoaNameDTO;
 
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -67,69 +68,11 @@ public class HOAController {
             Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.username, hoa.get().getId());
             if (membership.isPresent()) throw new Exception("User is already in this HOA");
 
-            memberManagementService.addMembership(new Membership(request.username, hoa.get().getId(), false));
+            memberManagementService.addMembership(new Membership(request.username, hoa.get().getId(), false, new Date().getTime(), -1));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
         return ResponseEntity.ok().build();
-    }
-
-
-    /**
-     * Find this user's role for a given hoa name
-     * @param request contains hoa name and username
-     * @return a boolean value indicate the role of this user (true if boardMember)
-     */
-    @GetMapping("/findUserRoleByHoaName")
-    public ResponseEntity<String> findUserRoleByHoaName(@RequestBody UserNameHoaNameDTO request) {
-        try {
-            Optional<HOA> hoa = hoaService.findHOAByName(request.hoaName);
-            if (hoa.isEmpty()) throw new Exception("No such HOA with this name: " + request.hoaName);
-
-            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.username, hoa.get().getId());
-            if (membership.isEmpty()) throw new Exception("User is not registered in this HOA");
-
-            if (membership.get().isBoardMember()) return ResponseEntity.ok("boardMember");
-            return ResponseEntity.ok("normalMember");
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    /**
-     * Find this user's role for a given hoa ID
-     * @param request contains hoa ID and username
-     * @return a boolean value indicate the role of this user (true if boardMember)
-     */
-    @GetMapping("/findUserRoleByHoaID")
-    public ResponseEntity<String> findUserRoleByHoaID(@RequestBody UserNameHoaIDDTO request) {
-        try {
-            Optional<HOA> hoa = hoaService.findHOAByID(request.hoaID);
-            if (hoa.isEmpty()) throw new Exception("No such HOA with this ID: " + request.hoaID);
-
-            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.username, hoa.get().getId());
-            if (membership.isEmpty()) throw new Exception("User is not registered in this HOA");
-
-            if (membership.get().isBoardMember()) return ResponseEntity.ok("boardMember");
-            return ResponseEntity.ok("normalMember");
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    /**
-     * Check if user is a board member of any HOAs
-     * If yes, return the ID of the HOA
-     */
-    @GetMapping("/isaBoardMember")
-    public ResponseEntity<Integer> isBoardMember(@RequestBody String username) {
-        try {
-            if (username == null) throw new Exception();
-            int hoaID = memberManagementService.isBoardMemberOf(username);
-            return ResponseEntity.ok(hoaID);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
     }
     
 }

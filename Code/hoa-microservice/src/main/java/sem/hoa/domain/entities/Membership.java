@@ -1,6 +1,8 @@
 package sem.hoa.domain.entities;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -23,10 +25,22 @@ public class Membership {
   @Column(name = "isboardmember")
   private boolean isBoardMember;
 
-  public Membership(String username, int hoaID, boolean isBoardMember) {
+  @Getter
+  @Setter
+  @Column(name = "joiningDate")
+  private Long joiningDate;
+
+  @Getter
+  @Setter
+  @Column(name = "joiningBoardDate")
+  private Long joiningBoardDate;
+
+  public Membership(String username, int hoaID, boolean isBoardMember, long joiningDate, long joiningBoardDate) {
     this.username = username;
     this.hoaID = hoaID;
     this.isBoardMember = isBoardMember;
+    this.joiningDate = joiningDate;
+    this.joiningBoardDate = joiningBoardDate;
   }
 
   public String getUsername() {
