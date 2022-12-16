@@ -39,7 +39,7 @@ public class ActivityController {
     @PostMapping("/activity/add")
     public ResponseEntity addActivity(@RequestBody ActivityCreationRequestModel req) throws Exception {
         try {
-            activityService.addActivity(req.getHoaId(), req.getDate(), req.getDesc());
+            activityService.addActivity(req.getHoaId(), req.getName(), req.getDate(), req.getDesc());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -59,7 +59,7 @@ public class ActivityController {
     public ResponseEntity<ActivityResponseModel> getActivity(@RequestParam(name = "id") int activityId) throws Exception {
         try {
             Activity activity = activityService.getActivity(activityId);
-            ActivityResponseModel responseModel = new ActivityResponseModel(activity.getActivityId(), activity.getHoaId(), activity.getDescription(), activity.getDate());
+            ActivityResponseModel responseModel = new ActivityResponseModel(activity.getActivityId(), activity.getHoaId(), activity.getName(), activity.getDescription(), activity.getDate());
             return ResponseEntity.ok(responseModel);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

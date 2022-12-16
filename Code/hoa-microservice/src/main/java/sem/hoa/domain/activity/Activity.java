@@ -24,9 +24,11 @@ public class Activity {
     @Column(name = "hoaId", nullable = false)
     private Integer hoaId;
 
+    @Column(name = "name")
+    private String name;
+
     @Column(name = "date", nullable = false, unique = false)
-    @JsonFormat
-            (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date date;
 
     @Column(name = "description", nullable = true, unique = false)
@@ -41,9 +43,10 @@ public class Activity {
      *
      * @param description description about the activity
      */
-    public Activity(Integer activityId, Integer hoaId, Date date, String description) {
+    public Activity(Integer activityId, Integer hoaId, String name, Date date, String description) {
         this.activityId = activityId;
         this.hoaId = hoaId;
+        this.name = name;
         this.date = date;
         this.description = description;
     }
@@ -55,14 +58,19 @@ public class Activity {
      *
      * @param description description about the activity
      */
-    public Activity(Integer hoaId, Date date, String description) {
+    public Activity(Integer hoaId, String name, Date date, String description) {
         this.hoaId = hoaId;
+        this.name = name;
         this.date = date;
         this.description = description;
     }
 
     public int getActivityId() {
         return activityId;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Date getDate() {

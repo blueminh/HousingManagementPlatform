@@ -26,8 +26,9 @@ public class ActivityService {
      * @param desc Description of the Activity.
      * @throws Exception This exception is thrown if we try to add an Activity that already exists. (I'll have to check this again because we do not generate activity Id)
      */
-    public void addActivity(int hoaId, Date date, String desc) throws Exception {
-        Activity activity = new Activity(hoaId, date, desc);
+    public void addActivity(int hoaId, String name, Date date, String desc) throws Exception {
+        // TODO: Add a check to see if the user creating the activity is from the same HOA or not
+        Activity activity = new Activity(hoaId, name, date, desc);
         if (!activityRepository.existsActivityByActivityId(activity.getActivityId())) {
             activityRepository.save(activity);
         } else {
@@ -64,6 +65,7 @@ public class ActivityService {
         if (activity.isPresent()) {
             return activity.get();
         } else {
+            System.out.println("No such activity to retrieve");
             throw new NoSuchActivityException("No such activity");
         }
     }

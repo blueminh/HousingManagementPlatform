@@ -1,5 +1,6 @@
 package sem.hoa.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -8,7 +9,11 @@ import java.util.Date;
 public class ActivityResponseModel {
     private int activityId;
     private int hoaId;
+
+    private String name;
     private String desc;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date date;
 
     /**
@@ -19,9 +24,10 @@ public class ActivityResponseModel {
      * @param desc the description
      * @param date date at which the activity occurs
      */
-    public ActivityResponseModel(int activityId, int hoaId, String desc, Date date) {
+    public ActivityResponseModel(int activityId, int hoaId, String name, String desc, Date date) {
         this.activityId = activityId;
         this.hoaId = hoaId;
+        this.name = name;
         this.desc = desc;
         this.date = date;
     }
