@@ -35,6 +35,21 @@ public class ActivityService {
         }
     }
 
+    /**
+     * It tries to remove an activity to the repository.
+     *
+     * @param activityId activity ID of the activity to be removed
+     * @throws Exception This exception is thrown if we try to remove an Activity that does not exist. (I'll have to check this again because we do not generate activity Id)
+     */
+    public void removeActivity(int activityId) throws Exception {
+        if (activityRepository.existsActivityByActivityId(activityId)) {
+            System.out.println("Activity deleted");
+            activityRepository.deleteById(activityId);
+        } else {
+            throw new NoSuchActivityException("No activity found to be removed");
+        }
+    }
+
 
     /**
      * Gets the specified activity from the database.
@@ -69,6 +84,27 @@ public class ActivityService {
         } else {
             participationRepository.save(new Participation(activityId, username));
             System.out.println("User with the id " + username + " now participates in activity with the id " + activityId);
+        }
+        //TODO: I should add another test to check if the user exists but for that I need to communicates with the user microservice
+        //TODO: I should also add another check to see if the activity and the user belongs to the same HOA
+    }
+
+    /**
+     * This service removes the userId and activityId to the Participation repository.
+     *
+     * @param username the unique username
+     * @param activityId the unique activity id
+     */
+    public void removeParticipate(String username, int activityId) throws Exception {
+        if (!participationRepository.existsByActivityIdAndUsername(activityId, username)) {
+            System.out.println("No such participation exists in the database");
+            throw new NoSuchParticipationException("There is no such participation with the id");
+        } else if (!activityRepository.existsActivityByActivityId(activityId)) {
+            System.out.println("Participation not added because there is no such activity");
+            throw new NoSuchActivityException("There is no such activity with the id " + activityId);
+        } else {
+            participationRepository.deleteById(new ParticipationKey(activityId, username));
+            System.out.println("User with the id " + username + " now DOES NOT participate in activity with the id " + activityId);
         }
         //TODO: I should add another test to check if the user exists but for that I need to communicates with the user microservice
         //TODO: I should also add another check to see if the activity and the user belongs to the same HOA

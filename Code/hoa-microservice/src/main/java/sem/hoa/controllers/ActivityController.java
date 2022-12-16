@@ -3,6 +3,7 @@ package sem.hoa.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -66,6 +67,26 @@ public class ActivityController {
     }
 
     /**
+     * API call for removing an Activity.
+     *
+     * @param activityId Unique id of the activity to get
+     *
+     * @return Returns 200 OK Response
+     *
+     * @throws Exception In case the deletion of Activity fails, it throws a BAD REQUEST and a NoSuchActivityException
+     */
+    @DeleteMapping ("/activity/remove")
+    public ResponseEntity removeActivity(@RequestParam(name = "id") int activityId) throws Exception {
+        try {
+            activityService.removeActivity(activityId);
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    /**
      * API call for user participating in an activity.
      *
      * @param userParticipateModel it is the request model for taking all the information regarding which user participates in which activity
@@ -76,6 +97,23 @@ public class ActivityController {
     public ResponseEntity participate(@RequestBody UserParticipateModel userParticipateModel) throws Exception {
         try {
             activityService.participate(userParticipateModel.getUsername(), userParticipateModel.getActivityId());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * API call for removing user participation in an activity.
+     *
+     * @param userParticipateModel it is the request model for taking all the information regarding which user participates in which activity
+     * @return returns 200 OK response if everything goes fine
+     * @throws Exception In case the user already does not participate in the activity or the activity does not exist or the user does not exist
+     */
+    @PostMapping("/activity/removeParticipate")
+    public ResponseEntity removeParticipate(@RequestBody UserParticipateModel userParticipateModel) throws Exception {
+        try {
+            activityService.removeParticipate(userParticipateModel.getUsername(), userParticipateModel.getActivityId());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
