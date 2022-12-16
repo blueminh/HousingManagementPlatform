@@ -15,6 +15,7 @@ import java.util.Date;
 @Table(name = "activities")
 @NoArgsConstructor
 public class Activity {
+    // TODO: Add ending date
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "activityId", nullable = false)
@@ -70,5 +71,9 @@ public class Activity {
 
     public String getDescription() {
         return description;
+    }
+
+    public Integer getHoaId() {
+        return hoaId;
     }
 }

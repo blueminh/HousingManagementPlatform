@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import javax.sound.midi.Soundbank;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class ActivityService {
@@ -31,6 +32,24 @@ public class ActivityService {
             activityRepository.save(activity);
         } else {
             throw new ActivityAlreadyExistsException();
+        }
+    }
+
+
+    /**
+     * Gets the specified activity from the database.
+     *
+     * @param activityId activity id of the activity to be fetched
+     *
+     * @return the activity retrieved from the database
+     * @throws Exception throws an exception if no such activity was found
+     */
+    public Activity getActivity(int activityId) throws Exception {
+        Optional<Activity> activity = activityRepository.findByActivityId(activityId);
+        if (activity.isPresent()) {
+            return activity.get();
+        } else {
+            throw new NoSuchActivityException("No such activity");
         }
     }
 

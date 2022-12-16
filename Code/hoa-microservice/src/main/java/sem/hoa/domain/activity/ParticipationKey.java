@@ -7,6 +7,8 @@ import java.util.Objects;
 
 @NoArgsConstructor
 public class ParticipationKey implements Serializable {
+
+    static final long serialVersionUID = -3387516993124229948L;
     private int activityId;
     private String username;
 
