@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode
 public class HashedPassword {
+    @EqualsAndHashCode.Include
     private final transient String hash;
 
     public HashedPassword(String hash) {

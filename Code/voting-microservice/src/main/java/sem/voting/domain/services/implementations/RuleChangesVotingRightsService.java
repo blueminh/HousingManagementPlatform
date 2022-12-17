@@ -7,7 +7,7 @@ public class RuleChangesVotingRightsService implements VotingRightsService {
     private static final long serialVersionUID = 0L;
 
     @Override
-    public boolean canVote(int userId, Proposal proposal) {
+    public boolean canVote(String username, Proposal proposal) {
         // ToDo: check if user is on the HOA board
         return false;
     }
