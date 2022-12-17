@@ -31,7 +31,6 @@ public class Membership {
   @Column(name = "city")
   private String city;
 
-  public Membership(String username, int hoaID, boolean isBoardMember, String country, String city) {
   @Getter
   @Setter
   @Column(name = "joiningDate")
@@ -42,7 +41,7 @@ public class Membership {
   @Column(name = "joiningBoardDate")
   private Long joiningBoardDate;
 
-  public Membership(String username, int hoaID, boolean isBoardMember, long joiningDate, long joiningBoardDate) {
+  public Membership(String username, int hoaID, boolean isBoardMember, String country, String city, Long joiningDate, Long joiningBoardDate) {
     this.username = username;
     this.hoaID = hoaID;
     this.isBoardMember = isBoardMember;

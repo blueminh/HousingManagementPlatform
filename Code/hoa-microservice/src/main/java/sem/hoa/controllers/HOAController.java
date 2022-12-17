@@ -12,6 +12,7 @@ import sem.hoa.domain.entities.Membership;
 import sem.hoa.domain.entities.MembershipID;
 import sem.hoa.domain.services.HOAService;
 import sem.hoa.domain.services.MemberManagementService;
+import sem.hoa.dtos.JoiningRequestModel;
 import sem.hoa.dtos.UserHoaCreationDDTO;
 import sem.hoa.dtos.UserNameHoaIDDTO;
 import sem.hoa.dtos.UserNameHoaNameDTO;
@@ -64,7 +65,7 @@ public class HOAController {
             //System.out.println("ok");
             hoaService.createNewHOA(newHOA);
             //System.out.println("ok");
-            memberManagementService.addMembership(new Membership(authManager.getNetId(), newHOA.getId(), true));
+//            memberManagementService.addMembership(new Membership(authManager.getNetId(), newHOA.getId(), true));
             //System.out.println("ok");
 
             return ResponseEntity.ok(newHOA);
@@ -77,7 +78,7 @@ public class HOAController {
     //should add a check for the address of the hoa and the user
     // Membership
     @PostMapping("/joining")
-    public ResponseEntity joiningHOA(@RequestBody UserNameHoaNameDTO request){
+    public ResponseEntity<String> joiningHOA(@RequestBody JoiningRequestModel request){
         try {
             if (!request.username.equals(authManager.getNetId()))
                 throw new Exception("Wrong username");
@@ -87,9 +88,11 @@ public class HOAController {
 
             Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.username, hoa.get().getId());
             if (membership.isPresent()) throw new Exception("User is already in this HOA");//need explanation
-            if(!memberManagementService.addressCheck(hoa.get(), membership.get())) throw new Exception("Invalid address");
-            //weird warning - should be resolved later (probably because of the isPresent() method)
-            memberManagementService.addMembership(new Membership(request.username, hoa.get().getId(), false, request.country, request.city));
+
+            Membership newMemberShip = new Membership(request.username, hoa.get().getId(), false, request.country, request.city, new Date().getTime(), -1L);
+            if(!memberManagementService.addressCheck(hoa.get(), newMemberShip)) throw new Exception("Invalid address");
+
+            memberManagementService.addMembership(newMemberShip);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

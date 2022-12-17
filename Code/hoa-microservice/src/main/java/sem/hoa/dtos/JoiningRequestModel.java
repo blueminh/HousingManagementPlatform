@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @EqualsAndHashCode
-public class UserNameHoaNameDTO {
+public class JoiningRequestModel {
   @Getter
   @Setter
   public String hoaName;
@@ -14,8 +14,14 @@ public class UserNameHoaNameDTO {
   @Setter
   public String username;
 
-  public UserNameHoaNameDTO(String hoaName, String username) {
+  //address has to be stored in the request
+  public String country;
+  public String city;
+
+  public JoiningRequestModel(String hoaName, String username, String country, String city) {
     this.hoaName = hoaName;
     this.username = username;
+    this.country = country;
+    this.city = city;
   }
 }
