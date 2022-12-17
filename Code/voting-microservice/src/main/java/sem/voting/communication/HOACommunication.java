@@ -42,8 +42,8 @@ public class HOACommunication {
    */
   public static boolean checkUserIsBoardMember(String username, int hoaID, String authToken) throws Exception{
     String url = "";
-    UserNameHoaIDDTO info = new UserNameHoaIDDTO(username, hoaID);
-    String response = makeRequest(authToken, url, objectMapper.writeValueAsString(info));
+    UserNameHoaIDDTO requestBody = new UserNameHoaIDDTO(username, hoaID);
+    String response = makeRequest(authToken, url, objectMapper.writeValueAsString(requestBody));
     return objectMapper.readValue(response, Boolean.class);
   }
 
