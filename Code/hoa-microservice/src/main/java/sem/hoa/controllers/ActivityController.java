@@ -139,4 +139,52 @@ public class ActivityController {
         }
     }
 
+    /**
+     * API endpoint to get all the activities that occurred before the provided date.
+     *
+     * @param date all the activities retrieved would have occurred before this date
+     * @return an array of Activities as a response
+     */
+    @GetMapping("/activity/getAllBeforeDate")
+    public ResponseEntity<ActivityResponseModel[]> getAllActivitiesBeforeDate(@RequestBody DateRequestModel date) throws Exception {
+        try {
+            ActivityResponseModel[] response = activityService.getAllActivitiesBeforeDate(date.getDate());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    /**
+     * API endpoint to get all the future activities.
+     *
+     * @return an array of Activities as a response
+     */
+    @GetMapping("/activity/getAllFutureActivities")
+    public ResponseEntity<ActivityResponseModel[]> getAllFutureActivities() throws Exception {
+        Date currentDate = new Date(System.currentTimeMillis());
+        try {
+            ActivityResponseModel[] response = activityService.getAllActivitiesAfterDate(currentDate);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    /**
+     * API endpoint to get all the past activities.
+     *
+     * @return an array of Activities as a response
+     */
+    @GetMapping("/activity/getAllPastActivities")
+    public ResponseEntity<ActivityResponseModel[]> getAllPastActivities() throws Exception {
+        Date currentDate = new Date(System.currentTimeMillis());
+        try {
+            ActivityResponseModel[] response = activityService.getAllActivitiesBeforeDate(currentDate);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
 }

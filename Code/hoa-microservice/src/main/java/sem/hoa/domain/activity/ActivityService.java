@@ -131,4 +131,23 @@ public class ActivityService {
         }
         return res;
     }
+
+    /**
+     * The service to get all the activities that occurred before the provided date. This can be used to get history of past activities
+     *
+     * @param date all the activities retrieved will occur after this date
+     * @return an array of Activities as a response
+     */
+    public ActivityResponseModel[] getAllActivitiesBeforeDate(Date date) throws Exception {
+        List<Activity> activities = activityRepository.findActivitiesByDateBefore(date);
+        if (activities.isEmpty()) {
+            throw new NoSuchActivityException("There are no activities before the mentioned date");
+        }
+        ActivityResponseModel[] res = new ActivityResponseModel[activities.size()];
+        int idx = 0;
+        for (Activity activity : activities) {
+            res[idx++] = new ActivityResponseModel(activity.getActivityId(), activity.getHoaId(), activity.getName(), activity.getDescription(), activity.getDate());
+        }
+        return res;
+    }
 }
