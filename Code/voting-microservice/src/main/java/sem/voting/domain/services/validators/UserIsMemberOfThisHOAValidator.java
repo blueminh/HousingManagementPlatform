@@ -8,7 +8,7 @@ public class UserIsMemberOfThisHOAValidator extends Validator{
   @Override
   public boolean handle(Vote vote, Proposal proposal) throws InvalidRequestException {
     try {
-      return HOACommunication.checkUserIsMemberOfThisHOA(vote.getVoter(), proposal.getHoaId());
+      return HOACommunication.checkUserIsMemberOfThisHOA(vote.getVoter(), proposal.getHoaId(), vote.getVoterToken());
     } catch (Exception e){
       throw new InvalidRequestException(e.getMessage());
     }

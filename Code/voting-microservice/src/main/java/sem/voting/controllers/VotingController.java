@@ -7,10 +7,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import sem.voting.authentication.AuthManager;
 import sem.voting.domain.proposal.*;
@@ -178,6 +180,7 @@ public class VotingController {
      */
     @PostMapping("/vote")
     public ResponseEntity<ProposalInformationResponseModel> castVote(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken,
             @RequestBody CastVoteRequestModel request) {
         if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
             return ResponseEntity.badRequest().build();
@@ -189,7 +192,7 @@ public class VotingController {
             return ResponseEntity.notFound().build();
         }
         Option beingVoted = request.getOption().equals("") ? null : new Option(request.getOption());
-        Vote vote = new Vote(request.getUsername(), beingVoted);
+        Vote vote = new Vote(authManager.getNetId(), beingVoted, authToken.split(" ")[1]);
 
 
         try {
@@ -214,9 +217,10 @@ public class VotingController {
      */
     @PostMapping("/remove-vote")
     public ResponseEntity<ProposalInformationResponseModel> removeVote(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken,
             @RequestBody CastVoteRequestModel request) {
         request.setOption("");
-        return castVote(request);
+        return castVote(authToken, request);
     }
 
     /**

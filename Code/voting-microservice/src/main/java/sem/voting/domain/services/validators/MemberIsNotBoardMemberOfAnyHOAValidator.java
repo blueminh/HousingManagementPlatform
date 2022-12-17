@@ -10,7 +10,7 @@ public class MemberIsNotBoardMemberOfAnyHOAValidator extends Validator{
 
     boolean isBoardMemeberOfAny = false;
     try {
-      isBoardMemeberOfAny = HOACommunication.checkUserIsNotBoardMemberOfAnyHoa(vote.getVoter());
+      isBoardMemeberOfAny = HOACommunication.checkUserIsNotBoardMemberOfAnyHoa(vote.getVoter(), vote.getVoterToken());
     } catch (Exception e) {
       throw new InvalidRequestException(e.getMessage());
     }

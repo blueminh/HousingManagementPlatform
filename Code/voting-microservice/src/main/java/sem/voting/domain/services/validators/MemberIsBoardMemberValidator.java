@@ -13,7 +13,7 @@ public class MemberIsBoardMemberValidator extends Validator{
     // communicate with the HOA microservice
     boolean isBoardMemeber = false;
     try {
-      isBoardMemeber = HOACommunication.checkUserIsBoardMember(vote.getVoter(), proposal.getHoaId());
+      isBoardMemeber = HOACommunication.checkUserIsBoardMember(vote.getVoter(), proposal.getHoaId(), vote.getVoterToken());
     } catch (Exception e) {
       throw new InvalidRequestException(e.getMessage());
     }
