@@ -36,9 +36,11 @@ public class HOAService {
     return new Pair<Long, Long>(hoa.get().getElectionStartTime(), hoa.get().getElectionEndTime());
   }
 
-  public Optional<HOA> findHOAByName(String hoaName){
+  public Optional<HOA> findHOAByName(String hoaName) {
     return hoaRepository.findByHoaName(hoaName);
   }
 
-  public Optional<HOA> findHOAByID(int hoaID) {return hoaRepository.findById(hoaID);}
+  public Optional<HOA> findHOAByID(int hoaID) {
+    return hoaRepository.findById(hoaID);
+  }
 }

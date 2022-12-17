@@ -18,4 +18,7 @@ public class UserNameHoaNameDTO {
     this.hoaName = hoaName;
     this.username = username;
   }
+  //address has to be stored in the request
+  public String country;
+  public String city;
 }

@@ -5,6 +5,7 @@ import sem.hoa.domain.entities.HOA;
 import sem.hoa.domain.entities.Membership;
 import sem.hoa.domain.entities.MembershipID;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
@@ -25,7 +26,15 @@ public class MemberManagementService {
    * When a user leaves a HOA, remove the membership entry from the database
    * @param membershipID the membershipID consists of username and hoaID
    */
-  public void removeMembership(MembershipID membershipID){}
+  public void removeMembership(MembershipID membershipID) throws Exception {
+    Optional<Membership> toBeRemoved = findByUsernameAndHoaID(membershipID.getUsername(), membershipID.getHoaID());
+    if(toBeRemoved.isPresent()) {
+      memberManagementRepository.delete(toBeRemoved.get());
+    }
+    else {
+      throw new Exception("User not found");
+    }
+  }
 
   /***
    * A user can create his/her own HOA
@@ -38,6 +47,10 @@ public class MemberManagementService {
 
   public Optional<Membership> findByUsernameAndHoaID(String username, int hoaID){
     return memberManagementRepository.findById(new MembershipID(username, hoaID));
+  }
+
+  public boolean addressCheck(HOA hoa, Membership membership) {
+    return hoa.getCountry().equals(membership.getCountry()) && hoa.getCity().equals(membership.getCity());
   }
 
   /**

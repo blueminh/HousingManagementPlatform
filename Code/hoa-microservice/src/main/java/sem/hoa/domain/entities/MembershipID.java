@@ -12,6 +12,14 @@ public class MembershipID implements Serializable {
     this.hoaID = hoaID;
   }
 
+  public String getUsername() {
+    return username;
+  }
+
+  public int getHoaID() {
+    return hoaID;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

@@ -3,14 +3,13 @@ package sem.hoa.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import sem.hoa.authentication.AuthManager;
 import sem.hoa.domain.entities.HOA;
 import sem.hoa.domain.entities.Membership;
+import sem.hoa.domain.entities.MembershipID;
 import sem.hoa.domain.services.HOAService;
 import sem.hoa.domain.services.MemberManagementService;
 import sem.hoa.dtos.UserNameHoaIDDTO;
@@ -54,7 +53,6 @@ public class HOAController {
         return ResponseEntity.ok("Hello " + authManager.getNetId() + "! \nWelcome to HOA!") ;
 
     }
-
     // Membership
     @PostMapping("/joining")
     public ResponseEntity joiningHOA(@RequestBody UserNameHoaNameDTO request){
@@ -66,9 +64,10 @@ public class HOAController {
             if (hoa.isEmpty()) throw new Exception("No such HOA with this name: " + request.hoaName);
 
             Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.username, hoa.get().getId());
-            if (membership.isPresent()) throw new Exception("User is already in this HOA");
-
-            memberManagementService.addMembership(new Membership(request.username, hoa.get().getId(), false, new Date().getTime(), -1));
+            if (membership.isPresent()) throw new Exception("User is already in this HOA");//need explanation
+            if(!memberManagementService.addressCheck(hoa.get(), membership.get())) throw new Exception("Invalid address");
+            //weird warning - should be resolved later (probably because of the isPresent() method)
+            memberManagementService.addMembership(new Membership(request.username, hoa.get().getId(), false, request.country, request.city));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
