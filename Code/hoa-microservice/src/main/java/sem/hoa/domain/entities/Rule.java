@@ -8,6 +8,7 @@ import java.util.Objects;
 @IdClass(RuleID.class)
 @Table(name = "rule")
 public class Rule {
+
     @Id
     @Column(name = "hoaID", nullable = false)
     private final int hoaID;
