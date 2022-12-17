@@ -58,9 +58,13 @@ public class HOAController {
     @PostMapping("/createHOA")
     public ResponseEntity<HOA> createHOA(@RequestBody UserHoaCreationDDTO request){
         try{
+            //System.out.println("ok");
             HOA newHOA = new HOA(request.hoaName, request.country, request.city);
+            //System.out.println("ok");
             hoaService.createNewHOA(newHOA);
+            //System.out.println("ok");
             memberManagementService.addMembership(new Membership(authManager.getNetId(), newHOA.getId(), true));
+            //System.out.println("ok");
 
             return ResponseEntity.ok(newHOA);
         }catch(Exception e){

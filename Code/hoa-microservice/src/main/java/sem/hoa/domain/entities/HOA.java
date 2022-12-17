@@ -24,10 +24,10 @@ public class HOA extends HasEvents {
   @Column(name = "city", nullable = false, unique = false)
   private String city;
 
-  @Column(name = "election_start_time", nullable = false)
+  @Column(name = "election_start_time")
   private Long electionStartTime;
 
-  @Column(name = "election_end_time", nullable = false)
+  @Column(name = "election_end_time")
   private Long electionEndTime;
 
   public HOA(String name, String country, String city){
