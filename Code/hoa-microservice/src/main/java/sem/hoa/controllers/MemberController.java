@@ -126,7 +126,7 @@ public class MemberController {
     }
   }
 
-  @GetMapping("/joiningDate")
+  @GetMapping("/joiningBoardDate")
   public ResponseEntity<Long> getBoardJoiningDate(@RequestBody UserNameHoaIDDTO request){
     try {
       if (request.username == null) throw new Exception();
