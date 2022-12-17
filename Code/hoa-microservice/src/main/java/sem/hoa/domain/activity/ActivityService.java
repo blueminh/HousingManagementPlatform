@@ -1,9 +1,10 @@
 package sem.hoa.domain.activity;
 
 import org.springframework.stereotype.Service;
+import sem.hoa.models.ActivityResponseModel;
 
-import javax.sound.midi.Soundbank;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -110,5 +111,24 @@ public class ActivityService {
         }
         //TODO: I should add another test to check if the user exists but for that I need to communicates with the user microservice
         //TODO: I should also add another check to see if the activity and the user belongs to the same HOA
+    }
+
+    /**
+     * The service to get all the activities that occurs after the provided date.
+     *
+     * @param date all the activities retrieved will occur after this date
+     * @return an array of Activities as a response
+     */
+    public ActivityResponseModel[] getAllActivitiesAfterDate(Date date) throws Exception {
+        List<Activity> activities = activityRepository.findActivitiesByDateAfter(date);
+        if (activities.isEmpty()) {
+            throw new NoSuchActivityException("There are no activities after the mentioned date");
+        }
+        ActivityResponseModel[] res = new ActivityResponseModel[activities.size()];
+        int idx = 0;
+        for (Activity activity : activities) {
+            res[idx++] = new ActivityResponseModel(activity.getActivityId(), activity.getHoaId(), activity.getName(), activity.getDescription(), activity.getDate());
+        }
+        return res;
     }
 }

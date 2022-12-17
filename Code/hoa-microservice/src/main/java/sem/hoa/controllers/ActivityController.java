@@ -14,7 +14,10 @@ import sem.hoa.domain.activity.Activity;
 import sem.hoa.domain.activity.ActivityService;
 import sem.hoa.models.ActivityCreationRequestModel;
 import sem.hoa.models.ActivityResponseModel;
+import sem.hoa.models.DateRequestModel;
 import sem.hoa.models.UserParticipateModel;
+
+import java.util.Date;
 
 
 @RestController
@@ -118,6 +121,22 @@ public class ActivityController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * API endpoint to get all the activities that occurs after the provided date.
+     *
+     * @param date all the activities retrieved will occur after this date
+     * @return an array of Activities as a response
+     */
+    @GetMapping("/activity/getAllAfterDate")
+    public ResponseEntity<ActivityResponseModel[]> getAllActivitiesAfterDate(@RequestBody DateRequestModel date) throws Exception {
+        try {
+            ActivityResponseModel[] response = activityService.getAllActivitiesAfterDate(date.getDate());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
 }
