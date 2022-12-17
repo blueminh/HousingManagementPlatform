@@ -10,5 +10,5 @@ import java.util.Optional;
 
 @Repository
 public interface MemberManagementRepository extends JpaRepository<Membership, MembershipID> {
-  Optional<Membership> findMembershipByUsernameAndBoardMemberIsTrue(String username);
+  Optional<Membership> findMembershipByUsernameAndIsBoardMemberIsTrue(String username);
 }

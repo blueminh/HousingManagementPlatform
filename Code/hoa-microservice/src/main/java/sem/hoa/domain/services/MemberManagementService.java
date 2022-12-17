@@ -46,7 +46,7 @@ public class MemberManagementService {
    * @return the ID of the HOA or -1 if user is not a board member of any HOAs
    */
   public Integer isBoardMemberOf(String username){
-    Optional<Membership> membership = memberManagementRepository.findMembershipByUsernameAndBoardMemberIsTrue(username);
+    Optional<Membership> membership = memberManagementRepository.findMembershipByUsernameAndIsBoardMemberIsTrue(username);
     if (membership.isEmpty()) return -1;
     return membership.get().getHoaID();
   }
