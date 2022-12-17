@@ -17,7 +17,13 @@ public class HOAService {
 
   public void createNewHOA(HOA hoa) {
     // TODO do some checks here
-    hoaRepository.save(hoa);
+    try {
+      //System.out.println(hoa.toString());
+      hoaRepository.save(hoa);
+      System.out.println("new HOA created:" + hoa.getHoaName());
+    }catch(Exception e){
+      System.out.println("unable to save new HOA");
+    }
   }
 
   /**
