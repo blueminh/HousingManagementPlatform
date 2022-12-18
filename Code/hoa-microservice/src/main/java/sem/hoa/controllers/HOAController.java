@@ -80,20 +80,23 @@ public class HOAController {
     @PostMapping("/joining")
     public ResponseEntity<String> joiningHOA(@RequestBody JoiningRequestModel request){
         try {
-            if (!request.username.equals(authManager.getNetId()))
-                throw new Exception("Wrong username");
+            if (!request.userName.equals(authManager.getNetId()))
+                throw new BadRequestException("Wrong username");
 
             Optional<HOA> hoa = hoaService.findHOAByName(request.hoaName);
-            if (hoa.isEmpty()) throw new Exception("No such HOA with this name: " + request.hoaName);
+            if (hoa.isEmpty()) throw new BadRequestException("No such HOA with this name: " + request.hoaName);
 
-            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.username, hoa.get().getId());
-            if (membership.isPresent()) throw new Exception("User is already in this HOA");//need explanation
+            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.userName, hoa.get().getId());
+            if (membership.isPresent()) throw new BadRequestException("User is already in this HOA");//need explanation
 
-            Membership newMemberShip = new Membership(request.username, hoa.get().getId(), false, request.country, request.city, new Date().getTime(), -1L);
-            if(!memberManagementService.addressCheck(hoa.get(), newMemberShip)) throw new Exception("Invalid address");
+            Membership newMemberShip = new Membership(request.userName, hoa.get().getId(), false, request.country, request.city, new Date().getTime(), -1L);
+            if(!memberManagementService.addressCheck(hoa.get(), newMemberShip)) throw new BadRequestException("Invalid address");
 
             memberManagementService.addMembership(newMemberShip);
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
         return ResponseEntity.ok().build();

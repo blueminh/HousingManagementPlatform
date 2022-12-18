@@ -1,26 +1,20 @@
 package sem.hoa.dtos;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@EqualsAndHashCode
+@Data
 public class JoiningRequestModel {
-  @Getter
-  @Setter
   public String hoaName;
 
-  @Getter
-  @Setter
-  public String username;
+  public String userName;
 
   //address has to be stored in the request
   public String country;
   public String city;
 
-  public JoiningRequestModel(String hoaName, String username, String country, String city) {
+  public JoiningRequestModel(String hoaName, String userName, String country, String city) {
     this.hoaName = hoaName;
-    this.username = username;
+    this.userName = userName;
     this.country = country;
     this.city = city;
   }

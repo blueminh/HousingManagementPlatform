@@ -5,7 +5,6 @@ import sem.hoa.domain.entities.HOA;
 import sem.hoa.domain.entities.Membership;
 import sem.hoa.domain.entities.MembershipID;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
@@ -20,7 +19,9 @@ public class MemberManagementService {
   /***
    * When a user joins a HOA, adds a new membership entry to the database.
    */
-  public void addMembership(Membership membership){}
+  public void addMembership(Membership membership){
+    memberManagementRepository.save(membership);
+  }
 
   /***
    * When a user leaves a HOA, remove the membership entry from the database
