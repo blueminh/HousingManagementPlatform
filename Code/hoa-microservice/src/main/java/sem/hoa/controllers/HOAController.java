@@ -49,7 +49,7 @@ public class HOAController {
      */
     @GetMapping("/welcomeHOA")
     public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getNetId() + "! \nWelcome to HOA!") ;
+        return ResponseEntity.ok("Hello " + authManager.getNetId() + "! \nWelcome to HOA!");
 
     }
     // Membership
