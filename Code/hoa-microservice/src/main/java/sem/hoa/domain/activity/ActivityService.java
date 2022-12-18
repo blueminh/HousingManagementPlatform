@@ -33,7 +33,7 @@ public class ActivityService {
         if (!activityRepository.existsActivityByActivityId(activity.getActivityId())) {
             activityRepository.save(activity);
         } else {
-            throw new ActivityAlreadyExistsException();
+            throw new ActivityAlreadyExistsException("Activity already exists");
         }
     }
 

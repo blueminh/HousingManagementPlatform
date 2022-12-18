@@ -1,0 +1,5 @@
+authentication-microservice-port=8081
+example-microservice-port=8082
+hoa-microservice=8086
+users-microservice=8085
+voting-microservice=8083
