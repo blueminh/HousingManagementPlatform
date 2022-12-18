@@ -6,12 +6,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import sem.voting.dtos.UserNameDTO;
 import sem.voting.dtos.UserNameHoaIDDTO;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class HOACommunication {
   private static ObjectMapper objectMapper = new ObjectMapper();
+  private static String HOAPath = "localhost:8085";
 
   /***
    * Send a request and receive a String as response
@@ -20,11 +25,22 @@ public class HOACommunication {
    * @return the body of the response as String if OK or the embedded error message if
    * receiving a error
    */
-  private static String makeRequest(String authToken, String url, String requestBody) throws Exception {
+  private static String makeRequest(String authToken, String url, String requestBody, Map<String, String> params) throws Exception {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Authorization", "Bearer " + authToken);
     HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
-    ResponseEntity<String> response = new RestTemplate().exchange(url, HttpMethod.GET, request, String.class);
+
+    ResponseEntity<String> response;
+    if (params == null) {
+       response = new RestTemplate().exchange(url, HttpMethod.GET, request, String.class);
+    } else {
+      UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(url);
+      for (String key : params.keySet())
+        uriComponentsBuilder.queryParam(key, "{" + key +"}");
+      String urlTemplate = uriComponentsBuilder.encode().toUriString();
+      response = new RestTemplate().exchange(urlTemplate, HttpMethod.GET, request, String.class, params);
+    }
+
     if (!response.hasBody())
       throw new Exception("Response does not have a body");
     if (response.getStatusCode().isError())
@@ -41,10 +57,11 @@ public class HOACommunication {
    * @throws Exception either a bad request or response has error
    */
   public static boolean checkUserIsBoardMember(String username, int hoaID, String authToken) throws Exception{
-    String url = "";
-    UserNameHoaIDDTO requestBody = new UserNameHoaIDDTO(username, hoaID);
-    String response = makeRequest(authToken, url, objectMapper.writeValueAsString(requestBody));
-    return objectMapper.readValue(response, Boolean.class);
+    String url = HOAPath + "/member/findUserRoleByHoaID";
+    Map<String, String> params = new HashMap<>();
+    params.put("hoaID", hoaID+"");
+    String response = makeRequest(authToken, url, "", params);
+    return objectMapper.readValue(response, String.class).equals("boardMember");
   }
 
   /***
@@ -55,9 +72,8 @@ public class HOACommunication {
    * @throws Exception either a bad request or response has error
    */
   public static boolean checkUserIsNotBoardMemberOfAnyHoa(String username, String authToken) throws Exception {
-    String url = "";
-    UserNameDTO requestBody = new UserNameDTO(username);
-    String response = makeRequest(authToken, url, objectMapper.writeValueAsString(requestBody));
+    String url = HOAPath + "/member/isaBoardMemberOfAny";
+    String response = makeRequest(authToken, url, "", null);
     return objectMapper.readValue(response, Integer.class) == -1;
   }
 
@@ -70,9 +86,10 @@ public class HOACommunication {
    * @throws Exception either a bad request or response has error
    */
   public static boolean checkUserIsMemberOfThisHOA(String username, int hoaID, String authToken) throws Exception{
-    String url =  "";
-    UserNameHoaIDDTO requestBody = new UserNameHoaIDDTO(username, hoaID);
-    String response = makeRequest(authToken, url, objectMapper.writeValueAsString(requestBody));
+    String url =  HOAPath + "/member/isMemberOf";
+    Map<String, String> params = new HashMap<>();
+    params.put("hoaID", hoaID+"");
+    String response = makeRequest(authToken, url, "", params);
     return objectMapper.readValue(response, Boolean.class);
   }
 
@@ -85,9 +102,10 @@ public class HOACommunication {
    * @throws Exception either because the member is not in the HOA, or response has errors
    */
   public static Long getJoiningDate(String username, int hoaID, String authToken) throws Exception {
-    String url = "";
-    UserNameHoaIDDTO requestBody = new UserNameHoaIDDTO(username, hoaID);
-    String response = makeRequest(authToken, url, objectMapper.writeValueAsString(requestBody));
+    String url = HOAPath + "/member/joiningDate";
+    Map<String, String> params = new HashMap<>();
+    params.put("hoaID", hoaID+"");
+    String response = makeRequest(authToken, url, "", params);
     return objectMapper.readValue(response, Long.class);
   }
 
@@ -102,9 +120,10 @@ public class HOACommunication {
    * @throws Exception either because the member is not in the HOA, or response has errors
    */
   public static Long getJoiningBoardDate(String username, int hoaID, String authToken) throws Exception {
-    String url = "";
-    UserNameHoaIDDTO requestBody = new UserNameHoaIDDTO(username, hoaID);
-    String response = makeRequest(authToken, url, objectMapper.writeValueAsString(requestBody));
+    String url = HOAPath + "/member/joiningBoardDate";
+    Map<String, String> params = new HashMap<>();
+    params.put("hoaID", hoaID+"");
+    String response = makeRequest(authToken, url, "", params);
     return objectMapper.readValue(response, Long.class);
   }
 }

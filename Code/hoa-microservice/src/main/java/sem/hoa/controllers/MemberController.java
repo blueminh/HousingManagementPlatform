@@ -14,7 +14,7 @@ import sem.hoa.domain.services.MemberManagementService;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/members")
+@RequestMapping("/member")
 public class MemberController {
   private final transient AuthManager authManager;
   private final transient MemberManagementService memberManagementService;
