@@ -1,11 +1,16 @@
 package sem.hoa.dtos;
 
-public class Pair<A, B> {
-  public A first;
-  public B second;
+import lombok.Getter;
 
-  public Pair(A first, B second) {
-    this.first = first;
-    this.second = second;
-  }
+public class Pair<A, B> {
+    @Getter
+    private A first;
+
+    @Getter
+    private B second;
+
+    public Pair(A first, B second) {
+        this.first = first;
+        this.second = second;
+    }
 }
