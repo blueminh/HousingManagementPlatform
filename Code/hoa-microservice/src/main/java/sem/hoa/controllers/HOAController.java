@@ -67,8 +67,8 @@ public class HOAController {
      * @return 200 and the hoa created if joined successfully
      */
     @PostMapping("/createHOA")
-    public ResponseEntity<HOA> createHOA(@RequestBody UserHoaCreationDDTO request){
-        try{
+    public ResponseEntity<HOA> createHOA(@RequestBody UserHoaCreationDDTO request) {
+        try {
             //System.out.println("ok");
             HOA newHOA = new HOA(request.hoaName, request.hoaCountry, request.hoaCity);
             //System.out.println("ok");
@@ -80,7 +80,7 @@ public class HOAController {
             //System.out.println("ok");
 
             return ResponseEntity.ok(newHOA);
-        }catch(Exception e){
+        } catch(Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
