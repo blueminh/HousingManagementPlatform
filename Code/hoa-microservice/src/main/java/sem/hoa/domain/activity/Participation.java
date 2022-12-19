@@ -21,7 +21,7 @@ public class Participation {
      * Constructor for participation. Participation of users in activity is stored in this entity.
      *
      * @param activityId unique activity id
-     * @param username unique user id
+     * @param username   unique user id
      */
     public Participation(int activityId, String username) {
         this.activityId = activityId;

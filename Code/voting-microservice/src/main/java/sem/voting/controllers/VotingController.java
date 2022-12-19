@@ -147,9 +147,10 @@ public class VotingController {
         proposal = Optional.of(proposalHandlingService.save(proposal.get()));
         response.setOptions(proposal.get().getAvailableOptions().stream()
             .map(Option::toString).collect(Collectors.toList()));
-//        if (!added) {
-//            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-//        }
+        // TODO: if these lines do sth important please add them back
+        //        if (!added) {
+        //            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        //        }
         return ResponseEntity.ok(response);
     }
 

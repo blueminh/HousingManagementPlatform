@@ -26,9 +26,9 @@ public class MemberController {
     /**
      * Constructor of this controller.
      *
-     * @param authManager authManager
+     * @param authManager             authManager
      * @param memberManagementService service
-     * @param hoaService service
+     * @param hoaService              service
      */
     @Autowired
     public MemberController(AuthManager authManager, MemberManagementService memberManagementService, HoaService hoaService) {

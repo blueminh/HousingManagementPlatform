@@ -15,10 +15,10 @@ public class JoiningRequestModel {
     /**
      * Constructor for joining request model.
      *
-     * @param hoaName hoaName
+     * @param hoaName  hoaName
      * @param userName userName
-     * @param country country
-     * @param city city
+     * @param country  country
+     * @param city     city
      */
     public JoiningRequestModel(String hoaName, String userName, String country, String city) {
         this.hoaName = hoaName;

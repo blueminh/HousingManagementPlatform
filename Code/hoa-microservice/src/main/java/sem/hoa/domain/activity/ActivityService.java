@@ -21,8 +21,8 @@ public class ActivityService {
      * It tries to add an activity to the repository.
      *
      * @param hoaId hoa ID of the HOA the activity belongs to.
-     * @param date Date of the activity.
-     * @param desc Description of the Activity.
+     * @param date  Date of the activity.
+     * @param desc  Description of the Activity.
      * @throws Exception This exception is thrown if we try to add an Activity that already exists. (I'll have to check this again because we do not generate activity Id)
      */
     public void addActivity(int hoaId, String name, Date date, String desc) throws Exception {
@@ -55,7 +55,6 @@ public class ActivityService {
      * Gets the specified activity from the database.
      *
      * @param activityId activity id of the activity to be fetched
-     *
      * @return the activity retrieved from the database
      * @throws Exception throws an exception if no such activity was found
      */
@@ -72,7 +71,7 @@ public class ActivityService {
     /**
      * This service adds the userId and activityId to the Participation repository.
      *
-     * @param username the unique username
+     * @param username   the unique username
      * @param activityId the unique activity id
      */
     public void participate(String username, int activityId) throws Exception {
@@ -93,7 +92,7 @@ public class ActivityService {
     /**
      * This service removes the userId and activityId to the Participation repository.
      *
-     * @param username the unique username
+     * @param username   the unique username
      * @param activityId the unique activity id
      */
     public void removeParticipate(String username, int activityId) throws Exception {

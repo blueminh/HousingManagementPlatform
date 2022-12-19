@@ -37,10 +37,8 @@ public class Activity {
     /**
      * Create a new Activity.
      *
-     * @param activityId unique id used for identifying an Activity
-     *
-     * @param date date on which the activity takes place
-     *
+     * @param activityId  unique id used for identifying an Activity
+     * @param date        date on which the activity takes place
      * @param description description about the activity
      */
     public Activity(Integer activityId, Integer hoaId, String name, Date date, String description) {
@@ -54,8 +52,7 @@ public class Activity {
     /**
      * Create a new Activity but without activityId.
      *
-     * @param date date on which the activity takes place
-     *
+     * @param date        date on which the activity takes place
      * @param description description about the activity
      */
     public Activity(Integer hoaId, String name, Date date, String description) {

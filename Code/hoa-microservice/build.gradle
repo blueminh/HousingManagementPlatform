@@ -37,9 +37,9 @@ repositories {
 
 dependencies {
 
-	implementation 'org.springframework.boot:spring-boot-starter-test'
-	compileOnly 'org.projectlombok:lombok:1.18.24'
-	annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    implementation 'org.springframework.boot:spring-boot-starter-test'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
@@ -63,12 +63,12 @@ dependencies {
 }
 
 test {
-	useJUnitPlatform()
-	jacoco {
-		enabled = true
-		includes = ['sem.hoa.*']
-		excludes = []
-	}
+    useJUnitPlatform()
+    jacoco {
+        enabled = true
+        includes = ['sem.hoa.*']
+        excludes = []
+    }
 }
 
 repositories {
@@ -76,12 +76,12 @@ repositories {
 }
 
 jacocoTestCoverageVerification() {
-	dependsOn test
-	violationRules {
-		rule {
-			enabled = true
-			element = 'CLASS'
-			includes = ['sem.hoa.*']
+    dependsOn test
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS'
+            includes = ['sem.hoa.*']
 
             limit {
                 counter = 'BRANCH'
@@ -93,11 +93,11 @@ jacocoTestCoverageVerification() {
 }
 
 checkstyle {
-	toolVersion "8.37"
-	configFile = file("${rootDir}/Code/config/checkstyle/checkstyle.xml")
-	ignoreFailures = false
-	maxErrors = 0
-	maxWarnings = 0
+    toolVersion "8.37"
+    configFile = file("${rootDir}/Code/config/checkstyle/checkstyle.xml")
+    ignoreFailures = false
+    maxErrors = 0
+    maxWarnings = 0
 }
 
 pmd {
@@ -110,9 +110,9 @@ pitest {
     //adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
     junit5PluginVersion = '0.12'
 
-	targetClasses = ['sem.hoa.*']  //by default "${project.group}.*"
-	pitestVersion = '1.5.1' //not needed when a default PIT version should be used
-	threads = 4
-	outputFormats = ['XML', 'HTML']
-	timestampedReports = false
+    targetClasses = ['sem.hoa.*']  //by default "${project.group}.*"
+    pitestVersion = '1.5.1' //not needed when a default PIT version should be used
+    threads = 4
+    outputFormats = ['XML', 'HTML']
+    timestampedReports = false
 }

@@ -20,9 +20,9 @@ public class ActivityResponseModel {
      * Constructor for the ActivityResponseModel.
      *
      * @param activityId unique id of the activity
-     * @param hoaId unique id of the hoa this activity belongs to
-     * @param desc the description
-     * @param date date at which the activity occurs
+     * @param hoaId      unique id of the hoa this activity belongs to
+     * @param desc       the description
+     * @param date       date at which the activity occurs
      */
     public ActivityResponseModel(int activityId, int hoaId, String name, String desc, Date date) {
         this.activityId = activityId;

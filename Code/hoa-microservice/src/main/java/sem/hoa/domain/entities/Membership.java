@@ -42,12 +42,12 @@ public class Membership {
     /**
      * Constructor of a Membership object.
      *
-     * @param username username
-     * @param hoaId hoaId
-     * @param isBoardMember isBoardMember
-     * @param country country
-     * @param city city
-     * @param joiningDate joiningDate
+     * @param username         username
+     * @param hoaId            hoaId
+     * @param isBoardMember    isBoardMember
+     * @param country          country
+     * @param city             city
+     * @param joiningDate      joiningDate
      * @param joiningBoardDate joiningBoardDate
      */
     public Membership(String username, int hoaId, boolean isBoardMember, String country, String city, Long joiningDate, Long joiningBoardDate) {

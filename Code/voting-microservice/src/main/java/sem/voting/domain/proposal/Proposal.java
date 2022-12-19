@@ -136,12 +136,14 @@ public class Proposal {
      */
     public boolean addOption(Option newOption) throws AddOptionException {
         checkDeadline();
-        if (this.status != ProposalStage.UnderConstruction)
+        if (this.status != ProposalStage.UnderConstruction) {
             // I'm not sure if Applying is the right word here
             throw new AddOptionException("Proposal is not accepting new options");
+        }
 
-        if (this.optionValidationService.isOptionValid(newOption, this))
+        if (this.optionValidationService.isOptionValid(newOption, this)) {
             throw new AddOptionException("Option is not valid");
+        }
 
         return this.availableOptions.add(newOption);
     }
@@ -154,14 +156,17 @@ public class Proposal {
      */
     public boolean addVote(Vote newVote) throws VotingException {
         checkDeadline();
-        if (this.status != ProposalStage.Voting)
+        if (this.status != ProposalStage.Voting) {
             throw new VotingException("Proposal is not in Voting phase");
+        }
 
-        if (!this.voteValidationService.isVoteValid(newVote, this))
+        if (!this.voteValidationService.isVoteValid(newVote, this)) {
             throw new VotingException("Vote is not valid");
+        }
 
-        if (newVote.getChoice() == null)
+        if (newVote.getChoice() == null) {
             return this.votes.remove(newVote.getVoter()) != null;
+        }
 
         if (this.availableOptions.contains(newVote.getChoice())) {
             this.votes.put(newVote.getVoter(), newVote.getChoice());

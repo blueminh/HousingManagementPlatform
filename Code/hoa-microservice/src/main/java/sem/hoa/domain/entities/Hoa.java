@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -41,9 +42,9 @@ public class Hoa extends HasEvents {
     /**
      * Constructor for a new HOA.
      *
-     * @param name name
+     * @param name    name
      * @param country country
-     * @param city city
+     * @param city    city
      */
     public Hoa(String name, String country, String city) {
         this.hoaName = name;

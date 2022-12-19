@@ -16,9 +16,9 @@ public class CastVoteRequestModel {
      * Constructor for a cast vote request.
      *
      * @param proposalId proposalID
-     * @param hoaId hoaID
-     * @param username username
-     * @param option option voted
+     * @param hoaId      hoaID
+     * @param username   username
+     * @param option     option voted
      */
     public CastVoteRequestModel(int proposalId, int hoaId, String username, String option) {
         this.proposalId = proposalId;

@@ -31,9 +31,7 @@ public class ActivityController {
      * API call for adding new a new Activity.
      *
      * @param req It is the request model for taking all the required information about a new Activity.
-     *
      * @return Returns 200 OK Response
-     *
      * @throws Exception In case the addition of Activity fails, it throws a BAD REQUEST Exception
      */
     @PostMapping("/activity/add")
@@ -50,9 +48,7 @@ public class ActivityController {
      * API call for getting details about an Activity.
      *
      * @param activityId Unique id of the activity to get
-     *
      * @return Returns 200 OK Response along with the ActivityResponseModel
-     *
      * @throws Exception In case the retrieval of Activity fails, it throws a BAD REQUEST and a NoSuchActivityException
      */
     @GetMapping("/activity/get")
@@ -70,12 +66,10 @@ public class ActivityController {
      * API call for removing an Activity.
      *
      * @param activityId Unique id of the activity to get
-     *
      * @return Returns 200 OK Response
-     *
      * @throws Exception In case the deletion of Activity fails, it throws a BAD REQUEST and a NoSuchActivityException
      */
-    @DeleteMapping ("/activity/remove")
+    @DeleteMapping("/activity/remove")
     public ResponseEntity removeActivity(@RequestParam(name = "id") int activityId) throws Exception {
         try {
             activityService.removeActivity(activityId);

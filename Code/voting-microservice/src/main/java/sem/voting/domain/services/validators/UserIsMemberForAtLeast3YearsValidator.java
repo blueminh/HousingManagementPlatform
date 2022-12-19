@@ -14,8 +14,9 @@ public class UserIsMemberForAtLeast3YearsValidator extends Validator {
             long joiningDate = HoaCommunication.getJoiningDate(vote.getVoter(), proposal.getHoaId(), vote.getVoterToken());
             long duration = new Date().getTime() - joiningDate;
             // 1 year is 365 days
-            if(!(TimeUnit.MILLISECONDS.toDays(duration) / 365 >= 3))
+            if (!(TimeUnit.MILLISECONDS.toDays(duration) / 365 >= 3)) {
                 throw new InvalidRequestException("User has not been a member for at least 3 years");
+            }
             return super.checkNext(vote, proposal);
         } catch (Exception e) {
             throw new InvalidRequestException(e.getMessage());

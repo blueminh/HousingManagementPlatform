@@ -20,7 +20,7 @@ public class HoaCommunication {
      * Send a request and receive a String as response.
      *
      * @param authToken authentication header
-     * @param url the endpoint to sent to
+     * @param url       the endpoint to sent to
      * @return the body of the response as String if OK or the embedded error message if
      * receiving a error
      */
@@ -53,8 +53,8 @@ public class HoaCommunication {
     /**
      * Check if a user is a board member of a hoa.
      *
-     * @param username username of the user
-     * @param hoaId hoaID
+     * @param username  username of the user
+     * @param hoaId     hoaID
      * @param authToken the authentication token associated with this user
      * @return whether the user is a board member of this hoa
      * @throws Exception either a bad request or response has error
@@ -70,7 +70,7 @@ public class HoaCommunication {
     /**
      * Check if a user is NOT a board member of any HOA.
      *
-     * @param username username of the user
+     * @param username  username of the user
      * @param authToken the authentication token associated with this user
      * @return whether the user is NOT a board member of any HOA
      * @throws Exception either a bad request or response has error
@@ -84,8 +84,8 @@ public class HoaCommunication {
     /**
      * Check if a user is a member of a hoa.
      *
-     * @param username username of the user
-     * @param hoaId hoaId
+     * @param username  username of the user
+     * @param hoaId     hoaId
      * @param authToken the authentication token associated with this user
      * @return whether the user is a ember of this hoa
      * @throws Exception either a bad request or response has error
@@ -101,8 +101,8 @@ public class HoaCommunication {
     /**
      * Get the joining date of a user.
      *
-     * @param username username of this user
-     * @param hoaId the hoaId to check
+     * @param username  username of this user
+     * @param hoaId     the hoaId to check
      * @param authToken the authentication token associated with this user
      * @return the joining date of this user. If the user is not in the HOA, an exception is thrown
      * @throws Exception either because the member is not in the HOA, or response has errors
@@ -118,8 +118,8 @@ public class HoaCommunication {
     /**
      * Get the joining board date of a user.
      *
-     * @param username username of this user
-     * @param hoaId the hoaId to check
+     * @param username  username of this user
+     * @param hoaId     the hoaId to check
      * @param authToken the authentication token associated with this user
      * @return the board joining date of this user.
      * If the user is not a board member of the HOA, -1 is returned
