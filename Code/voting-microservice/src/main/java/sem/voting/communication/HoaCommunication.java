@@ -62,7 +62,7 @@ public class HoaCommunication {
     public static boolean checkUserIsBoardMember(String username, int hoaId, String authToken) throws Exception {
         String url = HOAPath + "/member/findUserRoleByHoaID";
         Map<String, String> params = new HashMap<>();
-        params.put("hoaID", hoaId + "");
+        params.put("hoaId", hoaId + "");
         String response = makeRequest(authToken, url, "", params);
         return objectMapper.readValue(response, String.class).equals("boardMember");
     }
@@ -93,7 +93,7 @@ public class HoaCommunication {
     public static boolean checkUserIsMemberOfThisHoa(String username, int hoaId, String authToken) throws Exception {
         String url = HOAPath + "/member/isMemberOf";
         Map<String, String> params = new HashMap<>();
-        params.put("hoaID", hoaId + "");
+        params.put("hoaId", hoaId + "");
         String response = makeRequest(authToken, url, "", params);
         return objectMapper.readValue(response, Boolean.class);
     }
@@ -110,7 +110,7 @@ public class HoaCommunication {
     public static Long getJoiningDate(String username, int hoaId, String authToken) throws Exception {
         String url = HOAPath + "/member/joiningDate";
         Map<String, String> params = new HashMap<>();
-        params.put("hoaID", hoaId + "");
+        params.put("hoaId", hoaId + "");
         String response = makeRequest(authToken, url, "", params);
         return objectMapper.readValue(response, Long.class);
     }
@@ -129,7 +129,7 @@ public class HoaCommunication {
     public static Long getJoiningBoardDate(String username, int hoaId, String authToken) throws Exception {
         String url = HOAPath + "/member/joiningBoardDate";
         Map<String, String> params = new HashMap<>();
-        params.put("hoaID", hoaId + "");
+        params.put("hoaId", hoaId + "");
         String response = makeRequest(authToken, url, "", params);
         return objectMapper.readValue(response, Long.class);
     }
