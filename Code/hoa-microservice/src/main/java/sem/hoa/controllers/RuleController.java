@@ -9,8 +9,10 @@ import sem.hoa.domain.entities.HOA;
 import sem.hoa.domain.entities.Rule;
 import sem.hoa.domain.services.HOAService;
 import sem.hoa.domain.services.RuleService;
-import sem.hoa.dtos.HoaIDDTO;
-import sem.hoa.dtos.HoaIDRuleDescDTO;
+import sem.hoa.dtos.AddRuleRequestModel;
+import sem.hoa.dtos.AddRuleResponseModel;
+import sem.hoa.dtos.EditRuleRequestModel;
+import sem.hoa.dtos.HoaIDRulesListModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,37 +32,52 @@ public class RuleController {
     }
 
     @GetMapping("/rules")
-    public ResponseEntity<HoaIDRuleDescDTO> displayRules(@RequestBody HoaIDDTO request) {
+    public ResponseEntity<HoaIDRulesListModel> displayRules(@RequestBody HoaIDRulesListModel request) {
         if (request == null) {
             return ResponseEntity.badRequest().build();
         }
-        int hoaId = request.getId();
-        Optional<HOA> hoa = hoaService.findHOAByID(hoaId);
+        Optional<HOA> hoa = hoaService.findHOAByID(request.getHoaId());
         if(hoa.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        List<Rule> rules = ruleService.getHoaRules(hoaId);
+        List<Rule> rules = ruleService.getHoaRules(request.getHoaId());
         if(rules == null) {
             return ResponseEntity.badRequest().build();
         }
-        HoaIDRuleDescDTO response = new HoaIDRuleDescDTO();
+        HoaIDRulesListModel response = new HoaIDRulesListModel();
         response.setRules(rules);
         return ResponseEntity.ok(response);
     }
 
-//    @PostMapping("/add-rule")
-//    public ResponseEntity addRule(@RequestBody HoaIDRuleDescDTO request) {
-//        if (request == null) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//    }
-//
-//    @PostMapping("/edit-rule")
-//    public ResponseEntity editRule(@RequestBody HoaIDRuleDescDTO request) {
-//        if (request == null) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//    }
+    @PostMapping("/add-rule")
+    public ResponseEntity<AddRuleResponseModel> addRule(@RequestBody AddRuleRequestModel request) {
+        if (request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        Optional<HOA> hoa = hoaService.findHOAByID(request.getHoaId());
+        if(hoa.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        List<Rule> rules = ruleService.getHoaRules(request.getHoaId());
+        rules.add(new Rule(request.getHoaId(), request.getNewRule()));
+        AddRuleResponseModel response = new AddRuleResponseModel();
+        response.setHoaId(request.getHoaId());
+        response.setRules(rules);
+        return ResponseEntity.ok(response);
+    }
+    @PostMapping("/edit-rule")
+    public ResponseEntity<EditRuleRequestModel> editRule(@RequestBody EditRuleRequestModel request) {
+        if (request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        Optional<Rule> rule = ruleService.findRuleById(request.getRuleId());
+        if(rule.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        ruleService.replaceRule(rule.get(), request.getChange());
+        return ResponseEntity.ok().build();
+        
+    }
 //
 //    @DeleteMapping("/delete-rule")
 //    public ResponseEntity deleteRule(@RequestBody HoaIDRuleDescDTO request) {
