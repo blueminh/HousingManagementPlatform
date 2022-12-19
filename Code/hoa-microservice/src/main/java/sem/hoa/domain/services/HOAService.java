@@ -26,19 +26,23 @@ public class HOAService {
       }
     }
 
-    /**
-     * Find
-     * Either give the name of the HOA or the hoaID
-     * @param hoaName make this null or empty if hoaID is used
-     * @param hoaID id of the HOA
-     * @return the start time and end time of the HOA's board election
-     */
+  /**
+   * Either find the name of the HOA or the hoaID.
+   *
+   * @param hoaName make this null or empty if hoaID is used
+   * @param hoaID   id of the HOA
+   * @return the start time and end time of the HOA's board election
+   */
     public Pair<Long, Long> findBoardElectionStartTime(@Nullable String hoaName, int hoaID) {
       Optional<HOA> hoa;
-      if (hoaName != null)
+      if (hoaName != null) {
         hoa = hoaRepository.findByHoaName(hoaName);
-      else hoa = hoaRepository.findById(hoaID);
-      if (hoa.isEmpty()) return null;
+      }  else {
+        hoa = hoaRepository.findById(hoaID);
+      }
+      if (hoa.isEmpty()) {
+        return null;
+      }
       return new Pair<Long, Long>(hoa.get().getElectionStartTime(), hoa.get().getElectionEndTime());
     }
 
