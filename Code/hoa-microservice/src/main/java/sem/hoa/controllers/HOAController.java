@@ -59,11 +59,13 @@ public class HOAController {
     public ResponseEntity<HOA> createHOA(@RequestBody UserHoaCreationDDTO request){
         try{
             //System.out.println("ok");
-            HOA newHOA = new HOA(request.hoaName, request.country, request.city);
+            HOA newHOA = new HOA(request.hoaName, request.hoaCountry, request.hoaCity);
             //System.out.println("ok");
             hoaService.createNewHOA(newHOA);
             //System.out.println("ok");
-            memberManagementService.addMembership(new Membership(authManager.getNetId(), newHOA.getId(), true));
+            memberManagementService
+                    .addMembership(new Membership(authManager.getNetId(), newHOA.getId(), true,
+                    request.userCountry, request.userCity));
             //System.out.println("ok");
 
             return ResponseEntity.ok(newHOA);
@@ -87,7 +89,7 @@ public class HOAController {
             Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.username, hoa.get().getId());
             if (membership.isPresent()) throw new Exception("User is already in this HOA");
 
-            memberManagementService.addMembership(new Membership(request.username, hoa.get().getId(), false));
+            //memberManagementService.addMembership(new Membership(request.username, hoa.get().getId(), false));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
