@@ -22,7 +22,7 @@ public class Vote {
      *
      * @param voter      Id of voter.
      * @param choice     Selected choice.
-     * @param voterToken
+     * @param voterToken Authentication toekn of this voter
      */
     public Vote(String voter, Option choice, String voterToken) {
         this.voter = voter;

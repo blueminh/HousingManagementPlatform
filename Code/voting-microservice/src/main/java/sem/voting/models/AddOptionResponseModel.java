@@ -1,6 +1,7 @@
 package sem.voting.models;
 
 import java.util.List;
+
 import lombok.Data;
 
 /**

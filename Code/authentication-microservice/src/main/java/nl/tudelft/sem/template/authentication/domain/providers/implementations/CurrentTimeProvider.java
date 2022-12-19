@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.authentication.domain.providers.implementations;
 
 import java.time.Instant;
+
 import nl.tudelft.sem.template.authentication.domain.providers.TimeProvider;
 import org.springframework.stereotype.Component;
 

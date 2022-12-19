@@ -1,98 +1,63 @@
 package sem.hoa.domain.entities;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import javax.persistence.*;
-import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
 
 @Entity
-@IdClass(MembershipID.class)
+@IdClass(MembershipId.class)
 @Table(name = "memberManagements")
 @NoArgsConstructor
+@Data
 public class Membership {
 
-  @Id
-  @Column(name = "username", nullable = false)
-  private String username;
+    @Id
+    @Column(name = "username", nullable = false)
+    private String username;
 
-  @Id
-  @Column(name = "hoaID", nullable = false)
-  private int hoaID;
+    @Id
+    @Column(name = "hoaId", nullable = false)
+    private int hoaId;
 
-  // Enum type is complicated to be persisted in the database -> simply use a boolean value
-  @Column(name = "isboardmember")
-  private boolean isBoardMember;
+    // Enum type is complicated to be persisted in the database -> simply use a boolean value
+    @Column(name = "isboardmember")
+    private boolean isBoardMember;
 
-  @Column(name = "country")
-  private String country;
+    @Column(name = "country")
+    private String country;
 
-  @Column(name = "city")
-  private String city;
+    @Column(name = "city")
+    private String city;
 
-  @Getter
-  @Setter
-  @Column(name = "joiningDate")
-  private Long joiningDate;
+    @Column(name = "joiningDate")
+    private Long joiningDate;
 
-  @Getter
-  @Setter
-  @Column(name = "joiningBoardDate")
-  private Long joiningBoardDate;
+    @Column(name = "joiningBoardDate")
+    private Long joiningBoardDate;
 
-  public Membership(String username, int hoaID, boolean isBoardMember, String country, String city, Long joiningDate, Long joiningBoardDate) {
-    this.username = username;
-    this.hoaID = hoaID;
-    this.isBoardMember = isBoardMember;
-    this.country = country;
-    this.city = city;
-    this.joiningDate = joiningDate;
-    this.joiningBoardDate = joiningBoardDate;
-  }
-
-  public String getUsername() {
-    return username;
-  }
-
-  public int getHoaID() {
-    return hoaID;
-  }
-
-  public boolean isBoardMember() {
-    return isBoardMember;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public void setHoaID(int hoaID) {
-    this.hoaID = hoaID;
-  }
-
-  public void setBoardMember(boolean boardMember) {
-    isBoardMember = boardMember;
-  }
-
-  public String getCountry() {
-    return country;
-  }
-
-  public String getCity() {
-    return city;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Membership that = (Membership) o;
-    return hoaID == that.hoaID && isBoardMember == that.isBoardMember && username.equals(that.username);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(username, hoaID, isBoardMember);
-  }
+    /**
+     * Constructor of a Membership object.
+     *
+     * @param username username
+     * @param hoaId hoaId
+     * @param isBoardMember isBoardMember
+     * @param country country
+     * @param city city
+     * @param joiningDate joiningDate
+     * @param joiningBoardDate joiningBoardDate
+     */
+    public Membership(String username, int hoaId, boolean isBoardMember, String country, String city, Long joiningDate, Long joiningBoardDate) {
+        this.username = username;
+        this.hoaId = hoaId;
+        this.isBoardMember = isBoardMember;
+        this.country = country;
+        this.city = city;
+        this.joiningDate = joiningDate;
+        this.joiningBoardDate = joiningBoardDate;
+    }
 }

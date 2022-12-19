@@ -6,10 +6,12 @@ import static org.mockito.Mockito.when;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+
 import nl.tudelft.sem.template.authentication.domain.providers.TimeProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,10 +74,10 @@ public class JwtTokenGeneratorTests {
 
     private Claims getClaims(String token) {
         return Jwts.parser()
-                .setAllowedClockSkewSeconds(Integer.MAX_VALUE)
-                .setSigningKey(secret)
-                .parseClaimsJws(token)
-                .getBody();
+            .setAllowedClockSkewSeconds(Integer.MAX_VALUE)
+            .setSigningKey(secret)
+            .parseClaimsJws(token)
+            .getBody();
     }
 
     private void injectSecret(String secret) throws NoSuchFieldException, IllegalAccessException {

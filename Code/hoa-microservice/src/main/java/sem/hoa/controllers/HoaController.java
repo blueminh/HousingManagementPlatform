@@ -3,22 +3,20 @@ package sem.hoa.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import sem.hoa.authentication.AuthManager;
-import sem.hoa.domain.entities.HOA;
+import sem.hoa.domain.entities.Hoa;
 import sem.hoa.domain.entities.Membership;
-import sem.hoa.domain.entities.MembershipID;
-import sem.hoa.domain.services.HOAService;
+import sem.hoa.domain.services.HoaService;
 import sem.hoa.domain.services.MemberManagementService;
 import sem.hoa.dtos.JoiningRequestModel;
-import sem.hoa.dtos.UserHoaCreationDDTO;
-import sem.hoa.dtos.UserNameHoaIDDTO;
-import sem.hoa.dtos.UserNameHoaNameDTO;
+import sem.hoa.dtos.UserHoaCreationDto;
 
 import java.util.Date;
-import java.sql.Struct;
 import java.util.Optional;
 
 /**
@@ -28,11 +26,11 @@ import java.util.Optional;
  * </p>
  */
 @RestController
-public class HOAController {
+public class HoaController {
 
     private final transient AuthManager authManager;
     private final transient MemberManagementService memberManagementService;
-    private final transient HOAService hoaService;
+    private final transient HoaService hoaService;
 
     /**
      * Instantiates a new controller.
@@ -40,7 +38,7 @@ public class HOAController {
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public HOAController(AuthManager authManager, MemberManagementService memberManagementService, HOAService hoaService) {
+    public HoaController(AuthManager authManager, MemberManagementService memberManagementService, HoaService hoaService) {
         this.authManager = authManager;
         this.memberManagementService = memberManagementService;
         this.hoaService = hoaService;
@@ -53,44 +51,58 @@ public class HOAController {
      */
     @GetMapping("/welcomeHOA")
     public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getNetId() + "! \nWelcome to HOA!") ;
+        return ResponseEntity.ok("Hello " + authManager.getNetId() + "! \nWelcome to Hoa!");
 
     }
 
+    /**
+     * Create a new Hoa.
+     *
+     * @param request request
+     */
     @PostMapping("/createHOA")
-    public ResponseEntity<HOA> createHOA(@RequestBody UserHoaCreationDDTO request){
-        try{
+    public ResponseEntity<Hoa> createHoa(@RequestBody UserHoaCreationDto request) {
+        try {
             //System.out.println("ok");
-            HOA newHOA = new HOA(request.hoaName, request.country, request.city);
+            Hoa newHoa = new Hoa(request.hoaName, request.country, request.city);
             //System.out.println("ok");
-            hoaService.createNewHOA(newHOA);
+            hoaService.createNewHoa(newHoa);
             //System.out.println("ok");
-//            memberManagementService.addMembership(new Membership(authManager.getNetId(), newHOA.getId(), true));
+            //memberManagementService.addMembership(new Membership(authManager.getNetId(), newHoa.getId(), true));
             //System.out.println("ok");
 
-            return ResponseEntity.ok(newHOA);
-        }catch(Exception e){
+            return ResponseEntity.ok(newHoa);
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
-
-    //should add a check for the address of the hoa and the user
-    // Membership
+    /**
+     * A user can join a HOA.
+     *
+     * @param request request
+     */
     @PostMapping("/joining")
-    public ResponseEntity<String> joiningHOA(@RequestBody JoiningRequestModel request){
+    public ResponseEntity<String> joiningHoa(@RequestBody JoiningRequestModel request) {
         try {
-            if (!request.userName.equals(authManager.getNetId()))
+            if (!request.userName.equals(authManager.getNetId())) {
                 throw new BadRequestException("Wrong username");
+            }
 
-            Optional<HOA> hoa = hoaService.findHOAByName(request.hoaName);
-            if (hoa.isEmpty()) throw new BadRequestException("No such HOA with this name: " + request.hoaName);
+            Optional<Hoa> hoa = hoaService.findHoaByName(request.hoaName);
+            if (hoa.isEmpty()) {
+                throw new BadRequestException("No such Hoa with this name: " + request.hoaName);
+            }
 
-            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.userName, hoa.get().getId());
-            if (membership.isPresent()) throw new BadRequestException("User is already in this HOA");//need explanation
+            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(request.userName, hoa.get().getId());
+            if (membership.isPresent()) {
+                throw new BadRequestException("User is already in this Hoa");
+            }
 
             Membership newMemberShip = new Membership(request.userName, hoa.get().getId(), false, request.country, request.city, new Date().getTime(), -1L);
-            if(!memberManagementService.addressCheck(hoa.get(), newMemberShip)) throw new BadRequestException("Invalid address");
+            if (!memberManagementService.addressCheck(hoa.get(), newMemberShip)) {
+                throw new BadRequestException("Invalid address");
+            }
 
             memberManagementService.addMembership(newMemberShip);
         } catch (BadRequestException e) {
@@ -101,5 +113,5 @@ public class HOAController {
         }
         return ResponseEntity.ok().build();
     }
-    
+
 }

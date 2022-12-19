@@ -3,6 +3,7 @@ package sem.voting.models;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.Data;
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
@@ -34,6 +35,6 @@ public class ProposalInformationResponseModel {
         this.deadline = proposal.getVotingDeadline();
         this.status = proposal.getStatus();
         this.options = proposal.getAvailableOptions().stream()
-                .map(Option::toString).collect(Collectors.toList());
+            .map(Option::toString).collect(Collectors.toList());
     }
 }

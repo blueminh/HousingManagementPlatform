@@ -26,7 +26,6 @@ public class UserInfoController {
      * Endpoint for fetching the full name of a user.
      *
      * @param request The request model containing the username.
-     *
      * @return The full name of the user if it was found.
      * @throws ResponseStatusException Exception if the user was not found.
      */

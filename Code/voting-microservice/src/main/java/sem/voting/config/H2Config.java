@@ -1,6 +1,7 @@
 package sem.voting.config;
 
 import javax.sql.DataSource;
+
 import lombok.Getter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -16,7 +16,7 @@ public class RegistrationService {
     /**
      * Instantiates a new UserService.
      *
-     * @param userRepository  the user repository
+     * @param userRepository         the user repository
      * @param passwordHashingService the password encoder
      */
     public RegistrationService(UserRepository userRepository, PasswordHashingService passwordHashingService) {
@@ -59,7 +59,6 @@ public class RegistrationService {
      * Fetch the full name of a user in the database.
      *
      * @param username user to fetch the full name of.
-     *
      * @return full name of the user.
      * @throws UserNotFoundException Exception to throw if the user was not found.
      */

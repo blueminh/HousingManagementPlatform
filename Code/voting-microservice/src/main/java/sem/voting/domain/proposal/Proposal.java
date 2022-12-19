@@ -12,6 +12,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -143,8 +144,9 @@ public class Proposal {
      */
     public boolean addVote(Vote newVote) throws VotingException {
         checkDeadline();
-        if (this.status != ProposalStage.Voting || !this.voteValidationService.isVoteValid(newVote, this))
+        if (this.status != ProposalStage.Voting || !this.voteValidationService.isVoteValid(newVote, this)) {
             throw new VotingException("Proposal is not in Voting phase");
+        }
 
         if (newVote.getChoice() == null) {
             return this.votes.remove(newVote.getVoter()) != null;

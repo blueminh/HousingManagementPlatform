@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.sql.Date;
 import java.time.Instant;
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,15 +78,15 @@ class VotingControllerTest {
 
         // Act
         ResultActions resultActions = mockMvc.perform(post("/propose")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken")
-                .content(JsonUtil.serialize(model)));
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer MockedToken")
+            .content(JsonUtil.serialize(model)));
 
         // Assert
         resultActions.andExpect(status().isOk());
         ProposalCreationResponseModel response =
-                JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(),
-                        ProposalCreationResponseModel.class);
+            JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(),
+                ProposalCreationResponseModel.class);
 
         Proposal savedProposal = proposalRepository.findById(response.getProposalId()).orElseThrow();
 
