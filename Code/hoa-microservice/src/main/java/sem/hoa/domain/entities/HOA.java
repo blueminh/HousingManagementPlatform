@@ -34,6 +34,7 @@ public class HOA extends HasEvents {
     this.hoaName = name;
     this.country = country;
     this.city = city;
+    //this.electionStartTime = Date.from(Instant.now().plusSeconds(31556926));
   }
 
   public int getId() {
