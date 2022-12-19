@@ -34,7 +34,8 @@ public class HOA extends HasEvents {
     private Long electionEndTime;
 
     /**
-     * Create an HOA with only name, country and city
+     * Create an HOA with only name, country and city.
+     *
      * @param name - name of HOA
      * @param country - country of HOA
      * @param city - city of HOA
@@ -54,7 +55,7 @@ public class HOA extends HasEvents {
         this.hoaName = hoaName;
     }
 
-    public String getHoaName(){
+    public String getHoaName() {
         return this.hoaName;
     }
 

@@ -80,7 +80,7 @@ public class HOAController {
             //System.out.println("ok");
 
             return ResponseEntity.ok(newHOA);
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
