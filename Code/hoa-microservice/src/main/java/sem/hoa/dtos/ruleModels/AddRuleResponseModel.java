@@ -1,9 +1,15 @@
 package sem.hoa.dtos.ruleModels;
 
+import lombok.Data;
 import sem.hoa.domain.entities.Rule;
 
 import java.util.List;
 
+
+/**
+ * Model that represents a response to adding a new rule to an HOA
+ */
+@Data
 public class AddRuleResponseModel {
 
     private int hoaId;

@@ -28,6 +28,15 @@ public class RuleController {
         this.hoaService = hoaService;
     }
 
+    /**
+     * Endpoint to display all the rules of an HOA
+     *
+     * @param request model of the request
+     * @return 200 if the HOA was found
+     *      404 if the HOA was not found
+     *      400 otherwise
+     *      The response contains a list of the rules
+     */
     @GetMapping("/rules")
     public ResponseEntity<HoaIDRulesListModel> displayRules(@RequestBody HoaIDRulesListModel request) {
         if (request == null) {
@@ -38,14 +47,20 @@ public class RuleController {
             return ResponseEntity.notFound().build();
         }
         List<Rule> rules = ruleService.getHoaRules(request.getHoaId());
-        if(rules == null) {
-            return ResponseEntity.badRequest().build();
-        }
         HoaIDRulesListModel response = new HoaIDRulesListModel();
         response.setRules(rules);
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Endpoint to add a rule to an HOA
+     *
+     * @param request model of the request
+     * @return 200 if the rule was successfully added
+     *      404 if the HOA was not found
+     *      400 otherwise
+     *      The response contains the id of the HOA and the list of rules
+     */
     @PostMapping("/add-rule")
     public ResponseEntity<AddRuleResponseModel> addRule(@RequestBody AddRuleRequestModel request) {
         if (request == null) {
@@ -62,8 +77,16 @@ public class RuleController {
         response.setRules(rules);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * Endpoint to change a rule in an HOA
+     * @param request model of the request
+     * @return 200 if the modification was successful
+     *      401 if the rule was not found
+     *      400 otherwise
+     */
     @PostMapping("/edit-rule")
-    public ResponseEntity<EditRuleModel> editRule(@RequestBody EditRuleModel request) {
+    public ResponseEntity editRule(@RequestBody EditRuleModel request) {
         if (request == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -72,10 +95,19 @@ public class RuleController {
             return ResponseEntity.notFound().build();
         }
         ruleService.replaceRule(rule.get(), request.getChange());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Edited rule with id:" + request.getRuleId() +
+                "\nNew rule is: " + request.getChange());
 
     }
 
+    /**
+     * Endpoint to delete a rule
+     * @param request model of the request
+     * @return 200 if the deletion was successful
+     *      401 if the rule was not found
+     *      400 otherwise
+     *      The response contains information about the deleted rule and the id of the HOA
+     */
     @DeleteMapping("/delete-rule")
     public ResponseEntity deleteRule(@RequestBody DeleteRuleModel request) {
         if (request == null) {
@@ -88,7 +120,7 @@ public class RuleController {
         ruleService.removeRuleById(request.getRuleId());
         return ResponseEntity.ok("Deleted rule with id: " + request.getRuleId() +
                 "\nPart of hoa with id: " + request.getHoaId());
-        
+
     }
 
 

@@ -6,6 +6,10 @@ import sem.hoa.domain.entities.Rule;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * Model that stores an id of an HOA and its list of rules
+ */
 @Data
 public class HoaIDRulesListModel {
 
