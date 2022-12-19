@@ -1,6 +1,7 @@
 include:
-  - Code/authentication-microservice/.gitlab-ci.yml
-  - Code/example-microservice/.gitlab-ci.yml
+#  - Code/authentication-microservice/.gitlab-ci.yml
+#  - Code/example-microservice/.gitlab-ci.yml
   - Code/voting-microservice/.gitlab-ci.yml
   - Code/users-microservice/.gitlab-ci.yml
+  - Code/hoa-microservice/.gitlab-ci.yml
 

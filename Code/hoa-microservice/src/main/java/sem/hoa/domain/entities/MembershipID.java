@@ -1,35 +1,20 @@
 package sem.hoa.domain.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import java.io.Serializable;
-import java.util.Objects;
 
+@EqualsAndHashCode
+@AllArgsConstructor
 public class MembershipID implements Serializable {
-  private String username;
-  private int hoaID;
+    private static final long serialVersionUID = 0L;
 
-  public MembershipID(String username, int hoaID) {
-    this.username = username;
-    this.hoaID = hoaID;
-  }
+    @EqualsAndHashCode.Include
+    @Getter
+    private String username;
 
-  public String getUsername() {
-    return username;
-  }
-
-  public int getHoaID() {
-    return hoaID;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    MembershipID that = (MembershipID) o;
-    return hoaID == that.hoaID && Objects.equals(username, that.username);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(username, hoaID);
-  }
+    @EqualsAndHashCode.Include
+    @Getter
+    private int hoaID;
 }
