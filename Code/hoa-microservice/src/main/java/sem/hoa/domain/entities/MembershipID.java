@@ -12,9 +12,9 @@ public class MembershipID implements Serializable {
 
     @EqualsAndHashCode.Include
     @Getter
-    private transient String username;
+    private String username;
 
     @EqualsAndHashCode.Include
     @Getter
-    private transient int hoaID;
+    private int hoaID;
 }
