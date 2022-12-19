@@ -13,9 +13,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import sem.hoa.authentication.AuthManager;
 import sem.hoa.authentication.JwtTokenVerifier;
+import sem.hoa.domain.entities.HOA;
 import sem.hoa.domain.services.HOARepository;
 import sem.hoa.domain.services.HOAService;
 import sem.hoa.dtos.UserHoaCreationDDTO;
+import sem.hoa.utils.JsonUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -64,7 +66,20 @@ public class HoaCreationTests {
         request.setUserCity("exUserCity");
         request.setUserCountry("exUserCountry");
 
-        
+        ResultActions resultActions = mockMvc.perform(post("/createHOA")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isOk());
+
+        HOA given = new HOA(request.hoaName, request.hoaCountry, request.hoaCity);
+        HOA responded = JsonUtil
+                .deserialize(resultActions.andReturn().getResponse().getContentAsString(),
+                HOA.class);
+        HOA saved = hoaRepoMock.findById(responded.getId()).orElseThrow();
+
+        assertThat(saved.getHoaName()).isEqualTo(given.getHoaName());
 
     }
 }
