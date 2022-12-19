@@ -60,6 +60,12 @@ public class HOAController {
 
     }
 
+    /**
+     * Create an HOA.
+     *
+     * @param request model to create an HOA
+     * @return 200 and the hoa created if joined successfully
+     */
     @PostMapping("/createHOA")
     public ResponseEntity<HOA> createHOA(@RequestBody UserHoaCreationDDTO request){
         try{
@@ -80,7 +86,12 @@ public class HOAController {
     }
 
 
-    //should add a check for the address of the hoa and the user
+    /**
+     * Join an HOA.
+     *
+     * @param request model to join an HOA
+     * @return 200 if joined successfully
+     */
     // Membership
     @PostMapping("/joining")
     public ResponseEntity joiningHOA(@RequestBody UserNameHoaNameDTO request) {
