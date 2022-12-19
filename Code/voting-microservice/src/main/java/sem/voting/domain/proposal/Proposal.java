@@ -16,7 +16,9 @@ import javax.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import sem.voting.domain.services.OptionValidationService;
 import sem.voting.domain.services.VoteValidationService;
+import sem.voting.domain.services.implementations.AddOptionException;
 import sem.voting.domain.services.implementations.VotingException;
 
 /**
@@ -71,6 +73,10 @@ public class Proposal {
     @Getter
     @Setter
     private VoteValidationService voteValidationService;
+
+    @Getter
+    @Setter
+    private OptionValidationService optionValidationService;
 
     /**
      * Returns the number of votes each option got.
@@ -128,12 +134,16 @@ public class Proposal {
      * @param newOption Option to add.
      * @return true if the option was added, false otherwise.
      */
-    public boolean addOption(Option newOption) {
+    public boolean addOption(Option newOption) throws AddOptionException {
         checkDeadline();
-        if (this.status == ProposalStage.UnderConstruction) {
-            return this.availableOptions.add(newOption);
-        }
-        return false;
+        if (this.status != ProposalStage.UnderConstruction)
+            // I'm not sure if Applying is the right word here
+            throw new AddOptionException("Proposal is not accepting new options");
+
+        if (this.optionValidationService.isOptionValid(newOption, this))
+            throw new AddOptionException("Option is not valid");
+
+        return this.availableOptions.add(newOption);
     }
 
     /**

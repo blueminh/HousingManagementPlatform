@@ -22,6 +22,7 @@ import sem.voting.domain.proposal.ProposalHandlingService;
 import sem.voting.domain.proposal.ProposalStage;
 import sem.voting.domain.proposal.Result;
 import sem.voting.domain.proposal.Vote;
+import sem.voting.domain.services.implementations.AddOptionException;
 import sem.voting.domain.services.implementations.BoardElectionsVoteValidationService;
 import sem.voting.domain.services.implementations.RuleChangesVoteValidationService;
 import sem.voting.domain.services.implementations.VotingException;
@@ -84,7 +85,12 @@ public class VotingController {
         toAdd.setHoaId(request.getHoaId());
         if (request.getOptions() != null) {
             for (String s : request.getOptions()) {
-                toAdd.addOption(new Option(s));
+                try {
+                    toAdd.addOption(new Option(s));
+                } catch (AddOptionException e) {
+                    System.out.println(e.getMessage());
+                    return ResponseEntity.badRequest().build();
+                }
             }
         }
         toAdd.setTitle(request.getTitle());
@@ -132,13 +138,18 @@ public class VotingController {
         response.setProposalId(proposal.get().getProposalId());
         response.setHoaId(proposal.get().getHoaId());
         // ToDo: check validity of new option, either here or in Proposal
-        boolean added = proposal.get().addOption(new Option(request.getOption()));
+        try {
+            proposal.get().addOption(new Option(request.getOption()));
+        } catch (AddOptionException e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
         proposal = Optional.of(proposalHandlingService.save(proposal.get()));
         response.setOptions(proposal.get().getAvailableOptions().stream()
             .map(Option::toString).collect(Collectors.toList()));
-        if (!added) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-        }
+//        if (!added) {
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+//        }
         return ResponseEntity.ok(response);
     }
 
