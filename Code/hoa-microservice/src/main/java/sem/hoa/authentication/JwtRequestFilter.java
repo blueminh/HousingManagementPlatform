@@ -87,7 +87,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 System.err.println("Invalid authorization header");
             }
         }
-
         filterChain.doFilter(request, response);
     }
 }

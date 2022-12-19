@@ -1,5 +1,7 @@
 package sem.hoa.controllers;
 
+import java.util.Date;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,7 +19,9 @@ import sem.hoa.domain.services.MemberManagementService;
 import sem.hoa.dtos.CastVoteRequestModel;
 import sem.hoa.dtos.UserNameHoaNameDto;
 
-
+/**
+ * REST controller for the board.
+ */
 @RestController
 @RequestMapping("/board")
 public class BoardController {

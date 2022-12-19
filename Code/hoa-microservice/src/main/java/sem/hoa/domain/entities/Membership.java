@@ -1,6 +1,7 @@
 package sem.hoa.domain.entities;
 
 import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -13,8 +14,12 @@ import javax.persistence.Table;
 @IdClass(MembershipId.class)
 @Table(name = "memberManagements")
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class Membership {
+    @Id
+    @Column(name = "username", nullable = false)
+    private String username;
 
     @Id
     @Column(name = "username", nullable = false)

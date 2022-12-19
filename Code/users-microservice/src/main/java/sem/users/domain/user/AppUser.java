@@ -11,6 +11,13 @@ import javax.persistence.Table;
 import lombok.NoArgsConstructor;
 import sem.users.HasEvents;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.Convert;
+
 
 /**
  * A DDD entity representing an application user in our domain.
