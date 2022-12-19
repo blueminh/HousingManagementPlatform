@@ -23,7 +23,8 @@ public class Membership {
   @Column(name = "isboardmember")
   private boolean isBoardMember;
 
-  public Membership(String username, int hoaID, boolean isBoardMember) {
+  public Membership(String username, int hoaID, boolean isBoardMember,
+                    String country, String city) {
     this.username = username;
     this.hoaID = hoaID;
     this.isBoardMember = isBoardMember;
