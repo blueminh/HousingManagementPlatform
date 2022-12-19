@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import sem.hoa.authentication.AuthManager;
 import sem.hoa.authentication.JwtTokenVerifier;
+import sem.hoa.domain.services.HOARepository;
+import sem.hoa.domain.services.HOAService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,6 +39,12 @@ public class HoaCreationTests {
     @Autowired
     private transient AuthManager mockAuthenticationManager;
 
+    @Autowired
+    private transient HOAService hoaServiceMock;
+
+    @Autowired
+    private transient HOARepository hoaRepoMock;
+
 
     @Test
     public void createOne() {
@@ -46,7 +54,7 @@ public class HoaCreationTests {
         when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
-
+        
 
 
     }
