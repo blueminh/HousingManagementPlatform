@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class HoaCommunication {
     private static ObjectMapper objectMapper = new ObjectMapper();
-    private static String HOAPath = "localhost:8085";
+    private static String HOAPath = "http://localhost:8086";
 
     /**
      * Send a request and receive a String as response.

@@ -18,6 +18,7 @@ public class BoardElectionsVoteValidationService implements VoteValidationServic
         try {
             return validator.handle(vote, proposal);
         } catch (InvalidRequestException e) {
+            System.out.println(e.getMessage());
             return false;
         }
     }

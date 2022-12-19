@@ -189,6 +189,7 @@ public class VotingController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken,
         @RequestBody CastVoteRequestModel request) {
         if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
+
             return ResponseEntity.badRequest().build();
         }
         // ToDo: check if authentication and HOA are valid
@@ -208,6 +209,7 @@ public class VotingController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProposalInformationResponseModel(proposal.get()));
             }
         } catch (VotingException e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 

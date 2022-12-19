@@ -144,13 +144,14 @@ public class Proposal {
      */
     public boolean addVote(Vote newVote) throws VotingException {
         checkDeadline();
-        if (this.status != ProposalStage.Voting || !this.voteValidationService.isVoteValid(newVote, this)) {
+        if (this.status != ProposalStage.Voting)
             throw new VotingException("Proposal is not in Voting phase");
-        }
 
-        if (newVote.getChoice() == null) {
+        if (!this.voteValidationService.isVoteValid(newVote, this))
+            throw new VotingException("Vote is not valid");
+
+        if (newVote.getChoice() == null)
             return this.votes.remove(newVote.getVoter()) != null;
-        }
 
         if (this.availableOptions.contains(newVote.getChoice())) {
             this.votes.put(newVote.getVoter(), newVote.getChoice());
