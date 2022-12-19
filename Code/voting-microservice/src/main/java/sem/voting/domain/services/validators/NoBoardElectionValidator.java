@@ -17,7 +17,6 @@ public class NoBoardElectionValidator extends Validator {
                 throw new InvalidRequestException("A board election is ongoing");
             }
         }
-        ;
         return super.checkNext(vote, proposal);
     }
 }
