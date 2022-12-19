@@ -1,6 +1,5 @@
 package sem.hoa.domain.services;
 
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import sem.hoa.domain.entities.Hoa;
 import sem.hoa.dtos.Pair;
@@ -38,7 +37,7 @@ public class HoaService {
      * @param hoaId   id of the Hoa
      * @return the start time and end time of the Hoa's board election
      */
-    public Pair<Long, Long> findBoardElectionStartTime(@Nullable String hoaName, int hoaId) {
+    public Pair<Long, Long> findBoardElectionStartTime(String hoaName, int hoaId) {
         Optional<Hoa> hoa;
         if (hoaName != null) {
             hoa = hoaRepository.findByHoaName(hoaName);
