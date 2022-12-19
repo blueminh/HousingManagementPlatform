@@ -1,4 +1,4 @@
-package sem.hoa.dtos;
+package sem.hoa.dtos.ruleModels;
 
 import lombok.Data;
 import sem.hoa.domain.entities.Rule;

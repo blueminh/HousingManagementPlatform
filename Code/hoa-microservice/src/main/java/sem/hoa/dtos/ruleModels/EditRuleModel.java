@@ -1,6 +1,6 @@
-package sem.hoa.dtos;
+package sem.hoa.dtos.ruleModels;
 
-public class EditRuleRequestModel {
+public class EditRuleModel {
 
     private int ruleId;
     private String change;

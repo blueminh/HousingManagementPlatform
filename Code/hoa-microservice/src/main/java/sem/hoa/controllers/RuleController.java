@@ -9,10 +9,7 @@ import sem.hoa.domain.entities.HOA;
 import sem.hoa.domain.entities.Rule;
 import sem.hoa.domain.services.HOAService;
 import sem.hoa.domain.services.RuleService;
-import sem.hoa.dtos.AddRuleRequestModel;
-import sem.hoa.dtos.AddRuleResponseModel;
-import sem.hoa.dtos.EditRuleRequestModel;
-import sem.hoa.dtos.HoaIDRulesListModel;
+import sem.hoa.dtos.ruleModels.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,7 +63,7 @@ public class RuleController {
         return ResponseEntity.ok(response);
     }
     @PostMapping("/edit-rule")
-    public ResponseEntity<EditRuleRequestModel> editRule(@RequestBody EditRuleRequestModel request) {
+    public ResponseEntity<EditRuleModel> editRule(@RequestBody EditRuleModel request) {
         if (request == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -76,15 +73,23 @@ public class RuleController {
         }
         ruleService.replaceRule(rule.get(), request.getChange());
         return ResponseEntity.ok().build();
+
+    }
+
+    @DeleteMapping("/delete-rule")
+    public ResponseEntity deleteRule(@RequestBody DeleteRuleModel request) {
+        if (request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        Optional<Rule> rule = ruleService.findRuleById(request.getRuleId());
+        if(rule.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        ruleService.removeRuleById(request.getRuleId());
+        return ResponseEntity.ok("Deleted rule with id: " + request.getRuleId() +
+                "\nPart of hoa with id: " + request.getHoaId());
         
     }
-//
-//    @DeleteMapping("/delete-rule")
-//    public ResponseEntity deleteRule(@RequestBody HoaIDRuleDescDTO request) {
-//        if (request == null) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//    }
 
 
 }

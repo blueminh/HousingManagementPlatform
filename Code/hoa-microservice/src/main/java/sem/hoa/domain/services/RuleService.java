@@ -30,4 +30,8 @@ public class RuleService {
     public void replaceRule(Rule toBeReplaced, String replacement) {
         toBeReplaced.setDescription(replacement);
     }
+
+    public void removeRuleById(int ruleId) {
+        this.ruleRepository.deleteById(ruleId);
+    }
 }

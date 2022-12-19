@@ -1,4 +1,4 @@
-package sem.hoa.dtos;
+package sem.hoa.dtos.ruleModels;
 
 public class AddRuleRequestModel {
 
