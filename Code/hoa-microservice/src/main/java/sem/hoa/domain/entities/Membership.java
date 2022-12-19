@@ -35,21 +35,6 @@ public class Membership {
     @Column(name = "city")
     private String city;
 
-  @Column(name = "country")
-  private String country;
-
-  @Column(name = "city")
-  private String city;
-
-  public Membership(String username, int hoaID, boolean isBoardMember,
-                    String country, String city) {
-    this.username = username;
-    this.hoaID = hoaID;
-    this.isBoardMember = isBoardMember;
-    this.country = country;
-    this.city = city;
-  }
-
     public int getHoaID() {
         return hoaID;
     }
