@@ -2,7 +2,8 @@ package sem.hoa.domain.services;
 
 import org.springframework.stereotype.Service;
 import sem.hoa.domain.entities.Rule;
-import sem.hoa.domain.entities.RuleID;
+
+import java.util.List;
 
 @Service
 public class RuleService {
@@ -12,18 +13,23 @@ public class RuleService {
     public RuleService(RuleRepository ruleRepository) {
         this.ruleRepository = ruleRepository;
     }
+//
+//    public void deleteRule(Rule rule) {
+//        //TODO do some checks here
+//        ruleRepository.delete(rule);
+//    }
+//
+//    public void addRule(Rule rule) {
+//        //TODO do some checks here
+//        ruleRepository.save(rule);
+//    }
+//
+//    public void changeRule(Rule rule) {
+//        //TODO implement the logic
+//
+//    }
 
-    public void deleteRule(Rule rule) {
-        //TODO implement the logic
-    }
-
-    public void addRule(Rule rule) {
-        //TODO do some checks here
-        ruleRepository.save(rule);
-    }
-
-    public void changeRule(Rule rule) {
-        //TODO implement the logic
-
+    public List<Rule> getHoaRules(int hoaId) {
+        return this.ruleRepository.getRulesByHoaId(hoaId);
     }
 }

@@ -5,25 +5,27 @@ import java.util.Objects;
 
 
 @Entity
-@IdClass(RuleID.class)
 @Table(name = "rule")
 public class Rule {
 
     @Id
-    @Column(name = "hoaID", nullable = false)
-    private final int hoaID;
+    @GeneratedValue
+    @Column(name = "ruleId", nullable = false, unique = true)
+    private int id;
 
-    @Id
+    @Column(name = "hoaId", nullable = false)
+    private final int hoaId;
+
     @Column(name = "description", nullable = false)
     private String description;
 
-    public Rule(int hoaID, String description) {
-        this.hoaID = hoaID;
+    public Rule(int hoaId, String description) {
+        this.hoaId = hoaId;
         this.description = description;
     }
 
     public int getHoaID() {
-        return hoaID;
+        return hoaId;
     }
 
     public String getDescription() {
