@@ -40,13 +40,14 @@ public class ActivityController {
      * @throws Exception In case the addition of Activity fails, it throws a BAD REQUEST Exception
      */
     @PostMapping("/activity/add")
-    public ResponseEntity addActivity(@RequestBody ActivityCreationRequestModel req) throws Exception {
+    public ResponseEntity<Integer> addActivity(@RequestBody ActivityCreationRequestModel req) throws Exception {
         try {
-            activityService.addActivity(req.getHoaId(), req.getName(), req.getDate(), req.getDesc());
+            int res = activityService.addActivity(req.getHoaId(), req.getName(), req.getDate(), req.getDesc());
+            return ResponseEntity.ok(res);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        return ResponseEntity.ok().build();
+
     }
 
     /**

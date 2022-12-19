@@ -27,11 +27,12 @@ public class ActivityService {
      * @param desc Description of the Activity.
      * @throws Exception This exception is thrown if we try to add an Activity that already exists. (I'll have to check this again because we do not generate activity Id)
      */
-    public void addActivity(int hoaId, String name, Date date, String desc) throws Exception {
+    public Integer addActivity(int hoaId, String name, Date date, String desc) throws Exception {
         // TODO: Add a check to see if the user creating the activity is from the same HOA or not
         Activity activity = new Activity(hoaId, name, date, desc);
         if (!activityRepository.existsActivityByActivityId(activity.getActivityId())) {
             activityRepository.save(activity);
+            return activity.getActivityId();
         } else {
             throw new ActivityAlreadyExistsException("Activity already exists");
         }
@@ -119,6 +120,7 @@ public class ActivityService {
      * @param date all the activities retrieved will occur after this date
      * @return an array of Activities as a response
      */
+    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     public ActivityResponseModel[] getAllActivitiesAfterDate(Date date) throws Exception {
         List<Activity> activities = activityRepository.findActivitiesByDateAfter(date);
         if (activities.isEmpty()) {
@@ -138,6 +140,7 @@ public class ActivityService {
      * @param date all the activities retrieved will occur after this date
      * @return an array of Activities as a response
      */
+    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     public ActivityResponseModel[] getAllActivitiesBeforeDate(Date date) throws Exception {
         List<Activity> activities = activityRepository.findActivitiesByDateBefore(date);
         if (activities.isEmpty()) {
