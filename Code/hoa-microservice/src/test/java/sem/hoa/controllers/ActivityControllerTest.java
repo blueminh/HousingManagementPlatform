@@ -24,6 +24,7 @@ import sem.hoa.domain.activity.ParticipationRepository;
 import sem.hoa.domain.activity.UserAlreadyParticipatesException;
 import sem.hoa.integeration.utils.JsonUtil;
 import sem.hoa.models.ActivityCreationRequestModel;
+import sem.hoa.models.ActivityResponseModel;
 import sem.hoa.models.UserParticipateModel;
 
 import java.util.Calendar;
@@ -34,8 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -100,6 +100,43 @@ class ActivityControllerTest {
         // Check if added to repo
         Boolean addedToRep = activityRepository.existsActivityByActivityId(res);
         assertThat(addedToRep).isTrue();
+    }
+
+    @Test
+    public void testGetActivity() throws Exception {
+        // Setup mocking for authentication
+        final String userName = "ExampleUser";
+        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2022, 0, 1, 0, 0);
+        // This is required because in the repository we don't store the seconds and ms so it won't match
+        calendar.clear(Calendar.SECOND);
+        calendar.clear(Calendar.MILLISECOND);
+
+        final String testName = "Test";
+        final String testDesc = "Test Desc";
+        final int testHoaId = 1;
+        final Date testDate = calendar.getTime();
+
+        // Setup repository
+        final Activity activity = new Activity(testHoaId, testName, testDate, testDesc);
+        activityRepository.save(activity);
+        int id = activity.getActivityId();
+
+        // Make request
+        ResultActions resultActions = mockMvc.perform(get("/activity/get?id=" + id)
+                .header("Authorization", "Bearer MockedToken"));
+
+        resultActions.andExpect(status().isOk());
+        ActivityResponseModel responseModel = JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(), ActivityResponseModel.class);
+
+        assertThat(responseModel.getActivityId()).isEqualTo(id);
+        assertThat(responseModel.getName()).isEqualTo(testName);
+        assertThat(responseModel.getDate()).isEqualTo(testDate);
+        assertThat(responseModel.getDesc()).isEqualTo(testDesc);
+        assertThat(responseModel.getHoaId()).isEqualTo(testHoaId);
     }
 
     @Test
@@ -308,7 +345,7 @@ class ActivityControllerTest {
         request.setUsername(username);
 
         // Make request
-        ResultActions resultActions = mockMvc.perform(post("/activity/removeParticipate")
+        ResultActions resultActions = mockMvc.perform(delete("/activity/removeParticipate")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(request)));

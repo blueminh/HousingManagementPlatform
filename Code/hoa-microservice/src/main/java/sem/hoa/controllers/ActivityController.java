@@ -114,7 +114,7 @@ public class ActivityController {
      * @return returns 200 OK response if everything goes fine
      * @throws Exception In case the user already does not participate in the activity or the activity does not exist or the user does not exist
      */
-    @PostMapping("/activity/removeParticipate")
+    @DeleteMapping("/activity/removeParticipate")
     public ResponseEntity removeParticipate(@RequestBody UserParticipateModel userParticipateModel) throws Exception {
         try {
             activityService.removeParticipate(userParticipateModel.getUsername(), userParticipateModel.getActivityId());
