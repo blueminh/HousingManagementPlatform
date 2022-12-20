@@ -6,7 +6,10 @@ gradle-app.setting
 !gradle/wrapper/gradle-wrapper.jar
 **/build/
 .gradletasknamecache
+
+### IntelliJ ###
 .idea
+*.iml
 
 ### Java ###
 # Compiled class file

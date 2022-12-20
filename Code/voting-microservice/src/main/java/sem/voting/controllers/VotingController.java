@@ -104,7 +104,7 @@ public class VotingController {
         if (request.getOptions() != null) {
             for (String s : request.getOptions()) {
                 try {
-                    toAdd.addOption(new Option(s));
+                    toAdd.addOption(new Option(s), authManager.getUserId());
                 } catch (AddOptionException e) {
                     System.out.println(e.getMessage());
                     return ResponseEntity.badRequest().build();
@@ -142,9 +142,8 @@ public class VotingController {
         AddOptionResponseModel response = new AddOptionResponseModel();
         response.setProposalId(proposal.get().getProposalId());
         response.setHoaId(proposal.get().getHoaId());
-        // ToDo: check validity of new option, either here or in Proposal
         try {
-            proposal.get().addOption(new Option(request.getOption()));
+            proposal.get().addOption(new Option(request.getOption()), authManager.getUserId());
         } catch (AddOptionException e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
@@ -152,10 +151,6 @@ public class VotingController {
         proposal = Optional.of(proposalHandlingService.save(proposal.get()));
         response.setOptions(proposal.get().getAvailableOptions().stream()
             .map(Option::toString).collect(Collectors.toList()));
-        // TODO: if these lines do sth important please add them back
-        //        if (!added) {
-        //            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-        //        }
         return ResponseEntity.ok(response);
     }
 

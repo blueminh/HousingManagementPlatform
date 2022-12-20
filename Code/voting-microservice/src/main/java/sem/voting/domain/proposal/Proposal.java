@@ -132,9 +132,10 @@ public class Proposal {
      * Add an option to vote on. This can be done only in the UnderConstruction stage of the proposal.
      *
      * @param newOption Option to add.
+     * @param userId Id of the user adding the option.
      * @return true if the option was added, false otherwise.
      */
-    public boolean addOption(Option newOption) throws AddOptionException {
+    public boolean addOption(Option newOption, String userId) throws AddOptionException {
         checkDeadline();
         if (this.status != ProposalStage.UnderConstruction) {
             // I'm not sure if Applying is the right word here
