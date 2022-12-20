@@ -28,7 +28,6 @@ import sem.voting.domain.proposal.ProposalHandlingService;
 import sem.voting.domain.proposal.ProposalRepository;
 import sem.voting.domain.proposal.ProposalType;
 import sem.voting.integration.utils.JsonUtil;
-import sem.voting.models.AddOptionRequestModel;
 import sem.voting.models.ProposalCreationRequestModel;
 import sem.voting.models.ProposalCreationResponseModel;
 
@@ -58,7 +57,7 @@ class VotingControllerTest {
     void addProposal() throws Exception {
         // Arrange
         final String userName = "ExampleUser";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
+        when(mockAuthenticationManager.getUserId()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
         final String testTitle = "New Amazing Board Members";

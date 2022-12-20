@@ -216,7 +216,7 @@ public class VotingController {
             return ResponseEntity.notFound().build();
         }
         Option beingVoted = request.getOption().equals("") ? null : new Option(request.getOption());
-        Vote vote = new Vote(authManager.getNetId(), beingVoted, authToken.split(" ")[1]);
+        Vote vote = new Vote(authManager.getUserId(), beingVoted, authToken.split(" ")[1]);
 
 
         try {
