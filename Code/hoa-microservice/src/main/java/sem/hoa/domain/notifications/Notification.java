@@ -21,10 +21,10 @@ public class Notification {
     private int notifId;
 
     @Column(name = "message", nullable = false)
-    private transient String message;
+    private String message;
 
     @Column(name = "username", nullable = false)
-    private transient String username;
+    private String username;
 
     public String getMessage() {
         return message;
