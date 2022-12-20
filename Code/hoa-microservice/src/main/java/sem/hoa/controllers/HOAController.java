@@ -17,8 +17,12 @@ import sem.hoa.domain.entities.Membership;
 import sem.hoa.domain.entities.MembershipID;
 import sem.hoa.domain.services.HOAService;
 import sem.hoa.domain.services.MemberManagementService;
+import sem.hoa.dtos.UserHoaCreationDDTO;
 import sem.hoa.dtos.UserNameHoaIDDTO;
 import sem.hoa.dtos.UserNameHoaNameDTO;
+
+import java.sql.Struct;
+import java.util.Optional;
 
 /**
  * Hello World example controller.
@@ -55,6 +59,32 @@ public class HOAController {
         return ResponseEntity.ok("Hello " + authManager.getNetId() + "! \nWelcome to HOA!");
 
     }
+
+    /**
+     * Create an HOA.
+     *
+     * @param request model to create an HOA
+     * @return 200 and the hoa created if joined successfully
+     */
+    @PostMapping("/createHOA")
+    public ResponseEntity<HOA> createHOA(@RequestBody UserHoaCreationDDTO request) {
+        try {
+            //System.out.println("ok");
+            HOA newHOA = new HOA(request.hoaName, request.hoaCountry, request.hoaCity);
+            //System.out.println("ok");
+            hoaService.createNewHOA(newHOA);
+            //System.out.println("ok");
+            memberManagementService
+                    .addMembership(new Membership(authManager.getNetId(), newHOA.getId(), true,
+                    request.userCountry, request.userCity));
+            //System.out.println("ok");
+
+            return ResponseEntity.ok(newHOA);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
 
     /**
      * Join an HOA.

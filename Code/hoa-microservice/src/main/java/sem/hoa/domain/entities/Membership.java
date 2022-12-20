@@ -35,10 +35,6 @@ public class Membership {
     @Column(name = "city")
     private String city;
 
-    public String getUsername() {
-        return username;
-    }
-
     public int getHoaID() {
         return hoaID;
     }
