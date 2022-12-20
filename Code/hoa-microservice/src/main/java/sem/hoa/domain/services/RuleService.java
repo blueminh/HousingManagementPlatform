@@ -19,7 +19,7 @@ public class RuleService {
         return this.ruleRepository.getRulesByHoaId(hoaId);
     }
 
-    public Rule save(Rule rule) {
+    public Rule saveRule(Rule rule) {
         return this.ruleRepository.save(rule);
     }
 

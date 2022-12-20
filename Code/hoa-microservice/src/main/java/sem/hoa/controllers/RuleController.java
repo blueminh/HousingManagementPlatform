@@ -40,7 +40,7 @@ public class RuleController {
     @GetMapping("/rules")
     public ResponseEntity<HoaIDRulesListModel> displayRules(@RequestBody HoaIDRulesListModel request) {
         if (request == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         Optional<HOA> hoa = hoaService.findHOAByID(request.getHoaId());
         if(hoa.isEmpty()) {
@@ -71,7 +71,9 @@ public class RuleController {
             return ResponseEntity.notFound().build();
         }
         List<Rule> rules = ruleService.getHoaRules(request.getHoaId());
-        rules.add(new Rule(request.getHoaId(), request.getNewRule()));
+        Rule newRule = new Rule(request.getHoaId(), request.getNewRule());
+        ruleService.saveRule(newRule);
+        rules.add(newRule);
         AddRuleResponseModel response = new AddRuleResponseModel();
         response.setHoaId(request.getHoaId());
         response.setRules(rules);
