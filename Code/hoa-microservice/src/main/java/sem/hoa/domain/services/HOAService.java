@@ -25,12 +25,13 @@ public class HOAService {
         // TODO do some checks here
         try {
             //System.out.println(hoa.toString());
-            if (hoaRepository.existsById(hoa.getId())) {
+            if (!hoaRepository.findByHoaName(hoa.getHoaName()).isEmpty()) {
                 throw new HoaCreationException("HOA already exists");
             }
             hoaRepository.save(hoa);
             System.out.println("new HOA created:" + hoa.getHoaName());
         } catch (Exception e) {
+            System.err.println("HOA was not saved successfully");
             throw new HoaCreationException("HOA was not saved successfully");
         }
     }
