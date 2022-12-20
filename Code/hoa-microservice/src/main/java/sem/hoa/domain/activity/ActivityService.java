@@ -100,12 +100,12 @@ public class ActivityService {
      * @param activityId the unique activity id
      */
     public void removeParticipate(String username, int activityId) throws Exception {
-        if (!participationRepository.existsByActivityIdAndUsername(activityId, username)) {
-            System.out.println("No such participation exists in the database");
-            throw new NoSuchParticipationException("There is no such participation with the id");
-        } else if (!activityRepository.existsActivityByActivityId(activityId)) {
+        if (!activityRepository.existsActivityByActivityId(activityId)) {
             System.out.println("Participation not added because there is no such activity");
             throw new NoSuchActivityException("There is no such activity with the id " + activityId);
+        } else if (!participationRepository.existsByActivityIdAndUsername(activityId, username)) {
+            System.out.println("No such participation exists in the database");
+            throw new NoSuchParticipationException("There is no such participation with the id");
         } else {
             participationRepository.deleteById(new ParticipationKey(activityId, username));
             System.out.println("User with the id " + username + " now DOES NOT participate in activity with the id " + activityId);

@@ -18,6 +18,7 @@ import sem.hoa.domain.activity.Activity;
 import sem.hoa.domain.activity.ActivityRepository;
 import sem.hoa.domain.activity.ActivityService;
 import sem.hoa.domain.activity.NoSuchActivityException;
+import sem.hoa.domain.activity.NoSuchParticipationException;
 import sem.hoa.domain.activity.Participation;
 import sem.hoa.domain.activity.ParticipationRepository;
 import sem.hoa.domain.activity.UserAlreadyParticipatesException;
@@ -64,7 +65,7 @@ class ActivityControllerTest {
     private transient ParticipationRepository participationRepository;
 
     @Test
-    public void testAddActivity_Success() throws Exception {
+    public void testAddActivitySuccess() throws Exception {
 
         // Setup mocking for authentication
         final String userName = "ExampleUser";
@@ -168,6 +169,44 @@ class ActivityControllerTest {
     }
 
     @Test
+    public void testParticipationButUserAlreadyParticipatesInTheSameActivity() throws Exception {
+
+        // Setup mocking for authentication
+        final String username = "ExampleUser";
+        when(mockAuthenticationManager.getNetId()).thenReturn(username);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2022, 1, 1, 0, 0);
+
+        // Setup Activity Repository
+        final String testName = "Test";
+        final String testDesc = "Test Desc";
+        final int testHoaId = 1;
+        final Date testDate = calendar.getTime();
+
+        final Activity activity = new Activity(1, testHoaId, testName, testDate, testDesc);
+        activityRepository.save(activity);
+
+        // Setup participation repo
+        final int activityId = 1;
+        participationRepository.save(new Participation(activityId, username));
+
+        // Make action
+        ThrowableAssert.ThrowingCallable action = () -> activityService.participate(username, activityId);
+
+        // Assert the response
+        assertThatExceptionOfType(UserAlreadyParticipatesException.class)
+                .isThrownBy(action);
+
+        // Check if exists in repo
+        Boolean activityStillExists = participationRepository.existsByActivityIdAndUsername(activityId, username);
+        assertThat(activityStillExists).isTrue();
+    }
+
+
+    @Test
     public void testParticipationSuccess() throws Exception {
 
         // Setup mocking for authentication
@@ -218,9 +257,6 @@ class ActivityControllerTest {
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
 
-        Calendar calendar = new GregorianCalendar();
-        calendar.set(2022, 1, 1, 0, 0);
-
         final int activityId = 1;
 
         // Setup request model
@@ -241,7 +277,81 @@ class ActivityControllerTest {
     }
 
     @Test
-    public void testParticipationButUserAlreadyParticipatesInTheSameActivity() throws Exception {
+    public void testRemoveParticipationSuccess() throws Exception {
+
+        // Setup mocking for authentication
+        final String username = "ExampleUser";
+        when(mockAuthenticationManager.getNetId()).thenReturn(username);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2022, 1, 1, 0, 0);
+
+        final int activityId = 1;
+
+        // Setup Activity Repository
+        final String testName = "Test";
+        final String testDesc = "Test Desc";
+        final int testHoaId = 1;
+        final Date testDate = calendar.getTime();
+
+        final Activity activity = new Activity(1, testHoaId, testName, testDate, testDesc);
+        activityRepository.save(activity);
+
+        // Setup Participation Repository
+        participationRepository.save(new Participation(activityId, username));
+
+        // Setup request model
+        final UserParticipateModel request = new UserParticipateModel();
+        request.setActivityId(activityId);
+        request.setUsername(username);
+
+        // Make request
+        ResultActions resultActions = mockMvc.perform(post("/activity/removeParticipate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        // Assert the response
+        resultActions.andExpect(status().isOk());
+
+        // Check if added to repo
+        Boolean addedToRep = participationRepository.existsByActivityIdAndUsername(activityId, username);
+        assertThat(addedToRep).isFalse();
+    }
+
+    @Test
+    public void testRemoveParticipationButActivityDoesNotExist() throws Exception {
+
+        // Setup mocking for authentication
+        final String username = "ExampleUser";
+        when(mockAuthenticationManager.getNetId()).thenReturn(username);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+
+        final int activityId = 1;
+
+        // Setup request model
+        final UserParticipateModel request = new UserParticipateModel();
+        request.setActivityId(activityId);
+        request.setUsername(username);
+
+        // Make action
+        ThrowableAssert.ThrowingCallable action = () -> activityService.removeParticipate(username, activityId);
+
+        // Assert the response
+        assertThatExceptionOfType(NoSuchActivityException.class)
+                .isThrownBy(action);
+
+        // Check if exists in repo
+        Boolean activityStillExists = participationRepository.existsByActivityIdAndUsername(activityId, username);
+        assertThat(activityStillExists).isFalse();
+    }
+
+
+    @Test
+    public void testRemoveParticipationButNoSuchParticipation() throws Exception {
 
         // Setup mocking for authentication
         final String username = "ExampleUser";
@@ -258,22 +368,20 @@ class ActivityControllerTest {
         final int testHoaId = 1;
         final Date testDate = calendar.getTime();
 
-        final Activity activity = new Activity(1, testHoaId, testName, testDate, testDesc);
+        int activityId = 1;
+
+        final Activity activity = new Activity(activityId, testHoaId, testName, testDate, testDesc);
         activityRepository.save(activity);
 
-        // Setup participation repo
-        final int activityId = 1;
-        participationRepository.save(new Participation(activityId, username));
-
         // Make action
-        ThrowableAssert.ThrowingCallable action = () -> activityService.participate(username, activityId);
+        ThrowableAssert.ThrowingCallable action = () -> activityService.removeParticipate(username, activityId);
 
         // Assert the response
-        assertThatExceptionOfType(UserAlreadyParticipatesException.class)
+        assertThatExceptionOfType(NoSuchParticipationException.class)
                 .isThrownBy(action);
 
         // Check if exists in repo
         Boolean activityStillExists = participationRepository.existsByActivityIdAndUsername(activityId, username);
-        assertThat(activityStillExists).isTrue();
+        assertThat(activityStillExists).isFalse();
     }
 }
