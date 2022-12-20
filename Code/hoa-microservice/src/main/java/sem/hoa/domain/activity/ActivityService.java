@@ -30,11 +30,13 @@ public class ActivityService {
     public Integer addActivity(int hoaId, String name, Date date, String desc) throws Exception {
         // TODO: Add a check to see if the user creating the activity is from the same HOA or not
         Activity activity = new Activity(hoaId, name, date, desc);
-        if (!activityRepository.existsActivityByActivityId(activity.getActivityId())) {
+        if (!activityRepository.existsActivityByName(activity.getName())) {
             activityRepository.save(activity);
             return activity.getActivityId();
         } else {
-            throw new ActivityAlreadyExistsException("Activity already exists");
+            throw new ActivityAlreadyExistsException("Activity with that name already exists;"
+                    + "Change the name if it is the same activity but a new version of it;"
+                    + "For example, \"activity v1\" and \"activity v2\"");
         }
     }
 

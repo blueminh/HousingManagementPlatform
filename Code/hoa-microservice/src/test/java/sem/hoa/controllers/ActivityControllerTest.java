@@ -1,6 +1,5 @@
 package sem.hoa.controllers;
 
-import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +16,8 @@ import sem.hoa.authentication.JwtTokenVerifier;
 import sem.hoa.domain.activity.Activity;
 import sem.hoa.domain.activity.ActivityRepository;
 import sem.hoa.domain.activity.ActivityService;
-import sem.hoa.domain.activity.NoSuchActivityException;
-import sem.hoa.domain.activity.NoSuchParticipationException;
 import sem.hoa.domain.activity.Participation;
 import sem.hoa.domain.activity.ParticipationRepository;
-import sem.hoa.domain.activity.UserAlreadyParticipatesException;
 import sem.hoa.integeration.utils.JsonUtil;
 import sem.hoa.models.ActivityCreationRequestModel;
 import sem.hoa.models.ActivityResponseModel;
@@ -33,7 +29,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -106,6 +101,47 @@ class ActivityControllerTest {
     }
 
     @Test
+    public void testAddActivityAlreadyExists() throws Exception {
+
+        // Setup mocking for authentication
+        final String userName = "ExampleUser";
+        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2022, 1, 1, 0, 0);
+
+        final String testName = "Test";
+        final String testDesc = "Test Desc";
+        final int testHoaId = 1;
+        final Date testDate = calendar.getTime();
+
+        Activity activity = new Activity(testHoaId, testName, testDate, testDesc);
+        activityRepository.save(activity);
+
+        // Setup request model
+        final ActivityCreationRequestModel request = new ActivityCreationRequestModel();
+        request.setName(testName);
+        request.setDesc(testDesc);
+        request.setHoaId(testHoaId);
+        request.setDate(testDate);
+
+        // Make request
+        ResultActions resultActions = mockMvc.perform(post("/activity/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        // Assert the response
+        resultActions.andExpect(status().isBadRequest());
+
+        // Check if already exists in repo
+        Boolean addedToRep = activityRepository.existsActivityByName(testName);
+        assertThat(addedToRep).isTrue();
+    }
+
+    @Test
     public void testGetActivitySuccess() throws Exception {
         // Setup mocking for authentication
         final String userName = "ExampleUser";
@@ -152,13 +188,14 @@ class ActivityControllerTest {
 
         int activityId = 2;
 
-        // Make action
-        ThrowableAssert.ThrowingCallable action = () -> activityService.getActivity(activityId);
+        // Make request
+        ResultActions resultActions = mockMvc.perform(get("/activity/get?id=" + activityId)
+                .header("Authorization", "Bearer MockedToken"));
 
         // Assert the response
-        assertThatExceptionOfType(NoSuchActivityException.class)
-                .isThrownBy(action);
+        resultActions.andExpect(status().isBadRequest());
 
+        // Check if exists in repo
         boolean exists = activityRepository.existsActivityByActivityId(activityId);
         assertThat(exists).isFalse();
     }
@@ -197,7 +234,7 @@ class ActivityControllerTest {
     }
 
     @Test
-    public void testRemoveActivityFailure() {
+    public void testRemoveActivityFailure() throws Exception {
 
         // Setup mocking for authentication
         final String userName = "ExampleUser";
@@ -217,12 +254,12 @@ class ActivityControllerTest {
         final Activity activity = new Activity(testHoaId, testName, testDate, testDesc);
         int id = activity.getActivityId();
 
-        // Make action
-        ThrowableAssert.ThrowingCallable action = () -> activityService.removeActivity(id);
+        // Make request
+        ResultActions resultActions = mockMvc.perform(delete("/activity/remove?id=" + id)
+                .header("Authorization", "Bearer MockedToken"));
 
         // Assert the response
-        assertThatExceptionOfType(NoSuchActivityException.class)
-                .isThrownBy(action);
+        resultActions.andExpect(status().isBadRequest());
 
         // Check if exists in repo
         Boolean activityStillExists = activityRepository.existsActivityByActivityId(id);
@@ -230,7 +267,7 @@ class ActivityControllerTest {
     }
 
     @Test
-    public void testParticipationButUserAlreadyParticipatesInTheSameActivity() {
+    public void testParticipationButUserAlreadyParticipatesInTheSameActivity() throws Exception {
 
         // Setup mocking for authentication
         final String username = "ExampleUser";
@@ -254,16 +291,23 @@ class ActivityControllerTest {
         final int activityId = 1;
         participationRepository.save(new Participation(activityId, username));
 
-        // Make action
-        ThrowableAssert.ThrowingCallable action = () -> activityService.participate(username, activityId);
+        // Set up request model
+        UserParticipateModel userParticipateModel = new UserParticipateModel();
+        userParticipateModel.setActivityId(activityId);
+        userParticipateModel.setUsername(username);
+
+        // Make request
+        ResultActions resultActions = mockMvc.perform(post("/activity/participate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(userParticipateModel)));
 
         // Assert the response
-        assertThatExceptionOfType(UserAlreadyParticipatesException.class)
-                .isThrownBy(action);
+        resultActions.andExpect(status().isBadRequest());
 
         // Check if exists in repo
-        Boolean activityStillExists = participationRepository.existsByActivityIdAndUsername(activityId, username);
-        assertThat(activityStillExists).isTrue();
+        Boolean participationExists = participationRepository.existsByActivityIdAndUsername(activityId, username);
+        assertThat(participationExists).isTrue();
     }
 
 
@@ -310,7 +354,7 @@ class ActivityControllerTest {
     }
 
     @Test
-    public void testParticipationButActivityDoesNotExist() {
+    public void testParticipationButActivityDoesNotExist() throws Exception {
 
         // Setup mocking for authentication
         final String username = "ExampleUser";
@@ -320,21 +364,23 @@ class ActivityControllerTest {
 
         final int activityId = 1;
 
-        // Setup request model
-        final UserParticipateModel request = new UserParticipateModel();
-        request.setActivityId(activityId);
-        request.setUsername(username);
+        // Set up request model
+        UserParticipateModel userParticipateModel = new UserParticipateModel();
+        userParticipateModel.setActivityId(activityId);
+        userParticipateModel.setUsername(username);
 
-        // Make action
-        ThrowableAssert.ThrowingCallable action = () -> activityService.participate(username, activityId);
+        // Make request
+        ResultActions resultActions = mockMvc.perform(post("/activity/participate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(userParticipateModel)));
 
         // Assert the response
-        assertThatExceptionOfType(NoSuchActivityException.class)
-                .isThrownBy(action);
+        resultActions.andExpect(status().isBadRequest());
 
-        // Check if exists in repo
-        Boolean activityStillExists = participationRepository.existsByActivityIdAndUsername(activityId, username);
-        assertThat(activityStillExists).isFalse();
+        // Check if participation added
+        Boolean participationExists = participationRepository.existsByActivityIdAndUsername(activityId, username);
+        assertThat(participationExists).isFalse();
     }
 
     @Test
@@ -383,7 +429,7 @@ class ActivityControllerTest {
     }
 
     @Test
-    public void testRemoveParticipationButActivityDoesNotExist() {
+    public void testRemoveParticipationButActivityDoesNotExist() throws Exception {
 
         // Setup mocking for authentication
         final String username = "ExampleUser";
@@ -398,21 +444,23 @@ class ActivityControllerTest {
         request.setActivityId(activityId);
         request.setUsername(username);
 
-        // Make action
-        ThrowableAssert.ThrowingCallable action = () -> activityService.removeParticipate(username, activityId);
+        // Make request
+        ResultActions resultActions = mockMvc.perform(delete("/activity/removeParticipate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
 
         // Assert the response
-        assertThatExceptionOfType(NoSuchActivityException.class)
-                .isThrownBy(action);
+        resultActions.andExpect(status().isBadRequest());
 
         // Check if exists in repo
-        Boolean activityStillExists = participationRepository.existsByActivityIdAndUsername(activityId, username);
-        assertThat(activityStillExists).isFalse();
+        Boolean participationExists = participationRepository.existsByActivityIdAndUsername(activityId, username);
+        assertThat(participationExists).isFalse();
     }
 
 
     @Test
-    public void testRemoveParticipationButNoSuchParticipation() {
+    public void testRemoveParticipationButNoSuchParticipation() throws Exception {
 
         // Setup mocking for authentication
         final String username = "ExampleUser";
@@ -434,16 +482,23 @@ class ActivityControllerTest {
         final Activity activity = new Activity(activityId, testHoaId, testName, testDate, testDesc);
         activityRepository.save(activity);
 
-        // Make action
-        ThrowableAssert.ThrowingCallable action = () -> activityService.removeParticipate(username, activityId);
+        // Setup request model
+        final UserParticipateModel request = new UserParticipateModel();
+        request.setActivityId(activityId);
+        request.setUsername(username);
+
+        // Make request
+        ResultActions resultActions = mockMvc.perform(delete("/activity/removeParticipate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
 
         // Assert the response
-        assertThatExceptionOfType(NoSuchParticipationException.class)
-                .isThrownBy(action);
+        resultActions.andExpect(status().isBadRequest());
 
         // Check if exists in repo
-        Boolean activityStillExists = participationRepository.existsByActivityIdAndUsername(activityId, username);
-        assertThat(activityStillExists).isFalse();
+        Boolean participationExists = participationRepository.existsByActivityIdAndUsername(activityId, username);
+        assertThat(participationExists).isFalse();
     }
 
     @Test
