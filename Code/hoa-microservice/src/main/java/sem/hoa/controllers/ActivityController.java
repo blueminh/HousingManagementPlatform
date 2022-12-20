@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import sem.hoa.domain.activity.Activity;
 import sem.hoa.domain.activity.ActivityService;
+import sem.hoa.domain.utils.Clock;
 import sem.hoa.models.ActivityCreationRequestModel;
 import sem.hoa.models.ActivityResponseModel;
 import sem.hoa.models.DateRequestModel;
@@ -24,10 +25,12 @@ import java.util.Date;
 public class ActivityController {
 
     private final transient ActivityService activityService;
+    private final transient  Clock clock;
 
     @Autowired
-    public ActivityController(ActivityService activityService) {
+    public ActivityController(ActivityService activityService, Clock clock) {
         this.activityService = activityService;
+        this.clock = clock;
     }
 
     /**
@@ -163,7 +166,7 @@ public class ActivityController {
      */
     @GetMapping("/activity/getAllFutureActivities")
     public ResponseEntity<ActivityResponseModel[]> getAllFutureActivities() throws Exception {
-        Date currentDate = new Date(System.currentTimeMillis());
+        Date currentDate = clock.getCurrentDate();
         try {
             ActivityResponseModel[] response = activityService.getAllActivitiesAfterDate(currentDate);
             return ResponseEntity.ok(response);
@@ -179,7 +182,7 @@ public class ActivityController {
      */
     @GetMapping("/activity/getAllPastActivities")
     public ResponseEntity<ActivityResponseModel[]> getAllPastActivities() throws Exception {
-        Date currentDate = new Date(System.currentTimeMillis());
+        Date currentDate = clock.getCurrentDate();
         try {
             ActivityResponseModel[] response = activityService.getAllActivitiesBeforeDate(currentDate);
             return ResponseEntity.ok(response);

@@ -18,6 +18,7 @@ import sem.hoa.domain.activity.ActivityRepository;
 import sem.hoa.domain.activity.ActivityService;
 import sem.hoa.domain.activity.Participation;
 import sem.hoa.domain.activity.ParticipationRepository;
+import sem.hoa.domain.utils.Clock;
 import sem.hoa.integeration.utils.JsonUtil;
 import sem.hoa.models.ActivityCreationRequestModel;
 import sem.hoa.models.ActivityResponseModel;
@@ -30,6 +31,7 @@ import java.util.GregorianCalendar;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 // activate profiles to have spring use mocks during auto-injection of certain beans.
-@ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager"})
+@ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager", "clock"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 class ActivityControllerTest {
@@ -52,6 +54,9 @@ class ActivityControllerTest {
 
     @Autowired
     private transient AuthManager mockAuthenticationManager;
+
+    @Autowired
+    private transient Clock clock;
 
     @Autowired
     private transient ActivityService activityService;
@@ -609,6 +614,103 @@ class ActivityControllerTest {
 
         // Out of the three activities added, 2 are after 2021.
         assertThat(activityRepository.existsActivityByDateAfter(dateRequestModel.getDate())).isFalse();
+    }
+
+    @Test
+    public void testGetAllFutureActivitiesSuccess() throws Exception {
+        // Setup mocking for authentication
+        final String username = "ExampleUser";
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2022, 11, 20, 7, 38);
+
+        when(mockAuthenticationManager.getNetId()).thenReturn(username);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(clock.getCurrentDate()).thenReturn(calendar.getTime());
+
+        setupRepository(activityRepository);
+
+        ResultActions resultActions = mockMvc.perform(get("/activity/getAllFutureActivities")
+                .header("Authorization", "Bearer MockedToken"));
+        ActivityResponseModel[] responseModel = JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(), ActivityResponseModel[].class);
+
+        resultActions.andExpect(status().isOk());
+
+        // Other Assertions
+        assertThat(responseModel.length).isEqualTo(1);
+        assertThat(responseModel[0].getDate()).isAfter(calendar.getTime());
+    }
+
+    @Test
+    public void testGetAllFutureActivitiesButNoFutureActivities() throws Exception {
+        // Setup mocking for authentication
+        final String username = "ExampleUser";
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2024, 11, 20, 7, 38);
+
+        when(mockAuthenticationManager.getNetId()).thenReturn(username);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(clock.getCurrentDate()).thenReturn(calendar.getTime());
+
+        setupRepository(activityRepository);
+
+        ResultActions resultActions = mockMvc.perform(get("/activity/getAllFutureActivities")
+                .header("Authorization", "Bearer MockedToken"));
+
+        resultActions.andExpect(status().isBadRequest());
+
+        // Other assertions
+        assertThat(activityRepository.existsActivityByDateAfter(calendar.getTime())).isFalse();
+    }
+
+    @Test
+    public void testGetAllPastActivitiesSuccess() throws Exception {
+        // Setup mocking for authentication
+        final String username = "ExampleUser";
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2022, 11, 20, 7, 38);
+
+        when(mockAuthenticationManager.getNetId()).thenReturn(username);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(clock.getCurrentDate()).thenReturn(calendar.getTime());
+
+        setupRepository(activityRepository);
+
+        ResultActions resultActions = mockMvc.perform(get("/activity/getAllPastActivities")
+                .header("Authorization", "Bearer MockedToken"));
+        ActivityResponseModel[] responseModel = JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(), ActivityResponseModel[].class);
+
+        resultActions.andExpect(status().isOk());
+
+        // Other Assertions
+        assertThat(responseModel.length).isEqualTo(2);
+        assertThat(responseModel[0].getDate()).isBefore(calendar.getTime());
+        assertThat(responseModel[1].getDate()).isBefore(calendar.getTime());
+    }
+
+    @Test
+    public void testGetAllPastActivitiesButNoPastActivities() throws Exception {
+        // Setup mocking for authentication
+        final String username = "ExampleUser";
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2018, 11, 20, 7, 38);
+
+        when(mockAuthenticationManager.getNetId()).thenReturn(username);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(clock.getCurrentDate()).thenReturn(calendar.getTime());
+
+        setupRepository(activityRepository);
+
+        ResultActions resultActions = mockMvc.perform(get("/activity/getAllPastActivities")
+                .header("Authorization", "Bearer MockedToken"));
+
+        resultActions.andExpect(status().isBadRequest());
+
+        // Other assertions
+        assertThat(activityRepository.existsActivityByDateBefore(calendar.getTime())).isFalse();
     }
 
     /**
