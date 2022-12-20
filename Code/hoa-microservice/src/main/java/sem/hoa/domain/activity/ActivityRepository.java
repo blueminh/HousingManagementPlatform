@@ -17,5 +17,9 @@ public interface ActivityRepository extends JpaRepository<Activity, Integer> {
 
     List<Activity> findActivitiesByDateBefore(Date date);
 
+    boolean existsActivityByDateAfter(Date date);
+
+    boolean existsActivityByDateBefore(Date date);
+
     boolean existsActivityByActivityId(Integer activityId);
 }
