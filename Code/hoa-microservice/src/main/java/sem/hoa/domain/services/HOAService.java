@@ -4,6 +4,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import sem.hoa.domain.entities.HOA;
 import sem.hoa.dtos.Pair;
+import sem.hoa.exceptions.HoaCreationException;
 
 import java.util.Optional;
 
@@ -20,14 +21,17 @@ public class HOAService {
     *
     * @param hoa = hoa to be added to the repository
     */
-    public void createNewHOA(HOA hoa) {
+    public void createNewHOA(HOA hoa) throws HoaCreationException {
         // TODO do some checks here
         try {
             //System.out.println(hoa.toString());
+            if (hoaRepository.existsById(hoa.getId())) {
+                throw new HoaCreationException("HOA already exists");
+            }
             hoaRepository.save(hoa);
             System.out.println("new HOA created:" + hoa.getHoaName());
         } catch (Exception e) {
-            System.out.println("unable to save new HOA");
+            throw new HoaCreationException("HOA was not saved successfully");
         }
     }
 
