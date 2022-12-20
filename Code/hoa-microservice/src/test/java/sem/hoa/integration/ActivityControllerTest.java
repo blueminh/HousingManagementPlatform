@@ -1,4 +1,4 @@
-package sem.hoa.controllers;
+package sem.hoa.integration;
 
 import org.junit.Test;
 
