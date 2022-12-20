@@ -11,7 +11,7 @@ public class UserIsMemberForAtLeast3YearsValidator extends Validator {
     @Override
     public boolean handle(Vote vote, Proposal proposal) throws InvalidRequestException {
         try {
-            long joiningDate = HoaCommunication.getJoiningDate(vote.getVoter(), proposal.getHoaId(), vote.getVoterToken());
+            long joiningDate = HoaCommunication.getJoiningDate(vote.getVoter(), proposal.getHoaId());
             long duration = new Date().getTime() - joiningDate;
             // 1 year is 365 days
             if (!(TimeUnit.MILLISECONDS.toDays(duration) / 365 >= 3)) {

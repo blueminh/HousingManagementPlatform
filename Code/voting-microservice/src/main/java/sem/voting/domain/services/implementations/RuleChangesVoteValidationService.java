@@ -12,7 +12,6 @@ public class RuleChangesVoteValidationService implements VoteValidationService {
 
     @Override
     public boolean isVoteValid(Vote vote, Proposal proposal) {
-        // ToDo: check if user is board member of HOA
         Validator validator = new MemberIsBoardMemberValidator();
         try {
             return validator.handle(vote, proposal);

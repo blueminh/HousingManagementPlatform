@@ -203,7 +203,6 @@ public class VotingController {
      */
     @PostMapping("/vote")
     public ResponseEntity<ProposalInformationResponseModel> castVote(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken,
         @RequestBody CastVoteRequestModel request) {
         if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
 
@@ -216,7 +215,7 @@ public class VotingController {
             return ResponseEntity.notFound().build();
         }
         Option beingVoted = request.getOption().equals("") ? null : new Option(request.getOption());
-        Vote vote = new Vote(authManager.getUserId(), beingVoted, authToken.split(" ")[1]);
+        Vote vote = new Vote(authManager.getUserId(), beingVoted);
 
 
         try {
@@ -242,10 +241,9 @@ public class VotingController {
      */
     @PostMapping("/remove-vote")
     public ResponseEntity<ProposalInformationResponseModel> removeVote(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken,
         @RequestBody CastVoteRequestModel request) {
         request.setOption("");
-        return castVote(authToken, request);
+        return castVote(request);
     }
 
     /**

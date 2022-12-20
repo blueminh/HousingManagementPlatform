@@ -20,13 +20,26 @@ import sem.voting.domain.proposal.Vote;
 public abstract class Validator {
     @Setter
     @Getter
-    private Validator next;
+    private Validator next = null;
 
     protected boolean checkNext(Vote vote, Proposal proposal) throws InvalidRequestException {
         if (next == null) {
             return true;
         }
         return next.handle(vote, proposal);
+    }
+
+    /**
+     * Add a Validator at the end of the chain.
+     *
+     * @param next validator to add last.
+     */
+    public void addLast(Validator next) {
+        Validator curr = this;
+        while (curr.next != null) {
+            curr = curr.next;
+        }
+        curr.setNext(next);
     }
 
     public abstract boolean handle(Vote vote, Proposal proposal) throws InvalidRequestException;
