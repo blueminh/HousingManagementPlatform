@@ -28,6 +28,7 @@ import sem.voting.domain.proposal.ProposalHandlingService;
 import sem.voting.domain.proposal.ProposalRepository;
 import sem.voting.domain.proposal.ProposalType;
 import sem.voting.integration.utils.JsonUtil;
+import sem.voting.models.AddOptionRequestModel;
 import sem.voting.models.ProposalCreationRequestModel;
 import sem.voting.models.ProposalCreationResponseModel;
 
@@ -60,8 +61,8 @@ class VotingControllerTest {
         when(mockAuthenticationManager.getNetId()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
-        final String testTitle = "New Amazing Rule";
-        final String testMotion = "More plants!";
+        final String testTitle = "New Amazing Board Members";
+        final String testMotion = "Choose!";
         final long weekInSeconds = 7 * 24 * 60 * 60;
         final int testHoaId = 0;
         final ProposalType testType = ProposalType.BoardElection;
@@ -78,15 +79,15 @@ class VotingControllerTest {
 
         // Act
         ResultActions resultActions = mockMvc.perform(post("/propose")
-            .contentType(MediaType.APPLICATION_JSON)
-            .header("Authorization", "Bearer MockedToken")
-            .content(JsonUtil.serialize(model)));
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(model)));
 
         // Assert
         resultActions.andExpect(status().isOk());
         ProposalCreationResponseModel response =
-            JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(),
-                ProposalCreationResponseModel.class);
+                JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(),
+                        ProposalCreationResponseModel.class);
 
         Proposal savedProposal = proposalRepository.findById(response.getProposalId()).orElseThrow();
 

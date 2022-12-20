@@ -10,6 +10,6 @@ public class BoardElectionOptionValidationService implements OptionValidationSer
     @Override
     public boolean isOptionValid(Option option, Proposal proposal) {
         // TODO implement checks whether an option is valid here
-        return false;
+        return true;
     }
 }

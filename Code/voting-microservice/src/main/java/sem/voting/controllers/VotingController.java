@@ -23,7 +23,9 @@ import sem.voting.domain.proposal.ProposalStage;
 import sem.voting.domain.proposal.Result;
 import sem.voting.domain.proposal.Vote;
 import sem.voting.domain.services.implementations.AddOptionException;
+import sem.voting.domain.services.implementations.BoardElectionOptionValidationService;
 import sem.voting.domain.services.implementations.BoardElectionsVoteValidationService;
+import sem.voting.domain.services.implementations.RuleChangesOptionValidationService;
 import sem.voting.domain.services.implementations.RuleChangesVoteValidationService;
 import sem.voting.domain.services.implementations.VotingException;
 import sem.voting.models.AddOptionRequestModel;
@@ -66,6 +68,7 @@ public class VotingController {
      * @return 200 if creation is successful
      * 400 if request is not complete
      */
+    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     @PostMapping("/propose")
     public ResponseEntity<ProposalCreationResponseModel> addProposal(
         @RequestBody ProposalCreationRequestModel request) {
@@ -81,6 +84,21 @@ public class VotingController {
 
         // Build proposal
         Proposal toAdd = new Proposal();
+        switch (request.getType()) {
+            case BoardElection: {
+                toAdd.setVoteValidationService(new BoardElectionsVoteValidationService());
+                toAdd.setOptionValidationService(new BoardElectionOptionValidationService());
+                break;
+            }
+            case HoaRuleChange: {
+                toAdd.setVoteValidationService(new RuleChangesVoteValidationService());
+                toAdd.setOptionValidationService(new RuleChangesOptionValidationService());
+                break;
+            }
+            default: {
+                return ResponseEntity.badRequest().build();
+            }
+        }
         toAdd.setVotingDeadline(deadline);
         toAdd.setHoaId(request.getHoaId());
         if (request.getOptions() != null) {
@@ -95,19 +113,6 @@ public class VotingController {
         }
         toAdd.setTitle(request.getTitle());
         toAdd.setMotion(request.getMotion());
-        switch (request.getType()) {
-            case BoardElection: {
-                toAdd.setVoteValidationService(new BoardElectionsVoteValidationService());
-                break;
-            }
-            case HoaRuleChange: {
-                toAdd.setVoteValidationService(new RuleChangesVoteValidationService());
-                break;
-            }
-            default: {
-                return ResponseEntity.badRequest().build();
-            }
-        }
         toAdd = proposalHandlingService.save(toAdd);
         ProposalCreationResponseModel response = new ProposalCreationResponseModel(toAdd.getProposalId());
         return ResponseEntity.ok(response);
