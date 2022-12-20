@@ -2,6 +2,8 @@ package sem.hoa.domain.notifications;
 
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,15 +22,20 @@ public class NotificationService {
      * @param username user to which it will be sent
      * @throws DuplicateNotificationException if a notification with all matching parameters already exists
      */
-    public void addNotification(String message, String username) throws DuplicateNotificationException {
+    public void addNotification(String message, String username) throws Exception {
         if (notificationRepository.existsByMessageAndUsername(message, username)) {
             throw new DuplicateNotificationException();
         }
+        if (message == null || username == null) {
+            throw new InvalidParameterException("At least one of the parameters are null!");
+        }
+
 
         Notification notification = new Notification(message, username);
         notificationRepository.save(notification);
         return;
     }
+
 
     /**
      * Method to get all notifications for a user.
@@ -36,6 +43,7 @@ public class NotificationService {
      * @param username user for whom the notifications are being sent
      * @return A list of messages
      */
+    @Transactional
     public List<String> getNotifications(String username) {
         if (!notificationRepository.existsByUsername(username)) {
             return new ArrayList<String>();
