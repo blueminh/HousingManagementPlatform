@@ -23,6 +23,11 @@ public class MemberController {
     private final transient MemberManagementService memberManagementService;
     private final transient HoaService hoaService;
 
+    private static final transient String noSuchHoaIdError = "No HOA with the id: ";
+    private static final transient String noSuchHoaNameError = "No HOA with the name: ";
+    private static final transient String userNotRegisteredError = "User is not registered in this Hoa";
+    private static final transient String userNotBoardMemberError = "User is not a board member of this Hoa";
+
     /**
      * Constructor of this controller.
      *
@@ -45,16 +50,16 @@ public class MemberController {
      * @return a boolean value indicate the role of this user (true if boardMember)
      */
     @GetMapping("/findUserRoleByHoaName")
-    public ResponseEntity<String> findUserRoleByHoaName(@RequestParam(name = "hoaName") String hoaName) {
+    public ResponseEntity<String> findUserRoleByHoaName(@RequestParam String hoaName) {
         try {
             Optional<Hoa> hoa = hoaService.findHoaByName(hoaName);
             if (hoa.isEmpty()) {
-                throw new BadRequestException("No such Hoa with this name: " + hoaName);
+                throw new BadRequestException(noSuchHoaNameError + hoaName);
             }
 
             Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(authManager.getNetId(), hoa.get().getId());
             if (membership.isEmpty()) {
-                throw new BadRequestException("User is not registered in this Hoa");
+                throw new BadRequestException(userNotRegisteredError);
             }
 
             if (membership.get().isBoardMember()) {
@@ -77,17 +82,17 @@ public class MemberController {
      * @return a boolean value indicate the role of this user (true if boardMember)
      */
     @GetMapping("/findUserRoleByHoaID")
-    public ResponseEntity<String> findUserRoleByHoaId(@RequestParam(name = "hoaId") Integer hoaId) {
+    public ResponseEntity<String> findUserRoleByHoaId(@RequestParam Integer hoaId) {
         try {
             Optional<Hoa> hoa = hoaService.findHoaById(hoaId);
             if (hoa.isEmpty()) {
-                throw new BadRequestException("No such Hoa with this ID: " + hoaId);
+                throw new BadRequestException(noSuchHoaIdError + hoaId);
             }
 
             String username = authManager.getNetId();
             Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(username, hoa.get().getId());
             if (membership.isEmpty()) {
-                throw new BadRequestException("User is not registered in this Hoa");
+                throw new BadRequestException(userNotRegisteredError);
             }
 
             if (membership.get().isBoardMember()) {
@@ -124,11 +129,11 @@ public class MemberController {
      * @param hoaId contains hoaID
      */
     @GetMapping("/isMemberOf")
-    public ResponseEntity<String> isMemberOfHoa(@RequestParam(name = "hoaId") Integer hoaId) {
+    public ResponseEntity<String> isMemberOfHoa(@RequestParam Integer hoaId) {
         try {
             Optional<Hoa> hoa = hoaService.findHoaById(hoaId);
             if (hoa.isEmpty()) {
-                throw new BadRequestException("No such Hoa with this ID: " + hoaId);
+                throw new BadRequestException(noSuchHoaIdError + hoaId);
             }
 
             Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(authManager.getNetId(), hoaId);
@@ -148,16 +153,16 @@ public class MemberController {
      * @param hoaId the hoaID
      */
     @GetMapping("/joiningDate")
-    public ResponseEntity<String> getJoiningDate(@RequestParam(name = "hoaId") Integer hoaId) {
+    public ResponseEntity<String> getJoiningDate(@RequestParam Integer hoaId) {
         try {
             Optional<Hoa> hoa = hoaService.findHoaById(hoaId);
             if (hoa.isEmpty()) {
-                throw new BadRequestException("No such Hoa with this ID: " + hoaId);
+                throw new BadRequestException(noSuchHoaIdError + hoaId);
             }
 
             Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(authManager.getNetId(), hoaId);
             if (membership.isEmpty()) {
-                throw new BadRequestException("User is not registered in this Hoa");
+                throw new BadRequestException(userNotRegisteredError);
             }
             return ResponseEntity.ok(membership.get().getJoiningDate().toString());
         } catch (BadRequestException e) {
@@ -175,19 +180,19 @@ public class MemberController {
      * @param hoaId the hoaID
      */
     @GetMapping("/joiningBoardDate")
-    public ResponseEntity<String> getBoardJoiningDate(@RequestParam(name = "hoaId") Integer hoaId) {
+    public ResponseEntity<String> getBoardJoiningDate(@RequestParam Integer hoaId) {
         try {
             Optional<Hoa> hoa = hoaService.findHoaById(hoaId);
             if (hoa.isEmpty()) {
-                throw new BadRequestException("No such Hoa with this ID: " + hoaId);
+                throw new BadRequestException(noSuchHoaIdError + hoaId);
             }
 
             Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(authManager.getNetId(), hoaId);
             if (membership.isEmpty()) {
-                throw new BadRequestException("User is not registered in this Hoa");
+                throw new BadRequestException(userNotRegisteredError);
             }
             if (membership.get().getJoiningBoardDate() == -1) {
-                throw new BadRequestException("User is not a board member of this Hoa");
+                throw new BadRequestException(userNotBoardMemberError);
             }
             return ResponseEntity.ok(membership.get().getJoiningBoardDate().toString());
         } catch (BadRequestException e) {

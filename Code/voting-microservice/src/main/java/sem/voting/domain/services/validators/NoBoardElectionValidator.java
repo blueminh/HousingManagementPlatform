@@ -1,5 +1,6 @@
 package sem.voting.domain.services.validators;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalHandlingService;
@@ -8,6 +9,7 @@ import sem.voting.domain.services.implementations.BoardElectionsVoteValidationSe
 
 public class NoBoardElectionValidator extends Validator {
     @Autowired
+    @Getter
     private ProposalHandlingService proposalHandlingService;
 
     @Override

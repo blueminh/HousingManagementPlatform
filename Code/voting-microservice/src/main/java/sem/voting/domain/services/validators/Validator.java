@@ -1,10 +1,8 @@
 package sem.voting.domain.services.validators;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Service;
+import lombok.Getter;
+import lombok.Setter;
 import sem.voting.domain.proposal.Proposal;
-import sem.voting.domain.proposal.ProposalHandlingService;
 import sem.voting.domain.proposal.Vote;
 
 
@@ -20,13 +18,9 @@ import sem.voting.domain.proposal.Vote;
 // * x - member cannot vote for themselves: username
 // */
 public abstract class Validator {
+    @Setter
+    @Getter
     private Validator next;
-
-    public void setNext(Validator validator) {
-        this.next = validator;
-    }
-
-    ;
 
     protected boolean checkNext(Vote vote, Proposal proposal) throws InvalidRequestException {
         if (next == null) {

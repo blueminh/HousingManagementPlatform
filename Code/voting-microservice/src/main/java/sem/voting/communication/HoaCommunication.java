@@ -16,6 +16,8 @@ public class HoaCommunication {
     private static ObjectMapper objectMapper = new ObjectMapper();
     private static String HOAPath = "http://localhost:8086";
 
+    private static final String hoaIdParamName = "hoaId";
+
     /**
      * Send a request and receive a String as response.
      *
@@ -62,7 +64,7 @@ public class HoaCommunication {
     public static boolean checkUserIsBoardMember(String username, int hoaId, String authToken) throws Exception {
         String url = HOAPath + "/member/findUserRoleByHoaID";
         Map<String, String> params = new HashMap<>();
-        params.put("hoaId", hoaId + "");
+        params.put(hoaIdParamName, hoaId + "");
         String response = makeRequest(authToken, url, "", params);
         return objectMapper.readValue(response, String.class).equals("boardMember");
     }
@@ -93,7 +95,7 @@ public class HoaCommunication {
     public static boolean checkUserIsMemberOfThisHoa(String username, int hoaId, String authToken) throws Exception {
         String url = HOAPath + "/member/isMemberOf";
         Map<String, String> params = new HashMap<>();
-        params.put("hoaId", hoaId + "");
+        params.put(hoaIdParamName, hoaId + "");
         String response = makeRequest(authToken, url, "", params);
         return objectMapper.readValue(response, Boolean.class);
     }
@@ -110,7 +112,7 @@ public class HoaCommunication {
     public static Long getJoiningDate(String username, int hoaId, String authToken) throws Exception {
         String url = HOAPath + "/member/joiningDate";
         Map<String, String> params = new HashMap<>();
-        params.put("hoaId", hoaId + "");
+        params.put(hoaIdParamName, hoaId + "");
         String response = makeRequest(authToken, url, "", params);
         return objectMapper.readValue(response, Long.class);
     }
@@ -129,7 +131,7 @@ public class HoaCommunication {
     public static Long getJoiningBoardDate(String username, int hoaId, String authToken) throws Exception {
         String url = HOAPath + "/member/joiningBoardDate";
         Map<String, String> params = new HashMap<>();
-        params.put("hoaId", hoaId + "");
+        params.put(hoaIdParamName, hoaId + "");
         String response = makeRequest(authToken, url, "", params);
         return objectMapper.readValue(response, Long.class);
     }
