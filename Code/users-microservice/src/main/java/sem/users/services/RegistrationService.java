@@ -42,6 +42,24 @@ public class RegistrationService {
      */
 
     public AppUser registerUser(Username username, Password password, FullName fullname) throws Exception {
+        int minlength = 1;
+
+        if (username.toString().length() < minlength || password.toString().length() < minlength || fullname.toString().length() < minlength) {
+            throw new InvalidAttributesException("One of the attributes is empty!");
+        }
+
+        int maxlength = 100;
+        // Setting a 100 character limit to all attributes
+        if (username.toString().length() > maxlength) {
+            throw new InvalidAttributesException("Username is too long! maximum 100 characters");
+        }
+        if (password.toString().length() > maxlength) {
+            throw new InvalidAttributesException("Password is too long! maximum 100 characters");
+        }
+        if (fullname.toString().length() > maxlength) {
+            throw new InvalidAttributesException("Full Name is too long! maximum 100 characters");
+        }
+
 
         if (!userExists(username)) {
             // Hash password
