@@ -6,5 +6,5 @@ import sem.voting.domain.proposal.Proposal;
 import java.io.Serializable;
 
 public interface OptionValidationService extends Serializable {
-    boolean isOptionValid(Option option, Proposal proposal);
+    boolean isOptionValid(String userId, Option option, Proposal proposal);
 }

@@ -142,7 +142,7 @@ public class Proposal {
             throw new AddOptionException("Proposal is not accepting new options");
         }
 
-        if (!this.optionValidationService.isOptionValid(newOption, this)) {
+        if (!this.optionValidationService.isOptionValid(userId, newOption, this)) {
             throw new AddOptionException("Option is not valid");
         }
 

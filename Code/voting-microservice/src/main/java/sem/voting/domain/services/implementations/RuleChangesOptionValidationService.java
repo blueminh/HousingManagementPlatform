@@ -15,16 +15,12 @@ import sem.voting.domain.services.validators.Validator;
 public class RuleChangesOptionValidationService implements OptionValidationService {
     private static final long serialVersionUID = 1L;
 
-    @Autowired
-    @Getter
-    AuthManager authManager;
-
     @Override
-    public boolean isOptionValid(Option option, Proposal proposal) {
+    public boolean isOptionValid(String userId, Option option, Proposal proposal) {
         Validator validator = new MemberIsBoardMemberValidator();
         validator.addLast(new IsAffirmativeOrNegativeValidator());
         try {
-            return validator.handle(authManager.getUserId(), option, proposal);
+            return validator.handle(userId, option, proposal);
         } catch (InvalidRequestException e) {
             System.out.println(e.getMessage());
             return false;

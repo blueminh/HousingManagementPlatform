@@ -94,7 +94,7 @@ public class HoaCommunication {
      * @throws Exception either a bad request or response has error
      */
     public static boolean checkHoaHasBoard(String username, int hoaId) throws Exception {
-        String url = HOAPath + "/member/findUserRoleByHoaID";
+        String url = HOAPath + "/member/numberBoardMembers";
         Map<String, String> params = new HashMap<>();
         params.put(hoaIdParamName, hoaId + "");
         String response = makeRequest(username, url, "", params);

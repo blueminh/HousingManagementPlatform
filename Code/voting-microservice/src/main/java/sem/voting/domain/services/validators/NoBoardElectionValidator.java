@@ -8,9 +8,11 @@ import sem.voting.domain.proposal.ProposalHandlingService;
 import sem.voting.domain.services.implementations.BoardElectionsVoteValidationService;
 
 public class NoBoardElectionValidator extends Validator {
-    @Autowired
-    @Getter
     private ProposalHandlingService proposalHandlingService;
+
+    public NoBoardElectionValidator(ProposalHandlingService phs) {
+        this.proposalHandlingService = phs;
+    }
 
     @Override
     public boolean handle(String username, Option option, Proposal proposal) throws InvalidRequestException {

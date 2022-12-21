@@ -19,6 +19,7 @@ import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalHandlingService;
 import sem.voting.domain.proposal.ProposalStage;
+import sem.voting.domain.proposal.ProposalType;
 import sem.voting.domain.proposal.Result;
 import sem.voting.domain.proposal.Vote;
 import sem.voting.domain.services.implementations.AddOptionException;
@@ -85,25 +86,9 @@ public class VotingController {
             return ResponseEntity.badRequest().build();
         }
 
-        Proposal toAdd = new Proposal();
-
-        // Validate user
-        Validator validator = new NoBoardElectionValidator();
-        try {
-            // check if the user is a member of the board only if there is any board to begin with
-            if (HoaCommunication.checkHoaHasBoard(authManager.getUserId(), request.getHoaId())) {
-                validator.addLast(new MemberIsBoardMemberValidator());
-            }
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-        try {
-            validator.handle(authManager.getUserId(), null, toAdd);
-        } catch (InvalidRequestException ex) {
-            return ResponseEntity.badRequest().build();
-        }
-
         // Build proposal
+        Proposal toAdd = new Proposal();
+        toAdd.setHoaId(request.getHoaId());
         switch (request.getType()) {
             case BoardElection: {
                 toAdd.setVoteValidationService(new BoardElectionsVoteValidationService());
@@ -120,7 +105,6 @@ public class VotingController {
             }
         }
         toAdd.setVotingDeadline(deadline);
-        toAdd.setHoaId(request.getHoaId());
         if (request.getOptions() != null) {
             for (String s : request.getOptions()) {
                 try {
@@ -133,6 +117,29 @@ public class VotingController {
         }
         toAdd.setTitle(request.getTitle());
         toAdd.setMotion(request.getMotion());
+
+        // Validate Proposal
+        Validator validator = new NoBoardElectionValidator(proposalHandlingService);
+        try {
+            // board elections can be started by any user if there is no current board member
+            if (HoaCommunication.checkHoaHasBoard(authManager.getUserId(), request.getHoaId())
+                && request.getType() == ProposalType.BoardElection) {
+                validator.addLast(new MemberIsBoardMemberValidator());
+            } else {
+                System.out.println("HOA doesn't have a board.");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.err.println("Could not determine the number of HOA board members.");
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            validator.handle(authManager.getUserId(), null, toAdd);
+        } catch (InvalidRequestException ex) {
+            System.err.println(authManager.getUserId() + " does not have the rights to start a new proposal.");
+            return ResponseEntity.badRequest().build();
+        }
+
         toAdd = proposalHandlingService.save(toAdd);
         ProposalCreationResponseModel response = new ProposalCreationResponseModel(toAdd.getProposalId());
         return ResponseEntity.ok(response);

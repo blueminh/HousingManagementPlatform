@@ -18,19 +18,15 @@ import sem.voting.domain.services.validators.Validator;
 public class BoardElectionOptionValidationService implements OptionValidationService {
     private static final long serialVersionUID = 1L;
 
-    @Autowired
-    @Getter
-    AuthManager authManager;
-
     @Override
-    public boolean isOptionValid(Option option, Proposal proposal) {
+    public boolean isOptionValid(String userId, Option option, Proposal proposal) {
         Validator validator = new UserIsMemberOfThisHoaValidator();
         validator.addLast(new MemberIsAddingThemselvesValidator());
         validator.addLast(new MemberIsNotBoardMemberOfAnyHoaValidator());
         validator.addLast(new UserIsMemberForAtLeast3YearsValidator());
         validator.addLast(new BoardMemberForLess10YearsValidator());
         try {
-            return validator.handle(authManager.getUserId(), option, proposal);
+            return validator.handle(userId, option, proposal);
         } catch (InvalidRequestException e) {
             System.out.println(e.getMessage());
             return false;
