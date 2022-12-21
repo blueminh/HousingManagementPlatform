@@ -20,6 +20,8 @@ import sem.hoa.domain.services.MemberManagementService;
 import sem.hoa.dtos.HoaModifyDTO;
 import sem.hoa.dtos.UserNameHoaIDDTO;
 import sem.hoa.dtos.UserNameHoaNameDTO;
+import sem.hoa.exceptions.HoaCreationException;
+import sem.hoa.exceptions.HoaJoiningException;
 
 /**
  * Hello World example controller.
@@ -71,7 +73,7 @@ public class HOAController {
             hoaService.checkHoaModifyDTO(request);
             if (hoaService.hoaExistsByName(request.hoaName)) {
                 System.err.println("HOA with that name already exists");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "HOA by that name already exists");
+                throw new HoaCreationException("HOA by that name already exists");
             }
 
             //Creation
@@ -101,20 +103,20 @@ public class HOAController {
             //CHECKS
             hoaService.checkHoaModifyDTO(request);
             if (!hoaService.hoaExistsByName(request.hoaName)) {
-                throw new Exception("No such HOA with this name: " + request.hoaName);
+                throw new HoaJoiningException("No such HOA with this name: " + request.hoaName);
             }
             HOA hoa = hoaService.findHOAByName(request.hoaName).get();
             if (memberManagementService
                     .findByUsernameAndHoaID(authManager.getNetId(), hoa.getId())
                     .isPresent()) {
-                throw new Exception("User is already in this HOA"); //need explanation
+                throw new HoaJoiningException("User is already in this HOA"); //need explanation
             }
             Membership membership = new Membership(authManager.getNetId(),
                     hoaService.findHOAByName(request.hoaName).get().getId(), false,
                     request.userCountry, request.userCity, request.userStreet,
                     request.userHouseNumber, request.userPostalCode);
             if (!memberManagementService.addressCheck(hoa, membership)) {
-                throw new Exception("Invalid address");
+                throw new HoaJoiningException("Invalid address");
             }
             //CREATION
             //weird warning - should be resolved later (probably because of the isPresent() method)

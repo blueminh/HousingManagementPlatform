@@ -1,6 +1,5 @@
 package sem.hoa.domain.services;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -77,24 +76,24 @@ public class HOAService {
      * @param request = request to be checked
      */
 
-    public void checkHoaModifyDTO(HoaModifyDTO request) {
+    public void checkHoaModifyDTO(HoaModifyDTO request) throws Exception {
 
         //Checks if strings are null
         if (request.hoaName == null || request.userCity == null || request.userCountry == null
                 || request.userStreet == null || request.userPostalCode == null) {
             System.err.println("one or more fields Invalid(null)");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fields can not be Invalid(null)");
+            throw new Exception("Fields can not be Invalid(null)");
         }
         //checks if variables are valid
         if (request.hoaName.isBlank() || request.userCity.isBlank() || request.userCountry.isBlank()
                 || request.userStreet.isBlank() || request.userPostalCode.isBlank()) {
             System.err.println("one or more fields were Empty");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fields can not be Empty");
+            throw new Exception("Fields can not be Empty");
         }
         //checks if house number is valid
         if (request.userHouseNumber < 0) {
             System.err.println("house Number was < 0");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "House Number must be a positive integer");
+            throw new Exception( "House Number must be a positive integer");
         }
     }
 }
