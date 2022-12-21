@@ -16,7 +16,7 @@ import sem.hoa.authentication.JwtTokenVerifier;
 import sem.hoa.domain.entities.HOA;
 import sem.hoa.domain.services.HOARepository;
 import sem.hoa.domain.services.HOAService;
-import sem.hoa.dtos.UserHoaCreationDDTO;
+import sem.hoa.dtos.HoaModifyDTO;
 import sem.hoa.utils.JsonUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,12 +59,15 @@ public class HoaCreationTests {
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
 
-        UserHoaCreationDDTO request = new UserHoaCreationDDTO();
-        request.setHoaCity("exHoaCity");
-        request.setHoaCountry("exHoaCountry");
+        HoaModifyDTO request = new HoaModifyDTO();
         request.setHoaName("exampleName");
         request.setUserCity("exUserCity");
         request.setUserCountry("exUserCountry");
+
+        request.setUserStreet("Jump Street");
+        request.setUserHouseNumber(21);
+        request.setUserPostalCode("JUMP");
+
 
         ResultActions resultActions = mockMvc.perform(post("/createHOA")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -73,7 +76,7 @@ public class HoaCreationTests {
 
         resultActions.andExpect(status().isOk());
 
-        HOA given = new HOA(request.hoaName, request.hoaCountry, request.hoaCity);
+        HOA given = new HOA(request.hoaName, request.userCountry, request.userCity);
         HOA responded = JsonUtil
                 .deserialize(resultActions.andReturn().getResponse().getContentAsString(),
                 HOA.class);
