@@ -1,23 +1,47 @@
 package sem.voting.communication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import sem.voting.authentication.AuthManager;
 
+
+import java.io.FileInputStream;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
-
+@Component
 public class HoaCommunication {
     private static ObjectMapper objectMapper = new ObjectMapper();
     private static String HOAPath = "http://localhost:8086";
-
     private static final String hoaIdParamName = "hoaId";
+
+
+    /**
+     * Constructs a token from a userId.
+     *
+     * @param userId userId to create the token for
+     * @return a token for communication between microservices
+     */
+    private static String getTokenFromId(String userId, String jwtSecret) {
+        Date nowDate = new Date(Instant.now().toEpochMilli());
+        return Jwts.builder().setClaims(new HashMap<>()).setSubject(userId)
+            .setIssuedAt(nowDate)
+            .setExpiration(Date.from(nowDate.toInstant().plusSeconds(60 * 60)))
+            .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+    }
 
     /**
      * Send a request and receive a String as response.
@@ -28,8 +52,15 @@ public class HoaCommunication {
      * receiving a error
      */
     private static String makeRequest(String userId, String url, String requestBody, Map<String, String> params) throws Exception {
+        // Get the secret
+        Properties properties = new Properties();
+        URL resourceUrl = HoaCommunication.class.getClassLoader().getResource("application.properties");
+        properties.load(new FileInputStream(Paths.get(resourceUrl.toURI()).toFile().getPath()));
+
+        // Generate authToken for the given userId
+        String authToken = getTokenFromId(userId, properties.getProperty("jwt.secret"));
+
         HttpHeaders headers = new HttpHeaders();
-        String authToken = AuthManager.getTokenFromId(userId);
         headers.add("Authorization", "Bearer " + authToken);
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
