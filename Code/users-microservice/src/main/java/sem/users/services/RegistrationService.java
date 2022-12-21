@@ -1,6 +1,7 @@
-package sem.users.domain.user;
+package sem.users.services;
 
 import org.springframework.stereotype.Service;
+import sem.users.domain.user.*;
 
 import javax.naming.directory.InvalidAttributesException;
 import java.util.Optional;
