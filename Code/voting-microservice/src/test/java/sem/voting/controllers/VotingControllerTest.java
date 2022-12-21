@@ -12,6 +12,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import sem.voting.authentication.AuthManager;
 import sem.voting.authentication.JwtTokenVerifier;
+import sem.voting.communication.HoaCommunication;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalHandlingService;
 import sem.voting.domain.proposal.ProposalRepository;
@@ -54,16 +57,16 @@ class VotingControllerTest {
     private transient ProposalRepository proposalRepository;
 
     @Test
-    void addProposal() throws Exception {
+    void addProposalNonBoardMember() throws Exception {
         // Arrange
         final String userName = "ExampleUser";
+        final int testHoaId = 0;
         when(mockAuthenticationManager.getUserId()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
         final String testTitle = "New Amazing Board Members";
         final String testMotion = "Choose!";
         final long weekInSeconds = 7 * 24 * 60 * 60;
-        final int testHoaId = 0;
         final ProposalType testType = ProposalType.BoardElection;
         final String opt1 = "Sem Semminson";
         final String opt2 = "Mario Rossi";
@@ -83,7 +86,8 @@ class VotingControllerTest {
                 .content(JsonUtil.serialize(model)));
 
         // Assert
-        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(status().isBadRequest());
+        /*
         ProposalCreationResponseModel response =
                 JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(),
                         ProposalCreationResponseModel.class);
@@ -92,5 +96,6 @@ class VotingControllerTest {
 
         assertThat(savedProposal.getTitle()).isEqualTo(testTitle);
         assertThat(savedProposal.getMotion()).isEqualTo(testMotion);
+        */
     }
 }
