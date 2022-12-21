@@ -1,7 +1,15 @@
 package sem.users.services;
 
 import org.springframework.stereotype.Service;
-import sem.users.domain.user.*;
+import sem.users.domain.user.AppUser;
+import sem.users.domain.user.FullName;
+import sem.users.domain.user.HashedPassword;
+import sem.users.domain.user.Password;
+import sem.users.domain.user.PasswordHashingService;
+import sem.users.domain.user.UserNotFoundException;
+import sem.users.domain.user.UserRepository;
+import sem.users.domain.user.Username;
+import sem.users.domain.user.UsernameAlreadyInUseException;
 
 import javax.naming.directory.InvalidAttributesException;
 import java.util.Optional;
