@@ -93,7 +93,7 @@ public class HOAService {
         //checks if house number is valid
         if (request.userHouseNumber < 0) {
             System.err.println("house Number was < 0");
-            throw new Exception( "House Number must be a positive integer");
+            throw new Exception("House Number must be a positive integer");
         }
     }
 }
