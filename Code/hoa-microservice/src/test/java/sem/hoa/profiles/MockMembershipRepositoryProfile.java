@@ -1,25 +1,23 @@
 package sem.hoa.profiles;
 
-
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import sem.hoa.domain.utils.Clock;
+import sem.hoa.domain.services.MemberManagementRepository;
 
-@Profile("clock")
+@Profile("membershipRepo")
 @Configuration
-public class ClockProfile {
-
+public class MockMembershipRepositoryProfile {
     /**
-     * Mocks the Clock.
+     * Mocks the membership repo.
      *
-     * @return A mocked Clock
+     * @return mocked membership repo
      */
     @Bean
     @Primary
-    public Clock getClock() {
-        return Mockito.mock(Clock.class);
+    public MemberManagementRepository getMockMembershipManagementRepository() {
+        return Mockito.mock(MemberManagementRepository.class);
     }
 }

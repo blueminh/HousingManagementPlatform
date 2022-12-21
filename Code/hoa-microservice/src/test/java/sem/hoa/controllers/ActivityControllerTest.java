@@ -17,12 +17,10 @@ import sem.hoa.domain.activity.Activity;
 import sem.hoa.domain.activity.ActivityRepository;
 import sem.hoa.domain.activity.Participation;
 import sem.hoa.domain.activity.ParticipationRepository;
+import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.domain.utils.Clock;
 import sem.hoa.integeration.utils.JsonUtil;
-import sem.hoa.models.ActivityCreationRequestModel;
-import sem.hoa.models.ActivityResponseModel;
-import sem.hoa.models.DateRequestModel;
-import sem.hoa.models.UserParticipateModel;
+import sem.hoa.models.*;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -39,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 // activate profiles to have spring use mocks during auto-injection of certain beans.
-@ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager", "clock"})
+@ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager", "clock", "membershipRepo"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 class ActivityControllerTest {
@@ -62,6 +60,9 @@ class ActivityControllerTest {
     @Autowired
     private transient ParticipationRepository participationRepository;
 
+    @Autowired
+    private  transient MemberManagementRepository memberManagementRepository;
+
     @Test
     public void testAddActivitySuccess() throws Exception {
 
@@ -70,6 +71,8 @@ class ActivityControllerTest {
         when(mockAuthenticationManager.getNetId()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, userName)).thenReturn(true);
+
         Calendar calendar = new GregorianCalendar();
         calendar.set(2022, 1, 1, 0, 0);
 
@@ -149,6 +152,8 @@ class ActivityControllerTest {
         when(mockAuthenticationManager.getNetId()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, userName)).thenReturn(true);
+
         Calendar calendar = new GregorianCalendar();
         calendar.set(2022, 0, 1, 0, 0);
         // This is required because in the repository we don't store the seconds and ms so, it won't match
@@ -209,6 +214,8 @@ class ActivityControllerTest {
         when(mockAuthenticationManager.getNetId()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, userName)).thenReturn(true);
+
         Calendar calendar = new GregorianCalendar();
         calendar.set(2022, 1, 1, 0, 0);
 
@@ -295,7 +302,6 @@ class ActivityControllerTest {
         // Set up request model
         UserParticipateModel userParticipateModel = new UserParticipateModel();
         userParticipateModel.setActivityId(activityId);
-        userParticipateModel.setUsername(username);
 
         // Make request
         ResultActions resultActions = mockMvc.perform(post("/activity/participate")
@@ -320,6 +326,7 @@ class ActivityControllerTest {
         when(mockAuthenticationManager.getNetId()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, username)).thenReturn(true);
 
         Calendar calendar = new GregorianCalendar();
         calendar.set(2022, 1, 1, 0, 0);
@@ -338,7 +345,6 @@ class ActivityControllerTest {
         // Setup request model
         final UserParticipateModel request = new UserParticipateModel();
         request.setActivityId(activityId);
-        request.setUsername(username);
 
         // Make request
         ResultActions resultActions = mockMvc.perform(post("/activity/participate")
@@ -368,7 +374,6 @@ class ActivityControllerTest {
         // Set up request model
         UserParticipateModel userParticipateModel = new UserParticipateModel();
         userParticipateModel.setActivityId(activityId);
-        userParticipateModel.setUsername(username);
 
         // Make request
         ResultActions resultActions = mockMvc.perform(post("/activity/participate")
@@ -413,7 +418,6 @@ class ActivityControllerTest {
         // Setup request model
         final UserParticipateModel request = new UserParticipateModel();
         request.setActivityId(activityId);
-        request.setUsername(username);
 
         // Make request
         ResultActions resultActions = mockMvc.perform(delete("/activity/removeParticipate")
@@ -443,7 +447,6 @@ class ActivityControllerTest {
         // Setup request model
         final UserParticipateModel request = new UserParticipateModel();
         request.setActivityId(activityId);
-        request.setUsername(username);
 
         // Make request
         ResultActions resultActions = mockMvc.perform(delete("/activity/removeParticipate")
@@ -486,7 +489,6 @@ class ActivityControllerTest {
         // Setup request model
         final UserParticipateModel request = new UserParticipateModel();
         request.setActivityId(activityId);
-        request.setUsername(username);
 
         // Make request
         ResultActions resultActions = mockMvc.perform(delete("/activity/removeParticipate")
@@ -509,26 +511,27 @@ class ActivityControllerTest {
         when(mockAuthenticationManager.getNetId()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, username)).thenReturn(true);
 
         setupRepository(activityRepository, username);
 
         // Set up request model
         Calendar calendar = new GregorianCalendar();
         calendar.set(2023, 1, 1, 0, 0);
-        DateRequestModel dateRequestModel = new DateRequestModel(calendar.getTime());
+        GetActivityWithHoaIdAndDateRequestModel getActivityWithHoaIdAndDateRequestModel = new GetActivityWithHoaIdAndDateRequestModel(calendar.getTime(), 1);
 
         ResultActions resultActions = mockMvc.perform(get("/activity/getAllBeforeDate")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
-                .content(JsonUtil.serialize(dateRequestModel)));
+                .content(JsonUtil.serialize(getActivityWithHoaIdAndDateRequestModel)));
 
         resultActions.andExpect(status().isOk());
         ActivityResponseModel[] responseModel = JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(), ActivityResponseModel[].class);
 
         // Out of the three activities added, 2 are after 2021.
         assertThat(responseModel.length).isEqualTo(2);
-        assertThat(responseModel[0].getDate()).isBefore(dateRequestModel.getDate());
-        assertThat(responseModel[1].getDate()).isBefore(dateRequestModel.getDate());
+        assertThat(responseModel[0].getDate()).isBefore(getActivityWithHoaIdAndDateRequestModel.getDate());
+        assertThat(responseModel[1].getDate()).isBefore(getActivityWithHoaIdAndDateRequestModel.getDate());
     }
 
     @Test
@@ -544,17 +547,17 @@ class ActivityControllerTest {
         // Set up request model
         Calendar calendar = new GregorianCalendar();
         calendar.set(2000, 1, 1, 0, 0);
-        DateRequestModel dateRequestModel = new DateRequestModel(calendar.getTime());
+        GetActivityWithHoaIdAndDateRequestModel getActivityWithHoaIdAndDateRequestModel = new GetActivityWithHoaIdAndDateRequestModel(calendar.getTime(), 1);
 
         ResultActions resultActions = mockMvc.perform(get("/activity/getAllBeforeDate")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
-                .content(JsonUtil.serialize(dateRequestModel)));
+                .content(JsonUtil.serialize(getActivityWithHoaIdAndDateRequestModel)));
 
         resultActions.andExpect(status().isBadRequest());
 
         // Out of the three activities added, 2 are after 2021.
-        assertThat(activityRepository.existsActivityByDateBefore(dateRequestModel.getDate())).isFalse();
+        assertThat(activityRepository.existsActivityByDateBeforeAndHoaId(getActivityWithHoaIdAndDateRequestModel.getDate(), getActivityWithHoaIdAndDateRequestModel.getHoaId())).isFalse();
     }
 
     @Test
@@ -564,26 +567,26 @@ class ActivityControllerTest {
         when(mockAuthenticationManager.getNetId()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
-
+        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, username)).thenReturn(true);
         setupRepository(activityRepository, username);
 
         // Set up request model
         Calendar calendar = new GregorianCalendar();
         calendar.set(2021, 1, 1, 0, 0);
-        DateRequestModel dateRequestModel = new DateRequestModel(calendar.getTime());
+        GetActivityWithHoaIdAndDateRequestModel getActivityWithHoaIdAndDateRequestModel = new GetActivityWithHoaIdAndDateRequestModel(calendar.getTime(), 1);
 
         ResultActions resultActions = mockMvc.perform(get("/activity/getAllAfterDate")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
-                .content(JsonUtil.serialize(dateRequestModel)));
+                .content(JsonUtil.serialize(getActivityWithHoaIdAndDateRequestModel)));
 
         resultActions.andExpect(status().isOk());
         ActivityResponseModel[] responseModel = JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(), ActivityResponseModel[].class);
 
         // Out of the three activities added, 2 are after 2021.
         assertThat(responseModel.length).isEqualTo(2);
-        assertThat(responseModel[0].getDate()).isAfter(dateRequestModel.getDate());
-        assertThat(responseModel[1].getDate()).isAfter(dateRequestModel.getDate());
+        assertThat(responseModel[0].getDate()).isAfter(getActivityWithHoaIdAndDateRequestModel.getDate());
+        assertThat(responseModel[1].getDate()).isAfter(getActivityWithHoaIdAndDateRequestModel.getDate());
     }
 
     @Test
@@ -599,17 +602,17 @@ class ActivityControllerTest {
         // Set up request model
         Calendar calendar = new GregorianCalendar();
         calendar.set(2026, 1, 1, 0, 0);
-        DateRequestModel dateRequestModel = new DateRequestModel(calendar.getTime());
+        GetActivityWithHoaIdAndDateRequestModel getActivityWithHoaIdAndDateRequestModel = new GetActivityWithHoaIdAndDateRequestModel(calendar.getTime(), 1);
 
         ResultActions resultActions = mockMvc.perform(get("/activity/getAllAfterDate")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
-                .content(JsonUtil.serialize(dateRequestModel)));
+                .content(JsonUtil.serialize(getActivityWithHoaIdAndDateRequestModel)));
 
         resultActions.andExpect(status().isBadRequest());
 
         // Out of the three activities added, 2 are after 2021.
-        assertThat(activityRepository.existsActivityByDateAfter(dateRequestModel.getDate())).isFalse();
+        assertThat(activityRepository.existsActivityByDateAfterAndHoaId(getActivityWithHoaIdAndDateRequestModel.getDate(), getActivityWithHoaIdAndDateRequestModel.getHoaId())).isFalse();
     }
 
     @Test
@@ -622,12 +625,18 @@ class ActivityControllerTest {
         when(mockAuthenticationManager.getNetId()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, username)).thenReturn(true);
         when(clock.getCurrentDate()).thenReturn(calendar.getTime());
 
         setupRepository(activityRepository, username);
 
+        // Setup request model
+        GetActivitiesWithHoaIdRequestModel requestModel = new GetActivitiesWithHoaIdRequestModel(1);
+
         ResultActions resultActions = mockMvc.perform(get("/activity/getAllFutureActivities")
-                .header("Authorization", "Bearer MockedToken"));
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(requestModel)));
         ActivityResponseModel[] responseModel = JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(), ActivityResponseModel[].class);
 
         resultActions.andExpect(status().isOk());
@@ -647,17 +656,23 @@ class ActivityControllerTest {
         when(mockAuthenticationManager.getNetId()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, username)).thenReturn(true);
         when(clock.getCurrentDate()).thenReturn(calendar.getTime());
 
         setupRepository(activityRepository, username);
 
+        // Setup request model
+        GetActivitiesWithHoaIdRequestModel requestModel = new GetActivitiesWithHoaIdRequestModel(1);
+
         ResultActions resultActions = mockMvc.perform(get("/activity/getAllFutureActivities")
-                .header("Authorization", "Bearer MockedToken"));
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(requestModel)));
 
         resultActions.andExpect(status().isBadRequest());
 
         // Other assertions
-        assertThat(activityRepository.existsActivityByDateAfter(calendar.getTime())).isFalse();
+        assertThat(activityRepository.existsActivityByDateAfterAndHoaId(calendar.getTime(), requestModel.getHoaId())).isFalse();
     }
 
     @Test
@@ -670,12 +685,19 @@ class ActivityControllerTest {
         when(mockAuthenticationManager.getNetId()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, username)).thenReturn(true);
         when(clock.getCurrentDate()).thenReturn(calendar.getTime());
 
         setupRepository(activityRepository, username);
 
+        // Setup request model
+        GetActivitiesWithHoaIdRequestModel requestModel = new GetActivitiesWithHoaIdRequestModel(1);
+
         ResultActions resultActions = mockMvc.perform(get("/activity/getAllPastActivities")
-                .header("Authorization", "Bearer MockedToken"));
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(requestModel)));
+
         ActivityResponseModel[] responseModel = JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(), ActivityResponseModel[].class);
 
         resultActions.andExpect(status().isOk());
@@ -700,13 +722,18 @@ class ActivityControllerTest {
 
         setupRepository(activityRepository, username);
 
+        // Setup request model
+        GetActivitiesWithHoaIdRequestModel requestModel = new GetActivitiesWithHoaIdRequestModel(1);
+
         ResultActions resultActions = mockMvc.perform(get("/activity/getAllPastActivities")
-                .header("Authorization", "Bearer MockedToken"));
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(requestModel)));
 
         resultActions.andExpect(status().isBadRequest());
 
         // Other assertions
-        assertThat(activityRepository.existsActivityByDateBefore(calendar.getTime())).isFalse();
+        assertThat(activityRepository.existsActivityByDateBeforeAndHoaId(calendar.getTime(), requestModel.getHoaId())).isFalse();
     }
 
     /**
@@ -739,7 +766,7 @@ class ActivityControllerTest {
         calendar.set(2024, 1, 1, 0, 0);
         final String testName3 = "Test3";
         final String testDesc3 = "Test3 Desc";
-        final int testHoaId3 = 2;
+        final int testHoaId3 = 1;
         final Date testDate3 = calendar.getTime();
         int activityId3 = 3;
 

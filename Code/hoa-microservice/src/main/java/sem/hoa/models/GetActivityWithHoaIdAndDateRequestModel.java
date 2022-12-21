@@ -8,11 +8,13 @@ import java.util.Date;
 
 @Data
 @NoArgsConstructor
-public class DateRequestModel {
+public class GetActivityWithHoaIdAndDateRequestModel {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date date;
+    private Integer hoaId;
 
-    public DateRequestModel(Date date) {
+    public GetActivityWithHoaIdAndDateRequestModel(Date date, int hoaId) {
         this.date = date;
+        this.hoaId = hoaId;
     }
 }

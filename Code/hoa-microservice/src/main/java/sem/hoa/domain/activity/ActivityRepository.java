@@ -13,15 +13,15 @@ public interface ActivityRepository extends JpaRepository<Activity, Integer> {
 
     List<Activity> findActivitiesByHoaId(Integer hoaId);
 
-    List<Activity> findActivitiesByDateAfter(Date date);
+    List<Activity> findActivitiesByDateAfterAndHoaId(Date date, int hoaId);
 
-    List<Activity> findActivitiesByDateBefore(Date date);
+    List<Activity> findActivitiesByDateBeforeAndHoaId(Date date, int hoaId);
 
     boolean existsActivityByName(String name);
 
-    boolean existsActivityByDateAfter(Date date);
+    boolean existsActivityByDateAfterAndHoaId(Date date, int hoaId);
 
-    boolean existsActivityByDateBefore(Date date);
+    boolean existsActivityByDateBeforeAndHoaId(Date date, int hoaId);
 
     boolean existsActivityByActivityId(Integer activityId);
 }

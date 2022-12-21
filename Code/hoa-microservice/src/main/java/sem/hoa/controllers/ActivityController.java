@@ -10,13 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import sem.hoa.authentication.AuthManager;
 import sem.hoa.domain.activity.Activity;
 import sem.hoa.domain.activity.ActivityService;
 import sem.hoa.domain.utils.Clock;
-import sem.hoa.models.ActivityCreationRequestModel;
-import sem.hoa.models.ActivityResponseModel;
-import sem.hoa.models.DateRequestModel;
-import sem.hoa.models.UserParticipateModel;
+import sem.hoa.models.*;
 
 import java.util.Date;
 
@@ -27,10 +25,20 @@ public class ActivityController {
     private final transient ActivityService activityService;
     private final transient  Clock clock;
 
+    private final transient AuthManager authManager;
+
+    /**
+     * Controller for Activity.
+     *
+     * @param activityService activity service that contains all the business logic
+     * @param clock global clock that is used to get current time
+     * @param authManager authentication manager
+     */
     @Autowired
-    public ActivityController(ActivityService activityService, Clock clock) {
+    public ActivityController(ActivityService activityService, Clock clock, AuthManager authManager) {
         this.activityService = activityService;
         this.clock = clock;
+        this.authManager = authManager;
     }
 
     /**
@@ -65,7 +73,7 @@ public class ActivityController {
     @GetMapping("/activity/get")
     public ResponseEntity<ActivityResponseModel> getActivity(@RequestParam(name = "id") int activityId) throws Exception {
         try {
-            Activity activity = activityService.getActivity(activityId);
+            Activity activity = activityService.getActivity(activityId, authManager.getNetId());
             ActivityResponseModel responseModel = new ActivityResponseModel(
                     activity.getActivityId(), activity.getHoaId(), activity.getName(), activity.getDescription(), activity.getDate(), activity.getCreatedBy()
             );
@@ -87,7 +95,7 @@ public class ActivityController {
     @DeleteMapping ("/activity/remove")
     public ResponseEntity removeActivity(@RequestParam(name = "id") int activityId) throws Exception {
         try {
-            activityService.removeActivity(activityId);
+            activityService.removeActivity(activityId, authManager.getNetId());
 
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -105,7 +113,7 @@ public class ActivityController {
     @PostMapping("/activity/participate")
     public ResponseEntity participate(@RequestBody UserParticipateModel userParticipateModel) throws Exception {
         try {
-            activityService.participate(userParticipateModel.getUsername(), userParticipateModel.getActivityId());
+            activityService.participate(authManager.getNetId(), userParticipateModel.getActivityId());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
@@ -122,7 +130,7 @@ public class ActivityController {
     @DeleteMapping("/activity/removeParticipate")
     public ResponseEntity removeParticipate(@RequestBody UserParticipateModel userParticipateModel) throws Exception {
         try {
-            activityService.removeParticipate(userParticipateModel.getUsername(), userParticipateModel.getActivityId());
+            activityService.removeParticipate(authManager.getNetId(), userParticipateModel.getActivityId());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
@@ -136,9 +144,9 @@ public class ActivityController {
      * @return an array of Activities as a response
      */
     @GetMapping("/activity/getAllAfterDate")
-    public ResponseEntity<ActivityResponseModel[]> getAllActivitiesAfterDate(@RequestBody DateRequestModel date) throws Exception {
+    public ResponseEntity<ActivityResponseModel[]> getAllActivitiesAfterDate(@RequestBody GetActivityWithHoaIdAndDateRequestModel requestModel) throws Exception {
         try {
-            ActivityResponseModel[] response = activityService.getAllActivitiesAfterDate(date.getDate());
+            ActivityResponseModel[] response = activityService.getAllActivitiesAfterDate(requestModel.getDate(), requestModel.getHoaId(), authManager.getNetId());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -152,9 +160,9 @@ public class ActivityController {
      * @return an array of Activities as a response
      */
     @GetMapping("/activity/getAllBeforeDate")
-    public ResponseEntity<ActivityResponseModel[]> getAllActivitiesBeforeDate(@RequestBody DateRequestModel date) throws Exception {
+    public ResponseEntity<ActivityResponseModel[]> getAllActivitiesBeforeDate(@RequestBody GetActivityWithHoaIdAndDateRequestModel requestModel) throws Exception {
         try {
-            ActivityResponseModel[] response = activityService.getAllActivitiesBeforeDate(date.getDate());
+            ActivityResponseModel[] response = activityService.getAllActivitiesBeforeDate(requestModel.getDate(), requestModel.getHoaId(), authManager.getNetId());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -167,10 +175,10 @@ public class ActivityController {
      * @return an array of Activities as a response
      */
     @GetMapping("/activity/getAllFutureActivities")
-    public ResponseEntity<ActivityResponseModel[]> getAllFutureActivities() throws Exception {
+    public ResponseEntity<ActivityResponseModel[]> getAllFutureActivities(@RequestBody GetActivitiesWithHoaIdRequestModel requestModel) throws Exception {
         Date currentDate = clock.getCurrentDate();
         try {
-            ActivityResponseModel[] response = activityService.getAllActivitiesAfterDate(currentDate);
+            ActivityResponseModel[] response = activityService.getAllActivitiesAfterDate(currentDate, requestModel.getHoaId(), authManager.getNetId());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -183,10 +191,10 @@ public class ActivityController {
      * @return an array of Activities as a response
      */
     @GetMapping("/activity/getAllPastActivities")
-    public ResponseEntity<ActivityResponseModel[]> getAllPastActivities() throws Exception {
+    public ResponseEntity<ActivityResponseModel[]> getAllPastActivities(@RequestBody GetActivitiesWithHoaIdRequestModel requestModel) throws Exception {
         Date currentDate = clock.getCurrentDate();
         try {
-            ActivityResponseModel[] response = activityService.getAllActivitiesBeforeDate(currentDate);
+            ActivityResponseModel[] response = activityService.getAllActivitiesBeforeDate(currentDate, requestModel.getHoaId(), authManager.getNetId());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
