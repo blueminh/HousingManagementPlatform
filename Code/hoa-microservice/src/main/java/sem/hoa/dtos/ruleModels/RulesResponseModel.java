@@ -11,7 +11,7 @@ import java.util.List;
  * Model that stores an id of an HOA and its list of rules
  */
 @Data
-public class HoaIDRulesListModel {
+public class RulesResponseModel {
 
     private int hoaId;
     private List<Rule> rules;

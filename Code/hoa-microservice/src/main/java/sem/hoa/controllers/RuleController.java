@@ -38,7 +38,7 @@ public class RuleController {
      *      The response contains a list of the rules
      */
     @GetMapping("/rules")
-    public ResponseEntity<HoaIDRulesListModel> displayRules(@RequestBody HoaIDRulesListModel request) {
+    public ResponseEntity<RulesResponseModel> displayRules(@RequestBody RulesRequestModel request) {
         if (request == null) {
             return ResponseEntity.notFound().build();
         }
@@ -47,7 +47,7 @@ public class RuleController {
             return ResponseEntity.notFound().build();
         }
         List<Rule> rules = ruleService.getHoaRules(request.getHoaId());
-        HoaIDRulesListModel response = new HoaIDRulesListModel();
+        RulesResponseModel response = new RulesResponseModel();
         response.setHoaId(request.getHoaId());
         response.setRules(rules);
         return ResponseEntity.ok(response);

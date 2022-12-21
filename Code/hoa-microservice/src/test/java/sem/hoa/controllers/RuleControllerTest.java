@@ -11,8 +11,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import sem.hoa.authentication.AuthManager;
 import sem.hoa.authentication.JwtTokenVerifier;
+import sem.hoa.domain.entities.HOA;
 import sem.hoa.domain.services.HOARepository;
 import sem.hoa.domain.services.HOAService;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 
 @SpringBootTest
@@ -36,4 +40,15 @@ public class RuleControllerTest {
 
     @Autowired
     private transient HOARepository hoaRepoMock;
+
+//    @Test
+//    public void addRuleTest() {
+//        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
+//        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+//        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+//
+//        HOA hoa = new HOA("ExampleName", "ExampleCountry", "ExampleCity");
+//        hoaRepoMock.save(hoa);
+//
+//    }
 }
