@@ -71,18 +71,17 @@ public class HOAController {
         try {
             //CHECKS
             hoaService.checkHoaModifyDTO(request);
-            if (hoaService.hoaExistsByName(request.hoaName)) {
-                System.err.println("HOA with that name already exists");
-                throw new HoaCreationException("HOA by that name already exists");
-            }
 
             //Creation
             HOA newHOA = new HOA(request.hoaName, request.userCountry, request.userCity);
+
             hoaService.createNewHOA(newHOA);
+
             memberManagementService
                     .addMembership(new Membership(authManager.getNetId(), newHOA.getId(), true,
                     request.userCountry, request.userCity,
                             request.userStreet, request.userHouseNumber, request.userPostalCode));
+
             return ResponseEntity.ok(newHOA);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Attempted to create HOA, but " + e.getMessage());
@@ -119,11 +118,7 @@ public class HOAController {
                 throw new HoaJoiningException("Invalid address");
             }
             //CREATION
-            //weird warning - should be resolved later (probably because of the isPresent() method)
-            memberManagementService
-                    .addMembership(new Membership(authManager.getNetId(), hoa.getId(), false,
-                            request.userCountry, request.userCity,
-                            request.userStreet, request.userHouseNumber, request.userPostalCode));
+            memberManagementService.addMembership(membership);
             System.out.println("Member " + authManager.getNetId() + " added successfully to " + request.getHoaName());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
