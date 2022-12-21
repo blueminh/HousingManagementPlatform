@@ -2,7 +2,12 @@ package sem.hoa.domain.entities;
 
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Column;
 import java.util.Objects;
 
 
@@ -45,8 +50,12 @@ public class Rule {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Rule rule = (Rule) o;
         return getHoaID() == rule.getHoaID() && Objects.equals(getDescription(), rule.getDescription());
     }

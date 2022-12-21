@@ -3,13 +3,22 @@ package sem.hoa.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import sem.hoa.authentication.AuthManager;
 import sem.hoa.domain.entities.HOA;
 import sem.hoa.domain.entities.Rule;
 import sem.hoa.domain.services.HOAService;
 import sem.hoa.domain.services.RuleService;
-import sem.hoa.dtos.ruleModels.*;
+import sem.hoa.dtos.rulemodels.AddRuleRequestModel;
+import sem.hoa.dtos.rulemodels.AddRuleResponseModel;
+import sem.hoa.dtos.rulemodels.RulesRequestModel;
+import sem.hoa.dtos.rulemodels.RulesResponseModel;
+import sem.hoa.dtos.rulemodels.EditRuleModel;
+import sem.hoa.dtos.rulemodels.DeleteRuleModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +30,13 @@ public class RuleController {
     private final transient RuleService ruleService;
     private final transient HOAService hoaService;
 
+    /**
+     * Constructor of the controller.
+     *
+     * @param authManager authentication manager
+     * @param ruleService the service for the rules
+     * @param hoaService the service for hoa
+     */
     @Autowired
     public RuleController(AuthManager authManager, RuleService ruleService, HOAService hoaService) {
         this.authManager = authManager;
@@ -29,7 +45,7 @@ public class RuleController {
     }
 
     /**
-     * Endpoint to display all the rules of an HOA
+     * Endpoint to display all the rules of an HOA.
      *
      * @param request model of the request
      * @return 200 if the HOA was found
@@ -43,7 +59,7 @@ public class RuleController {
             return ResponseEntity.notFound().build();
         }
         Optional<HOA> hoa = hoaService.findHOAByID(request.getHoaId());
-        if(hoa.isEmpty()) {
+        if (hoa.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         List<Rule> rules = ruleService.getHoaRules(request.getHoaId());
@@ -54,7 +70,7 @@ public class RuleController {
     }
 
     /**
-     * Endpoint to add a rule to an HOA
+     * Endpoint to add a rule to an HOA.
      *
      * @param request model of the request
      * @return 200 if the rule was successfully added
@@ -68,7 +84,7 @@ public class RuleController {
             return ResponseEntity.badRequest().build();
         }
         Optional<HOA> hoa = hoaService.findHOAByID(request.getHoaId());
-        if(hoa.isEmpty()) {
+        if (hoa.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         List<Rule> rules = ruleService.getHoaRules(request.getHoaId());
@@ -82,8 +98,10 @@ public class RuleController {
     }
 
     /**
-     * Endpoint to change a rule in an HOA
+     * Endpoint to change a rule in an HOA.
+     *
      * @param request model of the request
+     *
      * @return 200 if the modification was successful
      *      401 if the rule was not found
      *      400 otherwise
@@ -94,23 +112,25 @@ public class RuleController {
             return ResponseEntity.badRequest().build();
         }
         Optional<Rule> rule = ruleService.findRuleById(request.getRuleId());
-        if(rule.isEmpty()) {
+        if (rule.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         ruleService.replaceRule(rule.get(), request.getChange());
         ruleService.saveRule(rule.get());
-        return ResponseEntity.ok("Edited rule with id: " + request.getRuleId() +
-                "\nNew rule is: " + request.getChange());
+        return ResponseEntity.ok("Edited rule with id: " + request.getRuleId()
+                + "\nNew rule is: " + request.getChange());
 
     }
 
     /**
-     * Endpoint to delete a rule
+     * Endpoint to delete a rule.
+     *
      * @param request model of the request
+     *
      * @return 200 if the deletion was successful
      *      401 if the rule was not found
      *      400 otherwise
-     *      The response contains information about the deleted rule and the id of the HOA
+     *
      */
     @DeleteMapping("/delete-rule")
     public ResponseEntity deleteRule(@RequestBody DeleteRuleModel request) {
@@ -118,12 +138,12 @@ public class RuleController {
             return ResponseEntity.badRequest().build();
         }
         Optional<Rule> rule = ruleService.findRuleById(request.getRuleId());
-        if(rule.isEmpty()) {
+        if (rule.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         ruleService.removeRuleById(request.getRuleId());
-        return ResponseEntity.ok("Deleted rule with id: " + request.getRuleId() +
-                "\nPart of hoa with id: " + request.getHoaId());
+        return ResponseEntity.ok("Deleted rule with id: " + request.getRuleId()
+                + "\nPart of hoa with id: " + request.getHoaId());
 
     }
 

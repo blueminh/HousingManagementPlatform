@@ -1,14 +1,13 @@
-package sem.hoa.dtos.ruleModels;
+package sem.hoa.dtos.rulemodels;
 
 import lombok.Data;
 import sem.hoa.domain.entities.Rule;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * Model that stores an id of an HOA and its list of rules
+ * Model that stores an id of an HOA and its list of rules.
  */
 @Data
 public class RulesResponseModel {

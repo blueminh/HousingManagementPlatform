@@ -1,10 +1,10 @@
-package sem.hoa.dtos.ruleModels;
+package sem.hoa.dtos.rulemodels;
 
 
 import lombok.Data;
 
 /**
- * Model that represents a request for deleting a rule from an HOA
+ * Model that represents a request for deleting a rule from an HOA.
  */
 @Data
 public class DeleteRuleModel {
