@@ -85,7 +85,7 @@ public class HOAController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fields can not be Empty");
             }
             //checks if house number is valid
-            if(request.userHouseNumber < 0){
+            if (request.userHouseNumber < 0) {
                 System.err.println("Attempted to create HOA but house Number was < 0");
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "House Number must be a positive integer");
             }
