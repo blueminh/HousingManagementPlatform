@@ -71,7 +71,13 @@ public class HOAService {
         return !hoaRepository.findByHoaName(hoaName).isEmpty();
     }
 
-    public void checkHoaModifyDTO(HoaModifyDTO request){
+    /**
+     * Checks if the HoaModifyDTO's fields are filled out correctly.
+     *
+     * @param request = request to be checked
+     */
+
+    public void checkHoaModifyDTO(HoaModifyDTO request) {
 
         //Checks if strings are null
         if (request.hoaName == null || request.userCity == null || request.userCountry == null
