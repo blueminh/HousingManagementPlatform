@@ -46,6 +46,7 @@ public class HoaControllerTest {
 
     @Autowired
     private transient HoaRepository hoaRepoMock;
+
     @Test
     public void createOne() throws Exception {
         // Arrange

@@ -16,14 +16,11 @@ import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.domain.services.MemberManagementService;
 import sem.hoa.exceptions.HoaJoiningException;
 
-import java.lang.reflect.Member;
 import java.util.Date;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -41,9 +38,9 @@ public class MemberManagementServiceTest {
     private transient HoaRepository hoaRepository;
 
     @Test
-    public void addMembership_ok(){
+    public void addMembership_ok() {
         // Arrange
-        final Hoa hoa = hoaRepository.save(new Hoa("hoa1", "country1","city1"));
+        final Hoa hoa = hoaRepository.save(new Hoa("hoa1", "country1", "city1"));
         final Membership membership = new Membership("user1", hoa.getId(), false,
             "country1", "city1", "street1", 1, "postal1",
             new Date().getTime(), -1L);
@@ -51,7 +48,7 @@ public class MemberManagementServiceTest {
         // Act
         try {
             memberManagementService.addMembership(membership);
-        } catch (HoaJoiningException e){
+        } catch (HoaJoiningException e) {
             fail("joining error");
         }
 
@@ -62,9 +59,9 @@ public class MemberManagementServiceTest {
     }
 
     @Test
-    public void is_board_member_of_test(){
+    public void is_board_member_of_test() {
         // Arrange
-        final Hoa hoa = hoaRepository.save(new Hoa("hoa1", "country1","city1"));
+        final Hoa hoa = hoaRepository.save(new Hoa("hoa1", "country1", "city1"));
         final Membership membership1 = new Membership("user1", hoa.getId(), false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L);
         final Membership membership2 = new Membership("user2", hoa.getId(), true, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L);
 
@@ -72,7 +69,7 @@ public class MemberManagementServiceTest {
         try {
             memberManagementService.addMembership(membership1);
             memberManagementService.addMembership(membership2);
-        } catch (HoaJoiningException e){
+        } catch (HoaJoiningException e) {
             fail("joining error");
         }
 
@@ -83,10 +80,10 @@ public class MemberManagementServiceTest {
 
     @Test
     public void address_check_test() {
-        final Hoa hoa = new Hoa("hoa1", "country1","city1");
+        final Hoa hoa = new Hoa("hoa1", "country1", "city1");
         final Membership membership1 = new Membership("user1", hoa.getId(), false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L);
         final Membership membership2 = new Membership("user2", hoa.getId(), true, "country2", "city1", "street1", 1, "postal1", new Date().getTime(), -1L);
-        final Membership membership3 = new Membership("user2", hoa.getId(), true, "country1", "city2", "street1", 1, "postal1",new Date().getTime(), -1L);
+        final Membership membership3 = new Membership("user2", hoa.getId(), true, "country1", "city2", "street1", 1, "postal1", new Date().getTime(), -1L);
 
         // Assert
         assertThat(memberManagementService.addressCheck(hoa, membership1)).isTrue();
@@ -96,18 +93,18 @@ public class MemberManagementServiceTest {
 
     @Test
     public void find_by_username_and_hoaId_test() {
-        final Hoa hoa1 = hoaRepository.save(new Hoa("hoa1", "country1","city1"));
-        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1","city1"));
-        final Membership membership1 = new Membership("user1", hoa1.getId(), false, "country1", "city1", "street1", 1, "postal1",new Date().getTime(), -1L);
-        final Membership membership2 = new Membership("user1", hoa2.getId(), false, "country1", "city1", "street1", 1, "postal1",new Date().getTime(), -1L);
-        final Membership membership3 = new Membership("user2", hoa1.getId(), false, "country1", "city1", "street1", 1, "postal1",new Date().getTime(), -1L);
+        final Hoa hoa1 = hoaRepository.save(new Hoa("hoa1", "country1", "city1"));
+        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1", "city1"));
+        final Membership membership1 = new Membership("user1", hoa1.getId(), false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L);
+        final Membership membership2 = new Membership("user1", hoa2.getId(), false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L);
+        final Membership membership3 = new Membership("user2", hoa1.getId(), false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L);
 
         // Act
         try {
             memberManagementService.addMembership(membership1);
             memberManagementService.addMembership(membership2);
             memberManagementService.addMembership(membership3);
-        } catch (HoaJoiningException e){
+        } catch (HoaJoiningException e) {
             fail("joining error");
         }
 
@@ -119,19 +116,19 @@ public class MemberManagementServiceTest {
     }
 
     @Test
-    public void remove_membership_test(){
-        final Hoa hoa1 = hoaRepository.save(new Hoa("hoa1", "country1","city1"));
-        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1","city1"));
+    public void remove_membership_test() {
+        final Hoa hoa1 = hoaRepository.save(new Hoa("hoa1", "country1", "city1"));
+        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1", "city1"));
         final Membership membership1 = new Membership("user1", hoa1.getId(), false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L);
-        final Membership membership2 = new Membership("user1", hoa2.getId(), false, "country1", "city1", "street1", 1, "postal1",new Date().getTime(), -1L);
-        final Membership membership3 = new Membership("user2", hoa1.getId(), false, "country1", "city1", "street1", 1, "postal1",new Date().getTime(), -1L);
+        final Membership membership2 = new Membership("user1", hoa2.getId(), false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L);
+        final Membership membership3 = new Membership("user2", hoa1.getId(), false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L);
 
         // Act
         try {
             memberManagementService.addMembership(membership1);
             memberManagementService.addMembership(membership2);
             memberManagementService.addMembership(membership3);
-        } catch (HoaJoiningException e){
+        } catch (HoaJoiningException e) {
             fail("joining error");
         }
 

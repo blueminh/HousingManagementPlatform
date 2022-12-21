@@ -27,7 +27,6 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -59,19 +58,19 @@ public class MemberControllerTest {
     private String userName;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         userName = "user1";
         when(mockAuthenticationManager.getNetId()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
-        hoa = hoaRepository.save(new Hoa("hoa1", "country1","city1"));
+        hoa = hoaRepository.save(new Hoa("hoa1", "country1", "city1"));
     }
 
     @Test
     void find_user_role_hoa_name_test_ok() {
         // Arrange
         final Membership membership = memberManagementRepository.save(new Membership("user1", hoa.getId(),
-            false, "country1", "city1", "street1", 1, "postal1",new Date().getTime(), -1L));
+            false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L));
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/findUserRoleByHoaName")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +111,7 @@ public class MemberControllerTest {
     void find_user_role_hoa_name_test_fail() {
         // Arrange
         final Membership membership = memberManagementRepository.save(new Membership("user1", hoa.getId(),
-            false, "country1", "city1", "street1", 1, "postal1",new Date().getTime(), -1L));
+            false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L));
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/findUserRoleByHoaName")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -147,11 +146,11 @@ public class MemberControllerTest {
     void find_user_role_hoa_id_test_ok() {
         // Arrange
         final Membership membership = memberManagementRepository.save(new Membership("user1", hoa.getId(),
-            false, "country1", "city1","street1", 1, "postal1", new Date().getTime(), -1L));
+            false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L));
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/findUserRoleByHoaID")
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("hoaId", hoa.getId()+"")
+                .param("hoaId", hoa.getId() + "")
                 .header("Authorization", "Bearer MockedToken"));
 
             resultActions.andExpect(status().isOk());
@@ -188,7 +187,7 @@ public class MemberControllerTest {
     void find_user_role_hoa_id_test_fail() {
         // Arrange
         final Membership membership = memberManagementRepository.save(new Membership("user1", hoa.getId(),
-            false, "country1", "city1", "street1", 1, "postal1",new Date().getTime(), -1L));
+            false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L));
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/findUserRoleByHoaID")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -228,11 +227,11 @@ public class MemberControllerTest {
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
 
         final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
-            false, "country1", "city1","street1", 1, "postal1", new Date().getTime(), -1L));
+            false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L));
 
-        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1","city1"));
+        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1", "city1"));
         final Membership membership2 = memberManagementRepository.save(new Membership("user1", hoa2.getId(),
-            true, "country1", "city1", "street1", 1, "postal1",new Date().getTime(), -1L));
+            true, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L));
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/isaBoardMemberOfAny")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -240,7 +239,7 @@ public class MemberControllerTest {
 
             resultActions.andExpect(status().isOk());
             String response = resultActions.andReturn().getResponse().getContentAsString();
-            assertThat(response).isEqualTo(hoa2.getId()+ "");
+            assertThat(response).isEqualTo(hoa2.getId() + "");
         } catch (Exception e) {
             fail("Exception when making request");
         }
@@ -250,11 +249,11 @@ public class MemberControllerTest {
     void board_member_of_any_false() {
         // Arrange
         final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
-            false, "country1", "city1", "street1", 1, "postal1",new Date().getTime(), -1L));
+            false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L));
 
-        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1","city1"));
+        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1", "city1"));
         final Membership membership2 = memberManagementRepository.save(new Membership("user1", hoa2.getId(),
-            false, "country1", "city1", "street1", 1, "postal1",new Date().getTime(), -1L));
+            false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L));
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/isaBoardMemberOfAny")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -271,9 +270,9 @@ public class MemberControllerTest {
     @Test
     public void is_member_of_ok() {
         final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
-            false, "country1", "city1", "street1", 1, "postal1",new Date().getTime(), -1L));
+            false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L));
 
-        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1","city1"));
+        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1", "city1"));
 
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/isMemberOf")
@@ -318,7 +317,7 @@ public class MemberControllerTest {
     public void joining_date_ok() {
         Long currentTime = new Date().getTime();
         final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
-            false, "country1", "city1", "street1", 1, "postal1",currentTime, -1L));
+            false, "country1", "city1", "street1", 1, "postal1", currentTime, -1L));
 
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/joiningDate")
@@ -338,9 +337,9 @@ public class MemberControllerTest {
     public void joining_date_fail() {
         Long currentTime = new Date().getTime();
         final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
-            false, "country1", "city1","street1", 1, "postal1", currentTime, -1L));
+            false, "country1", "city1", "street1", 1, "postal1", currentTime, -1L));
 
-        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1","city1"));
+        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1", "city1"));
 
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/joiningDate")
@@ -369,7 +368,7 @@ public class MemberControllerTest {
     public void joining_board_date_ok() {
         long currentTime = new Date().getTime();
         final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
-            true, "country1", "city1", "street1", 1, "postal1",currentTime, currentTime + 100));
+            true, "country1", "city1", "street1", 1, "postal1", currentTime, currentTime + 100));
 
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/joiningBoardDate")
@@ -389,13 +388,13 @@ public class MemberControllerTest {
     public void joining_board_date_fail() {
         long currentTime = new Date().getTime();
         final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
-            false, "country1", "city1", "street1", 1, "postal1",currentTime, -1L));
+            false, "country1", "city1", "street1", 1, "postal1", currentTime, -1L));
 
-        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1","city1"));
+        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1", "city1"));
         final Membership membership2 = memberManagementRepository.save(new Membership("user1", hoa2.getId(),
-            true, "country1", "city1", "street1", 1, "postal1",currentTime, currentTime + 100));
+            true, "country1", "city1", "street1", 1, "postal1", currentTime, currentTime + 100));
 
-        final Hoa hoa3 = hoaRepository.save(new Hoa("hoa3", "country1","city1"));
+        final Hoa hoa3 = hoaRepository.save(new Hoa("hoa3", "country1", "city1"));
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/joiningBoardDate")
                 .contentType(MediaType.APPLICATION_JSON)
