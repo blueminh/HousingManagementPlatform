@@ -1,22 +1,32 @@
 package sem.hoa.controllers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import sem.hoa.authentication.AuthManager;
 import sem.hoa.authentication.JwtTokenVerifier;
 import sem.hoa.domain.entities.HOA;
 import sem.hoa.domain.services.HOARepository;
 import sem.hoa.domain.services.HOAService;
+import sem.hoa.domain.services.RuleRepository;
+import sem.hoa.dtos.ruleModels.RulesRequestModel;
+import sem.hoa.utils.JsonUtil;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @SpringBootTest
@@ -24,6 +34,7 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
+
 public class RuleControllerTest {
 
     @Autowired
@@ -41,14 +52,29 @@ public class RuleControllerTest {
     @Autowired
     private transient HOARepository hoaRepoMock;
 
-//    @Test
-//    public void addRuleTest() {
-//        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
-//        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-//        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
-//
-//        HOA hoa = new HOA("ExampleName", "ExampleCountry", "ExampleCity");
-//        hoaRepoMock.save(hoa);
-//
-//    }
+    @Autowired
+    private transient RuleRepository ruleRepoMock;
+
+    @Test
+    public void displayRules() throws Exception {
+        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+
+        HOA hoa = new HOA("ExampleName", "ExampleCountry", "ExampleCity");
+
+        hoaRepoMock.save(hoa);
+        assertThat(hoa.getId()).isEqualTo(1);
+
+        RulesRequestModel requestModel = new RulesRequestModel();
+        requestModel.setHoaId(1);
+
+        ResultActions resultActions = mockMvc.perform(get("/rules")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(requestModel)));
+
+        resultActions.andExpect(status().isOk());
+
+    }
 }

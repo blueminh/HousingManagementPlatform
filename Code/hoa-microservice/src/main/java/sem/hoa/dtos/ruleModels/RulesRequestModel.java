@@ -7,4 +7,8 @@ public class RulesRequestModel {
     public int getHoaId() {
         return hoaId;
     }
+
+    public void setHoaId(int hoaId) {
+        this.hoaId = hoaId;
+    }
 }
