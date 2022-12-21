@@ -1,4 +1,4 @@
-package sem.hoa.controllers;
+package sem.hoa.integration;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,9 +13,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import sem.hoa.authentication.AuthManager;
 import sem.hoa.authentication.JwtTokenVerifier;
-import sem.hoa.domain.entities.HOA;
-import sem.hoa.domain.services.HOARepository;
-import sem.hoa.domain.services.HOAService;
+import sem.hoa.domain.entities.Hoa;
+import sem.hoa.domain.services.HoaRepository;
+import sem.hoa.domain.services.HoaService;
 import sem.hoa.domain.services.RuleRepository;
 import sem.hoa.dtos.rulemodels.RulesRequestModel;
 import sem.hoa.utils.JsonUtil;
@@ -45,10 +45,10 @@ public class RuleControllerTest {
     private transient AuthManager mockAuthenticationManager;
 
     @Autowired
-    private transient HOAService hoaServiceMock;
+    private transient HoaService hoaServiceMock;
 
     @Autowired
-    private transient HOARepository hoaRepoMock;
+    private transient HoaRepository hoaRepoMock;
 
     @Autowired
     private transient RuleRepository ruleRepoMock;
@@ -59,7 +59,7 @@ public class RuleControllerTest {
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
 
-        HOA hoa = new HOA("ExampleName", "ExampleCountry", "ExampleCity");
+        Hoa hoa = new Hoa("ExampleName", "ExampleCountry", "ExampleCity");
 
         hoaRepoMock.save(hoa);
         assertThat(hoa.getId()).isEqualTo(1);

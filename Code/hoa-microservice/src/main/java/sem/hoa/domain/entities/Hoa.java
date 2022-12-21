@@ -6,13 +6,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.Objects;
 
 @Entity
 @Table(name = "hoas")
@@ -33,12 +31,6 @@ public class Hoa extends HasEvents {
     @Column(name = "city", nullable = false, unique = false)
     private String city;
 
-    @Column(name = "election_start_time")
-    private Long electionStartTime;
-
-    @Column(name = "election_end_time")
-    private Long electionEndTime;
-
     /**
      * Constructor for a new HOA.
      *
@@ -56,43 +48,48 @@ public class Hoa extends HasEvents {
         return id;
     }
 
-    public String getHoaName() {
-        return hoaName;
-    }
-
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getHoaName() {
+        return hoaName;
     }
 
     public void setHoaName(String hoaName) {
         this.hoaName = hoaName;
     }
 
-    public String getHoaName() {
-        return this.hoaName;
-    }
-
-    public Long getElectionStartTime() {
-        return electionStartTime;
-    }
-
-    public Long getElectionEndTime() {
-        return electionEndTime;
-    }
-
-    public void setElectionStartTime(Long electionStartTime) {
-        this.electionStartTime = electionStartTime;
-    }
-
-    public void setElectionEndTime(Long electionEndTime) {
-        this.electionEndTime = electionEndTime;
-    }
-
     public String getCountry() {
         return country;
     }
 
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
     public String getCity() {
         return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Hoa)) {
+            return false;
+        }
+        Hoa hoa = (Hoa) o;
+        return id == hoa.id && Objects.equals(hoaName, hoa.hoaName) && Objects.equals(country, hoa.country) && Objects.equals(city, hoa.city);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, hoaName, country, city);
     }
 }

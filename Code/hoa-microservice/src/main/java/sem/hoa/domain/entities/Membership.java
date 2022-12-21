@@ -1,5 +1,6 @@
 package sem.hoa.domain.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import javax.persistence.Table;
 @IdClass(MembershipId.class)
 @Table(name = "memberManagements")
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class Membership {
     @Id
@@ -33,41 +35,39 @@ public class Membership {
     @Column(name = "city")
     private String city;
 
-    @Column(name = "joiningDate")
-    private Long joiningDate;
     @Column(name = "street")
     private String street;
 
-    @Column(name = "joiningBoardDate")
-    private Long joiningBoardDate;
     @Column(name = "houseNumber")
     private int houseNumber;
 
     @Column(name = "postalCode")
     private String postalCode;
 
-    public int getHoaID() {
-        return hoaID;
-    }
+    @Column(name = "joiningDate")
+    private Long joiningDate;
 
-    /**
-     * Constructor of a Membership object.
-     *
-     * @param username         username
-     * @param hoaId            hoaId
-     * @param isBoardMember    isBoardMember
-     * @param country          country
-     * @param city             city
-     * @param joiningDate      joiningDate
-     * @param joiningBoardDate joiningBoardDate
-     */
-    public Membership(String username, int hoaId, boolean isBoardMember, String country, String city, Long joiningDate, Long joiningBoardDate) {
-        this.username = username;
-        this.hoaId = hoaId;
-        this.isBoardMember = isBoardMember;
-        this.country = country;
-        this.city = city;
-        this.joiningDate = joiningDate;
-        this.joiningBoardDate = joiningBoardDate;
-    }
+    @Column(name = "joiningBoardDate")
+    private Long joiningBoardDate;
+
+//    /**
+//     * Constructor of a Membership object.
+//     *
+//     * @param username         username
+//     * @param hoaId            hoaId
+//     * @param isBoardMember    isBoardMember
+//     * @param country          country
+//     * @param city             city
+//     * @param joiningDate      joiningDate
+//     * @param joiningBoardDate joiningBoardDate
+//     */
+//    public Membership(String username, int hoaId, boolean isBoardMember, String country, String city, Long joiningDate, Long joiningBoardDate) {
+//        this.username = username;
+//        this.hoaId = hoaId;
+//        this.isBoardMember = isBoardMember;
+//        this.country = country;
+//        this.city = city;
+//        this.joiningDate = joiningDate;
+//        this.joiningBoardDate = joiningBoardDate;
+//    }
 }
