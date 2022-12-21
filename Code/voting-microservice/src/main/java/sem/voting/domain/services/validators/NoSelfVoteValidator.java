@@ -2,15 +2,13 @@ package sem.voting.domain.services.validators;
 
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
-import sem.voting.domain.proposal.ProposalHandlingService;
-import sem.voting.domain.proposal.Vote;
 
 public class NoSelfVoteValidator extends Validator {
     @Override
-    public boolean handle(Vote vote, Proposal proposal) throws InvalidRequestException {
-        if (proposal.getAvailableOptions().contains(new Option(vote.getVoter()))) {
+    public boolean handle(String username, Option option, Proposal proposal) throws InvalidRequestException {
+        if (proposal.getAvailableOptions().contains(new Option(username))) {
             throw new InvalidRequestException("A user can't vote for himself");
         }
-        return super.checkNext(vote, proposal);
+        return super.checkNext(username, option, proposal);
     }
 }

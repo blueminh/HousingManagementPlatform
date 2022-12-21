@@ -11,7 +11,6 @@ import sem.voting.domain.services.validators.BoardMemberForLess10YearsValidator;
 import sem.voting.domain.services.validators.InvalidRequestException;
 import sem.voting.domain.services.validators.MemberIsAddingThemselvesValidator;
 import sem.voting.domain.services.validators.MemberIsNotBoardMemberOfAnyHoaValidator;
-import sem.voting.domain.services.validators.NoSelfVoteValidator;
 import sem.voting.domain.services.validators.UserIsMemberForAtLeast3YearsValidator;
 import sem.voting.domain.services.validators.UserIsMemberOfThisHoaValidator;
 import sem.voting.domain.services.validators.Validator;
@@ -31,7 +30,7 @@ public class BoardElectionOptionValidationService implements OptionValidationSer
         validator.addLast(new UserIsMemberForAtLeast3YearsValidator());
         validator.addLast(new BoardMemberForLess10YearsValidator());
         try {
-            return validator.handle(new Vote(authManager.getUserId(), option), proposal);
+            return validator.handle(authManager.getUserId(), option, proposal);
         } catch (InvalidRequestException e) {
             System.out.println(e.getMessage());
             return false;

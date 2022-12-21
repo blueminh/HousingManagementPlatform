@@ -16,7 +16,7 @@ public class BoardElectionsVoteValidationService implements VoteValidationServic
         Validator validator = new UserIsMemberOfThisHoaValidator();
         validator.addLast(new NoSelfVoteValidator());
         try {
-            return validator.handle(vote, proposal);
+            return validator.handle(vote.getVoter(), vote.getChoice(), proposal);
         } catch (InvalidRequestException e) {
             System.out.println(e.getMessage());
             return false;

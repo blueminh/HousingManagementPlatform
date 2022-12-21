@@ -14,7 +14,7 @@ public class RuleChangesVoteValidationService implements VoteValidationService {
     public boolean isVoteValid(Vote vote, Proposal proposal) {
         Validator validator = new MemberIsBoardMemberValidator();
         try {
-            return validator.handle(vote, proposal);
+            return validator.handle(vote.getVoter(), vote.getChoice(), proposal);
         } catch (InvalidRequestException e) {
             return false;
         }

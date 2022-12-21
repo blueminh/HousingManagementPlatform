@@ -8,12 +8,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import sem.voting.authentication.AuthManager;
 import sem.voting.domain.proposal.Option;
@@ -92,7 +90,7 @@ public class VotingController {
         try {
             Validator validator = new MemberIsBoardMemberValidator();
             validator.addLast(new NoBoardElectionValidator());
-            validator.handle(new Vote(authManager.getUserId(), null), toAdd);
+            validator.handle(authManager.getUserId(), null, toAdd);
         } catch (InvalidRequestException ex) {
             return ResponseEntity.badRequest().build();
         }

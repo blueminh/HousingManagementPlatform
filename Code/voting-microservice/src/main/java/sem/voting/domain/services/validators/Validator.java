@@ -2,8 +2,8 @@ package sem.voting.domain.services.validators;
 
 import lombok.Getter;
 import lombok.Setter;
+import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
-import sem.voting.domain.proposal.Vote;
 
 
 ///**
@@ -22,11 +22,11 @@ public abstract class Validator {
     @Getter
     private Validator next = null;
 
-    protected boolean checkNext(Vote vote, Proposal proposal) throws InvalidRequestException {
+    protected boolean checkNext(String username, Option option, Proposal proposal) throws InvalidRequestException {
         if (next == null) {
             return true;
         }
-        return next.handle(vote, proposal);
+        return next.handle(username, option, proposal);
     }
 
     /**
@@ -42,6 +42,6 @@ public abstract class Validator {
         curr.setNext(next);
     }
 
-    public abstract boolean handle(Vote vote, Proposal proposal) throws InvalidRequestException;
+    public abstract boolean handle(String username, Option option, Proposal proposal) throws InvalidRequestException;
 }
 
