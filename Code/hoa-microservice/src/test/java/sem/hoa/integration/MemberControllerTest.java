@@ -1,6 +1,6 @@
 package sem.hoa.integration;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +20,7 @@ import sem.hoa.domain.services.HoaRepository;
 import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.domain.services.MemberManagementService;
 
-import java.time.Instant;
 import java.util.Date;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -57,15 +55,21 @@ public class MemberControllerTest {
     @Autowired
     private transient HoaRepository hoaRepository;
 
-    @Test
-    void find_user_role_hoa_name_test_ok() {
-        // Arrange
-        final String userName = "user1";
+    private Hoa hoa;
+    private String userName;
+
+    @BeforeEach
+    void setUp(){
+        userName = "user1";
         when(mockAuthenticationManager.getNetId()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+        hoa = hoaRepository.save(new Hoa("hoa1", "country1","city1"));
+    }
 
-        final Hoa hoa = hoaRepository.save(new Hoa("hoa1", "country1","city1"));
+    @Test
+    void find_user_role_hoa_name_test_ok() {
+        // Arrange
         final Membership membership = memberManagementRepository.save(new Membership("user1", hoa.getId(),
             false, "country1", "city1", new Date().getTime(), -1L));
         try {
@@ -85,12 +89,6 @@ public class MemberControllerTest {
     @Test
     void find_user_role_hoa_name_test_board_ok() {
         // Arrange
-        final String userName = "user1";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
-
-        final Hoa hoa = hoaRepository.save(new Hoa("hoa1", "country1","city1"));
         final Membership membership = memberManagementRepository.save(new Membership("user1", hoa.getId(),
             true, "country1", "city1", new Date().getTime(), -1L));
 
@@ -113,12 +111,6 @@ public class MemberControllerTest {
     @Test
     void find_user_role_hoa_name_test_fail() {
         // Arrange
-        String userName = "user1";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
-
-        final Hoa hoa = hoaRepository.save(new Hoa("hoa1", "country1","city1"));
         final Membership membership = memberManagementRepository.save(new Membership("user1", hoa.getId(),
             false, "country1", "city1", new Date().getTime(), -1L));
         try {
@@ -134,9 +126,9 @@ public class MemberControllerTest {
             fail("Exception when making request");
         }
 
-        userName = "user2";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+        String userName2 = "user2";
+        when(mockAuthenticationManager.getNetId()).thenReturn(userName2);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName2);
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/findUserRoleByHoaName")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -154,12 +146,6 @@ public class MemberControllerTest {
     @Test
     void find_user_role_hoa_id_test_ok() {
         // Arrange
-        final String userName = "user1";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
-
-        final Hoa hoa = hoaRepository.save(new Hoa("hoa1", "country1","city1"));
         final Membership membership = memberManagementRepository.save(new Membership("user1", hoa.getId(),
             false, "country1", "city1", new Date().getTime(), -1L));
         try {
@@ -179,12 +165,6 @@ public class MemberControllerTest {
     @Test
     void find_user_role_hoa_id_test_board_ok() {
         // Arrange
-        final String userName = "user1";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
-
-        final Hoa hoa = hoaRepository.save(new Hoa("hoa1", "country1","city1"));
         final Membership membership = memberManagementRepository.save(new Membership("user1", hoa.getId(),
             true, "country1", "city1", new Date().getTime(), -1L));
 
@@ -207,12 +187,6 @@ public class MemberControllerTest {
     @Test
     void find_user_role_hoa_id_test_fail() {
         // Arrange
-        String userName = "user1";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
-
-        final Hoa hoa = hoaRepository.save(new Hoa("hoa1", "country1","city1"));
         final Membership membership = memberManagementRepository.save(new Membership("user1", hoa.getId(),
             false, "country1", "city1", new Date().getTime(), -1L));
         try {
@@ -245,4 +219,212 @@ public class MemberControllerTest {
         }
     }
 
+    @Test
+    void board_member_of_any_true() {
+        // Arrange
+        String userName = "user1";
+        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+
+        final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
+            false, "country1", "city1", new Date().getTime(), -1L));
+
+        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1","city1"));
+        final Membership membership2 = memberManagementRepository.save(new Membership("user1", hoa2.getId(),
+            true, "country1", "city1", new Date().getTime(), -1L));
+        try {
+            ResultActions resultActions = mockMvc.perform(get("/member/isaBoardMemberOfAny")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isOk());
+            String response = resultActions.andReturn().getResponse().getContentAsString();
+            assertThat(response).isEqualTo(hoa2.getId()+ "");
+        } catch (Exception e) {
+            fail("Exception when making request");
+        }
+    }
+
+    @Test
+    void board_member_of_any_false() {
+        // Arrange
+        final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
+            false, "country1", "city1", new Date().getTime(), -1L));
+
+        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1","city1"));
+        final Membership membership2 = memberManagementRepository.save(new Membership("user1", hoa2.getId(),
+            false, "country1", "city1", new Date().getTime(), -1L));
+        try {
+            ResultActions resultActions = mockMvc.perform(get("/member/isaBoardMemberOfAny")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isOk());
+            String response = resultActions.andReturn().getResponse().getContentAsString();
+            assertThat(response).isEqualTo(-1 + "");
+        } catch (Exception e) {
+            fail("Exception when making request");
+        }
+    }
+
+    @Test
+    public void is_member_of_ok() {
+        final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
+            false, "country1", "city1", new Date().getTime(), -1L));
+
+        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1","city1"));
+
+        try {
+            ResultActions resultActions = mockMvc.perform(get("/member/isMemberOf")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("hoaId", hoa.getId() + "")
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isOk());
+            String response = resultActions.andReturn().getResponse().getContentAsString();
+            assertThat(response).isEqualTo(Boolean.toString(true));
+
+            resultActions = mockMvc.perform(get("/member/isMemberOf")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("hoaId", hoa2.getId() + "")
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isOk());
+            response = resultActions.andReturn().getResponse().getContentAsString();
+            assertThat(response).isEqualTo(Boolean.toString(false));
+        } catch (Exception e) {
+            fail("Exception when making request");
+        }
+    }
+
+    @Test
+    public void is_member_of_fail() {
+        try {
+            ResultActions resultActions = mockMvc.perform(get("/member/isMemberOf")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("hoaId", "123")
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isBadRequest());
+            String response = resultActions.andReturn().getResponse().getContentAsString();
+            assertThat(response).isEqualTo("No HOA with the id: 123");
+        } catch (Exception e) {
+            fail("Exception when making request");
+        }
+    }
+
+    @Test
+    public void joining_date_ok() {
+        Long currentTime = new Date().getTime();
+        final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
+            false, "country1", "city1", currentTime, -1L));
+
+        try {
+            ResultActions resultActions = mockMvc.perform(get("/member/joiningDate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("hoaId", hoa.getId() + "")
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isOk());
+            String response = resultActions.andReturn().getResponse().getContentAsString();
+            assertThat(response).isEqualTo(currentTime.toString());
+        } catch (Exception e) {
+            fail("Exception when making request");
+        }
+    }
+
+    @Test
+    public void joining_date_fail() {
+        Long currentTime = new Date().getTime();
+        final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
+            false, "country1", "city1", currentTime, -1L));
+
+        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1","city1"));
+
+        try {
+            ResultActions resultActions = mockMvc.perform(get("/member/joiningDate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("hoaId", "123")
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isBadRequest());
+            String response = resultActions.andReturn().getResponse().getContentAsString();
+            assertThat(response).isEqualTo("No HOA with the id: 123");
+
+            resultActions = mockMvc.perform(get("/member/joiningDate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("hoaId", hoa2.getId() + "")
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isBadRequest());
+            response = resultActions.andReturn().getResponse().getContentAsString();
+            assertThat(response).isEqualTo("User is not registered in this Hoa");
+        } catch (Exception e) {
+            fail("Exception when making request");
+        }
+    }
+
+    @Test
+    public void joining_board_date_ok() {
+        long currentTime = new Date().getTime();
+        final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
+            true, "country1", "city1", currentTime, currentTime + 100));
+
+        try {
+            ResultActions resultActions = mockMvc.perform(get("/member/joiningBoardDate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("hoaId", hoa.getId() + "")
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isOk());
+            String response = resultActions.andReturn().getResponse().getContentAsString();
+            assertThat(response).isEqualTo(currentTime + 100 + "");
+        } catch (Exception e) {
+            fail("Exception when making request");
+        }
+    }
+
+    @Test
+    public void joining_board_date_fail() {
+        long currentTime = new Date().getTime();
+        final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
+            false, "country1", "city1", currentTime, -1L));
+
+        final Hoa hoa2 = hoaRepository.save(new Hoa("hoa2", "country1","city1"));
+        final Membership membership2 = memberManagementRepository.save(new Membership("user1", hoa2.getId(),
+            true, "country1", "city1", currentTime, currentTime + 100));
+
+        final Hoa hoa3 = hoaRepository.save(new Hoa("hoa3", "country1","city1"));
+        try {
+            ResultActions resultActions = mockMvc.perform(get("/member/joiningBoardDate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("hoaId", "123")
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isBadRequest());
+            String response = resultActions.andReturn().getResponse().getContentAsString();
+            assertThat(response).isEqualTo("No HOA with the id: 123");
+
+            resultActions = mockMvc.perform(get("/member/joiningBoardDate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("hoaId", hoa3.getId() + "")
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isBadRequest());
+            response = resultActions.andReturn().getResponse().getContentAsString();
+            assertThat(response).isEqualTo("User is not registered in this Hoa");
+
+            resultActions = mockMvc.perform(get("/member/joiningBoardDate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("hoaId", hoa.getId() + "")
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isBadRequest());
+            response = resultActions.andReturn().getResponse().getContentAsString();
+            assertThat(response).isEqualTo("User is not a board member of this Hoa");
+        } catch (Exception e) {
+            fail("Exception when making request");
+        }
+    }
 }
