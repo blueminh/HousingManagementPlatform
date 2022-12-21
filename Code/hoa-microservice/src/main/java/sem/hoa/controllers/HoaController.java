@@ -57,6 +57,11 @@ public class HoaController {
 
     }
 
+    /**
+     * Create a new Hoa.
+     *
+     * @param request information about the HOA
+     */
     @PostMapping("/createHOA")
     public ResponseEntity<Hoa> createHOA(@RequestBody HoaModifyDTO request) {
 
