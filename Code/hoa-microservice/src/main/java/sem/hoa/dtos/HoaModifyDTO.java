@@ -1,5 +1,8 @@
 package sem.hoa.dtos;
 
+import lombok.Data;
+
+@Data
 public class HoaModifyDTO {
     public String hoaName;
     public String userCountry;
