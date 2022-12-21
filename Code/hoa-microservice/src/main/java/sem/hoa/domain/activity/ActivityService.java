@@ -1,12 +1,12 @@
 package sem.hoa.domain.activity;
 
 import org.springframework.stereotype.Service;
+import sem.hoa.domain.services.HOARepository;
 import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.models.ActivityResponseModel;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ActivityService {
@@ -14,18 +14,21 @@ public class ActivityService {
     private final transient ActivityRepository activityRepository;
     private final transient ParticipationRepository participationRepository;
     private final transient MemberManagementRepository memberManagementRepository;
+    private final transient HOARepository hoaRepository;
 
     /**
      * Constructor for ActivityService.
      *
-     * @param activityRepository repositories that stores activities
-     * @param participationRepository participation repository
+     * @param activityRepository         repositories that stores activities
+     * @param participationRepository    participation repository
      * @param memberManagementRepository membership repository
+     * @param hoaRepository hoa repository
      */
-    public ActivityService(ActivityRepository activityRepository, ParticipationRepository participationRepository, MemberManagementRepository memberManagementRepository) {
+    public ActivityService(ActivityRepository activityRepository, ParticipationRepository participationRepository, MemberManagementRepository memberManagementRepository, HOARepository hoaRepository) {
         this.activityRepository = activityRepository;
         this.participationRepository = participationRepository;
         this.memberManagementRepository = memberManagementRepository;
+        this.hoaRepository = hoaRepository;
     }
 
     /**
@@ -38,9 +41,10 @@ public class ActivityService {
      */
     @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     public Integer addActivity(int hoaId, String name, Date date, String desc, String createdBy) throws Exception {
-        // TODO: Add a check to see if the user creating the activity is from the same HOA or not
         Activity activity = new Activity(hoaId, name, date, desc, createdBy);
-        if (!memberManagementRepository.existsMembershipByHoaIDAndUsername(hoaId, createdBy)) {
+        if (!hoaRepository.existsById(hoaId)) {
+            throw new NoSuchHOAException("No HOAs with the id " + hoaId + " exists!");
+        } else if (!memberManagementRepository.existsMembershipByHoaIDAndUsername(hoaId, createdBy)) {
             throw new NoAccessToHoaException(createdBy + " is not a member of the HOA " + hoaId);
         } else if (!activityRepository.existsActivityByName(activity.getName())) {
             activityRepository.save(activity);

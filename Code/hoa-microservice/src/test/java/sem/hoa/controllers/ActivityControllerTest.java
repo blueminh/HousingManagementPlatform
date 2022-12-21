@@ -17,6 +17,7 @@ import sem.hoa.domain.activity.Activity;
 import sem.hoa.domain.activity.ActivityRepository;
 import sem.hoa.domain.activity.Participation;
 import sem.hoa.domain.activity.ParticipationRepository;
+import sem.hoa.domain.services.HOARepository;
 import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.domain.utils.Clock;
 import sem.hoa.integeration.utils.JsonUtil;
@@ -31,6 +32,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -41,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 // activate profiles to have spring use mocks during auto-injection of certain beans.
-@ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager", "clock", "membershipRepo"})
+@ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager", "clock", "membershipRepo", "hoaRepo"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 class ActivityControllerTest {
@@ -67,16 +69,13 @@ class ActivityControllerTest {
     @Autowired
     private  transient MemberManagementRepository memberManagementRepository;
 
+    @Autowired
+    private transient HOARepository hoaRepository;
+
     @Test
     public void testAddActivitySuccess() throws Exception {
 
-        // Setup mocking for authentication
-        final String userName = "ExampleUser";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, userName)).thenReturn(true);
-
+        // Setup variables
         Calendar calendar = new GregorianCalendar();
         calendar.set(2022, 1, 1, 0, 0);
 
@@ -84,6 +83,14 @@ class ActivityControllerTest {
         final String testDesc = "Test Desc";
         final int testHoaId = 1;
         final Date testDate = calendar.getTime();
+
+        // Setup mocking for authentication
+        final String userName = "ExampleUser";
+        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, userName)).thenReturn(true);
+        when(hoaRepository.existsById(testHoaId)).thenReturn(true);
 
         // Setup request model
         final ActivityCreationRequestModel request = new ActivityCreationRequestModel();
@@ -116,6 +123,7 @@ class ActivityControllerTest {
         when(mockAuthenticationManager.getNetId()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+        when(hoaRepository.existsById(anyInt())).thenReturn(true);
 
         Calendar calendar = new GregorianCalendar();
         calendar.set(2022, 1, 1, 0, 0);

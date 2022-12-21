@@ -6,14 +6,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.parameters.P;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import sem.hoa.authentication.AuthManager;
-import sem.hoa.authentication.JwtTokenVerifier;
-import sem.hoa.controllers.ActivityController;
+import sem.hoa.domain.services.HOARepository;
 import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.domain.utils.Clock;
 import sem.hoa.models.ActivityResponseModel;
@@ -29,7 +25,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 // activate profiles to have spring use mocks during auto-injection of certain beans.
-@ActiveProfiles({"test", "clock", "membershipRepo"})
+@ActiveProfiles({"test", "clock", "membershipRepo", "hoaRepo"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 class ActivityServiceTest {
@@ -44,6 +40,8 @@ class ActivityServiceTest {
 
     @Autowired
     private  transient MemberManagementRepository memberManagementRepository;
+    @Autowired
+    private transient HOARepository hoaRepository;
 
     @Autowired
     private transient ActivityService activityService;
@@ -63,7 +61,7 @@ class ActivityServiceTest {
 
         // mock
         when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
-
+        when(hoaRepository.existsById(testHoaId)).thenReturn(true);
         // act
         int res = activityService.addActivity(testHoaId, testName, testDate, testDesc, userName);
 
@@ -87,12 +85,36 @@ class ActivityServiceTest {
 
         // mock
         when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(false);
-
+        when(hoaRepository.existsById(testHoaId)).thenReturn(true);
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.addActivity(testHoaId, testName, testDate, testDesc, userName);
 
         // assert
         assertThatThrownBy(action).isInstanceOf(NoAccessToHoaException.class);
+    }
+
+    @Test
+    void testActivityAddButNoSuchHOA() throws Exception {
+
+        // setup required variable
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2022, 1, 1, 0, 0);
+
+        final String userName = "ExampleUser";
+        final int testHoaId = 1;
+        final String testName = "Test";
+        final String testDesc = "Test Desc";
+        final Date testDate = calendar.getTime();
+
+        // mock
+        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(hoaRepository.existsById(testHoaId)).thenReturn(false);
+
+        // act
+        ThrowableAssert.ThrowingCallable action = () -> activityService.addActivity(testHoaId, testName, testDate, testDesc, userName);
+
+        // assert
+        assertThatThrownBy(action).isInstanceOf(NoSuchHOAException.class);
     }
 
     @Test
@@ -114,6 +136,7 @@ class ActivityServiceTest {
 
         // mock
         when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(hoaRepository.existsById(testHoaId)).thenReturn(true);
 
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.addActivity(testHoaId, testName, testDate, testDesc, userName);
