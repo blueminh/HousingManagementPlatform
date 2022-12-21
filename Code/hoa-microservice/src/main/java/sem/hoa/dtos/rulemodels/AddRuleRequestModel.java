@@ -1,9 +1,9 @@
-package sem.hoa.dtos.ruleModels;
+package sem.hoa.dtos.rulemodels;
 
 import lombok.Data;
 
 /**
- * Model that represents a request for adding a new rule
+ * Model that represents a request for adding a new rule.
  */
 @Data
 public class AddRuleRequestModel {

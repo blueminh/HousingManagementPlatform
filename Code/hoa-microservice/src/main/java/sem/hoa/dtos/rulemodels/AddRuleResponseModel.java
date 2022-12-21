@@ -1,4 +1,4 @@
-package sem.hoa.dtos.ruleModels;
+package sem.hoa.dtos.rulemodels;
 
 import lombok.Data;
 import sem.hoa.domain.entities.Rule;
@@ -7,7 +7,7 @@ import java.util.List;
 
 
 /**
- * Model that represents a response to adding a new rule to an HOA
+ * Model that represents a response to adding a new rule to an HOA.
  */
 @Data
 public class AddRuleResponseModel {
