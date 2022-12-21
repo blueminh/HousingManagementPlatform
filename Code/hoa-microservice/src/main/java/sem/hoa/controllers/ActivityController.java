@@ -14,7 +14,11 @@ import sem.hoa.authentication.AuthManager;
 import sem.hoa.domain.activity.Activity;
 import sem.hoa.domain.activity.ActivityService;
 import sem.hoa.domain.utils.Clock;
-import sem.hoa.models.*;
+import sem.hoa.models.ActivityCreationRequestModel;
+import sem.hoa.models.ActivityResponseModel;
+import sem.hoa.models.GetActivitiesWithHoaIdRequestModel;
+import sem.hoa.models.GetActivityWithHoaIdAndDateRequestModel;
+import sem.hoa.models.UserParticipateModel;
 
 import java.util.Date;
 
@@ -140,7 +144,7 @@ public class ActivityController {
     /**
      * API endpoint to get all the activities that occurs after the provided date.
      *
-     * @param date all the activities retrieved will occur after this date
+     * @param requestModel Request model that has date and hoaId
      * @return an array of Activities as a response
      */
     @GetMapping("/activity/getAllAfterDate")
@@ -156,7 +160,7 @@ public class ActivityController {
     /**
      * API endpoint to get all the activities that occurred before the provided date.
      *
-     * @param date all the activities retrieved would have occurred before this date
+     * @param requestModel request model that has date and hoaId
      * @return an array of Activities as a response
      */
     @GetMapping("/activity/getAllBeforeDate")

@@ -20,7 +20,11 @@ import sem.hoa.domain.activity.ParticipationRepository;
 import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.domain.utils.Clock;
 import sem.hoa.integeration.utils.JsonUtil;
-import sem.hoa.models.*;
+import sem.hoa.models.ActivityCreationRequestModel;
+import sem.hoa.models.ActivityResponseModel;
+import sem.hoa.models.GetActivitiesWithHoaIdRequestModel;
+import sem.hoa.models.GetActivityWithHoaIdAndDateRequestModel;
+import sem.hoa.models.UserParticipateModel;
 
 import java.util.Calendar;
 import java.util.Date;

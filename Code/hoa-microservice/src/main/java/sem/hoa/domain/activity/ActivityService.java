@@ -28,7 +28,6 @@ public class ActivityService {
         this.memberManagementRepository = memberManagementRepository;
     }
 
-
     /**
      * It tries to add an activity to the repository.
      *
@@ -37,6 +36,7 @@ public class ActivityService {
      * @param desc Description of the Activity.
      * @throws Exception This exception is thrown if we try to add an Activity that already exists. (I'll have to check this again because we do not generate activity Id)
      */
+    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     public Integer addActivity(int hoaId, String name, Date date, String desc, String createdBy) throws Exception {
         // TODO: Add a check to see if the user creating the activity is from the same HOA or not
         Activity activity = new Activity(hoaId, name, date, desc, createdBy);
