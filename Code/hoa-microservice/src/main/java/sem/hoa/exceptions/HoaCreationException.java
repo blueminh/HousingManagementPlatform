@@ -1,7 +1,5 @@
 package sem.hoa.exceptions;
 
-import java.io.Serializable;
-
 public class HoaCreationException extends Exception
         implements java.io.Serializable {
 

@@ -63,4 +63,8 @@ public class HOAService {
     public Optional<HOA> findHOAByID(int hoaID) {
         return hoaRepository.findById(hoaID);
     }
+
+    public boolean hoaExistsByName(String hoaName) {
+        return !hoaRepository.findByHoaName(hoaName).isEmpty();
+    }
 }
