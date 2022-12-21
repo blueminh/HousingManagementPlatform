@@ -68,26 +68,10 @@ public class HOAController {
 
         try {
             //CHECKS
+            hoaService.checkHoaModifyDTO(request);
             if (hoaService.hoaExistsByName(request.hoaName)) {
-                System.err.println("Attempted to create HOA but an HOA with that name already exists");
+                System.err.println("HOA with that name already exists");
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "HOA by that name already exists");
-            }
-            //Checks if strings are null
-            if (request.hoaName == null || request.userCity == null || request.userCountry == null
-                    || request.userStreet == null || request.userPostalCode == null) {
-                System.err.println("Attempted to create HOA but one or more fields Invalid(null)");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fields can not be Invalid(null)");
-            }
-            //checks if variables are valid
-            if (request.hoaName.isBlank() || request.userCity.isBlank() || request.userCountry.isBlank()
-                    || request.userStreet.isBlank() || request.userPostalCode.isBlank()) {
-                System.err.println("Attempted to create HOA but one or more fields were Empty");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fields can not be Empty");
-            }
-            //checks if house number is valid
-            if (request.userHouseNumber < 0) {
-                System.err.println("Attempted to create HOA but house Number was < 0");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "House Number must be a positive integer");
             }
 
             //Creation
@@ -99,7 +83,7 @@ public class HOAController {
                             request.userStreet, request.userHouseNumber, request.userPostalCode));
             return ResponseEntity.ok(newHOA);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Attempted to create HOA, but " + e.getMessage());
         }
     }
 
@@ -114,13 +98,14 @@ public class HOAController {
     @PostMapping("/joining")
     public ResponseEntity joiningHOA(@RequestBody HoaModifyDTO request) {
         try {
+            //CHECKS
+            hoaService.checkHoaModifyDTO(request);
 
-            Optional<HOA> hoaOpt = hoaService.findHOAByName(request.hoaName);
-            if (hoaOpt.isEmpty()) {
+            if (hoaService.hoaExistsByName(request.hoaName)) {
                 throw new Exception("No such HOA with this name: " + request.hoaName);
             }
 
-            HOA hoa = hoaOpt.get();
+            HOA hoa = hoaService.findHOAByName(request.hoaName).get();
 
             Optional<Membership> membership = memberManagementService
                     .findByUsernameAndHoaID(authManager.getNetId(), hoa.getId());
@@ -131,6 +116,7 @@ public class HOAController {
             if (!memberManagementService.addressCheck(hoa, membership.get())) {
                 throw new Exception("Invalid address");
             }
+            //CREATION
             //weird warning - should be resolved later (probably because of the isPresent() method)
             memberManagementService
                     .addMembership(new Membership(authManager.getNetId(), hoa.getId(), false,
