@@ -101,5 +101,21 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * API endpoint to check if a user already exists in the system.
+     *
+     * @param request username to check
+     * @return OK if the user already exists, BAD REQUEST if the user does not exist in the system.
+     */
+    @PostMapping("/userexists")
+    public ResponseEntity userExists(@RequestBody AuthenticationRequestModel request) {
+        Username username = new Username(request.getUsername());
+        if (registrationService.userExists(username)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
+
+    }
+
 
 }
