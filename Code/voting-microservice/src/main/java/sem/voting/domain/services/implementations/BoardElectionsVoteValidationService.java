@@ -14,7 +14,7 @@ public class BoardElectionsVoteValidationService implements VoteValidationServic
     @Override
     public boolean isVoteValid(Vote vote, Proposal proposal) {
         Validator validator = new UserIsMemberOfThisHoaValidator();
-        validator.setNext(new NoSelfVoteValidator());
+        validator.addLast(new NoSelfVoteValidator());
         try {
             return validator.handle(vote, proposal);
         } catch (InvalidRequestException e) {

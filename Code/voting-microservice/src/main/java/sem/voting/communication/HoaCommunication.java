@@ -3,7 +3,6 @@ package sem.voting.communication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -51,6 +50,7 @@ public class HoaCommunication {
      * @return the body of the response as String if OK or the embedded error message if
      * receiving a error
      */
+    @SuppressWarnings("PMD.UseProperClassLoader")
     private static String makeRequest(String userId, String url, String requestBody, Map<String, String> params) throws Exception {
         // Get the secret
         Properties properties = new Properties();

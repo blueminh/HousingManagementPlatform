@@ -28,6 +28,10 @@ import sem.voting.domain.services.implementations.BoardElectionsVoteValidationSe
 import sem.voting.domain.services.implementations.RuleChangesOptionValidationService;
 import sem.voting.domain.services.implementations.RuleChangesVoteValidationService;
 import sem.voting.domain.services.implementations.VotingException;
+import sem.voting.domain.services.validators.InvalidRequestException;
+import sem.voting.domain.services.validators.MemberIsBoardMemberValidator;
+import sem.voting.domain.services.validators.NoBoardElectionValidator;
+import sem.voting.domain.services.validators.Validator;
 import sem.voting.models.AddOptionRequestModel;
 import sem.voting.models.AddOptionResponseModel;
 import sem.voting.models.CastVoteRequestModel;
@@ -82,8 +86,18 @@ public class VotingController {
             return ResponseEntity.badRequest().build();
         }
 
-        // Build proposal
         Proposal toAdd = new Proposal();
+
+        // Validate user
+        try {
+            Validator validator = new MemberIsBoardMemberValidator();
+            validator.addLast(new NoBoardElectionValidator());
+            validator.handle(new Vote(authManager.getUserId(), null), toAdd);
+        } catch (InvalidRequestException ex) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Build proposal
         switch (request.getType()) {
             case BoardElection: {
                 toAdd.setVoteValidationService(new BoardElectionsVoteValidationService());
