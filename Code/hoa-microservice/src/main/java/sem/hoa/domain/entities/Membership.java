@@ -35,9 +35,14 @@ public class Membership {
     @Column(name = "city")
     private String city;
 
-    public String getUsername() {
-        return username;
-    }
+    @Column(name = "street")
+    private String street;
+
+    @Column(name = "houseNumber")
+    private int houseNumber;
+
+    @Column(name = "postalCode")
+    private String postalCode;
 
     public int getHoaID() {
         return hoaID;

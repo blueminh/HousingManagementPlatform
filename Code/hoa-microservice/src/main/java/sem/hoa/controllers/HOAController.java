@@ -17,8 +17,11 @@ import sem.hoa.domain.entities.Membership;
 import sem.hoa.domain.entities.MembershipID;
 import sem.hoa.domain.services.HOAService;
 import sem.hoa.domain.services.MemberManagementService;
+import sem.hoa.dtos.HoaModifyDTO;
 import sem.hoa.dtos.UserNameHoaIDDTO;
 import sem.hoa.dtos.UserNameHoaNameDTO;
+import sem.hoa.exceptions.HoaCreationException;
+import sem.hoa.exceptions.HoaJoiningException;
 
 /**
  * Hello World example controller.
@@ -57,6 +60,36 @@ public class HOAController {
     }
 
     /**
+     * Create an HOA.
+     *
+     * @param request model to create an HOA
+     * @return 200 and the hoa created if joined successfully
+     */
+    @PostMapping("/createHOA")
+    public ResponseEntity<HOA> createHOA(@RequestBody HoaModifyDTO request) {
+
+        try {
+            //CHECKS
+            hoaService.checkHoaModifyDTO(request);
+
+            //Creation
+            HOA newHOA = new HOA(request.hoaName, request.userCountry, request.userCity);
+
+            hoaService.createNewHOA(newHOA);
+
+            memberManagementService
+                    .addMembership(new Membership(authManager.getNetId(), newHOA.getId(), true,
+                    request.userCountry, request.userCity,
+                            request.userStreet, request.userHouseNumber, request.userPostalCode));
+
+            return ResponseEntity.ok(newHOA);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Attempted to create HOA, but " + e.getMessage());
+        }
+    }
+    
+
+    /**
      * Join an HOA.
      *
      * @param request model to join an HOA
@@ -64,26 +97,29 @@ public class HOAController {
      */
     // Membership
     @PostMapping("/joining")
-    public ResponseEntity joiningHOA(@RequestBody UserNameHoaNameDTO request) {
+    public ResponseEntity joiningHOA(@RequestBody HoaModifyDTO request) {
         try {
-            if (!request.username.equals(authManager.getNetId())) {
-                throw new Exception("Wrong username");
+            //CHECKS
+            hoaService.checkHoaModifyDTO(request);
+            if (!hoaService.hoaExistsByName(request.hoaName)) {
+                throw new HoaJoiningException("No such HOA with this name: " + request.hoaName);
             }
-
-            Optional<HOA> hoa = hoaService.findHOAByName(request.hoaName);
-            if (hoa.isEmpty()) {
-                throw new Exception("No such HOA with this name: " + request.hoaName);
+            HOA hoa = hoaService.findHOAByName(request.hoaName).get();
+            if (memberManagementService
+                    .findByUsernameAndHoaID(authManager.getNetId(), hoa.getId())
+                    .isPresent()) {
+                throw new HoaJoiningException("User is already in this HOA"); //need explanation
             }
-
-            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(request.username, hoa.get().getId());
-            if (membership.isPresent()) {
-                throw new Exception("User is already in this HOA"); //need explanation
+            Membership membership = new Membership(authManager.getNetId(),
+                    hoaService.findHOAByName(request.hoaName).get().getId(), false,
+                    request.userCountry, request.userCity, request.userStreet,
+                    request.userHouseNumber, request.userPostalCode);
+            if (!memberManagementService.addressCheck(hoa, membership)) {
+                throw new HoaJoiningException("Invalid address");
             }
-            if (!memberManagementService.addressCheck(hoa.get(), membership.get())) {
-                throw new Exception("Invalid address");
-            }
-            //weird warning - should be resolved later (probably because of the isPresent() method)
-            memberManagementService.addMembership(new Membership(request.username, hoa.get().getId(), false, request.country, request.city));
+            //CREATION
+            memberManagementService.addMembership(membership);
+            System.out.println("Member " + authManager.getNetId() + " added successfully to " + request.getHoaName());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

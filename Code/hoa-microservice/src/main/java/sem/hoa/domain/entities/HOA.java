@@ -26,26 +26,37 @@ public class HOA extends HasEvents {
     @Column(name = "city", nullable = false, unique = false)
     private String city;
 
-    @Column(name = "election_start_time", nullable = false)
+
+    @Column(name = "election_start_time")
     private Long electionStartTime;
 
-    @Column(name = "election_end_time", nullable = false)
+    @Column(name = "election_end_time")
     private Long electionEndTime;
+
+    /**
+     * Create an HOA with only name, country and city.
+     *
+     * @param name - name of HOA
+     * @param country - country of HOA
+     * @param city - city of HOA
+     */
+    public HOA(String name, String country, String city) {
+        this.hoaName = name;
+        this.country = country;
+        this.city = city;
+        //this.electionStartTime = Date.from(Instant.now().plusSeconds(31556926));
+    }
 
     public int getId() {
         return id;
     }
 
-    public String getHoaName() {
-        return hoaName;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public void setHoaName(String hoaName) {
         this.hoaName = hoaName;
+    }
+
+    public String getHoaName() {
+        return this.hoaName;
     }
 
     public Long getElectionStartTime() {

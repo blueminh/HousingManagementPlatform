@@ -38,7 +38,7 @@ public class UserInfoController {
             Username username = new Username(request.getUsername());
             fullname = registrationService.getFullname(username).toString();
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         return ResponseEntity.ok(new FullnameResponseModel(fullname));
     }
