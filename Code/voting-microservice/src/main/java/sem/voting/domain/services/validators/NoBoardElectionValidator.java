@@ -8,7 +8,7 @@ import sem.voting.domain.proposal.ProposalHandlingService;
 import sem.voting.domain.services.implementations.BoardElectionsVoteValidationService;
 
 public class NoBoardElectionValidator extends Validator {
-    private ProposalHandlingService proposalHandlingService;
+    private transient ProposalHandlingService proposalHandlingService;
 
     public NoBoardElectionValidator(ProposalHandlingService phs) {
         this.proposalHandlingService = phs;
