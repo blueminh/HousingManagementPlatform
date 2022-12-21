@@ -34,7 +34,7 @@ public class RegistrationService {
 
     public AppUser registerUser(Username username, Password password, FullName fullname) throws Exception {
 
-        if (checkUsernameIsUnique(username)) {
+        if (!userExists(username)) {
             // Hash password
             HashedPassword hashedPassword = passwordHashingService.hash(password);
 
@@ -71,7 +71,16 @@ public class RegistrationService {
         }
     }
 
-    public boolean checkUsernameIsUnique(Username username) {
-        return !userRepository.existsByUsername(username);
+    /**
+     * Method to check if a user is registered in the database.
+     *
+     * @param username user to check
+     * @return true if exists, false otherwise
+     */
+    public boolean userExists(Username username) {
+        if (userRepository.existsByUsername(username)) {
+            return true;
+        }
+        return false;
     }
 }

@@ -35,9 +35,20 @@ public class Membership {
 
     @Column(name = "joiningDate")
     private Long joiningDate;
+    @Column(name = "street")
+    private String street;
 
     @Column(name = "joiningBoardDate")
     private Long joiningBoardDate;
+    @Column(name = "houseNumber")
+    private int houseNumber;
+
+    @Column(name = "postalCode")
+    private String postalCode;
+
+    public int getHoaID() {
+        return hoaID;
+    }
 
     /**
      * Constructor of a Membership object.

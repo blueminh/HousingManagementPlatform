@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import sem.hoa.domain.entities.Hoa;
 import sem.hoa.domain.entities.Membership;
 import sem.hoa.domain.entities.MembershipId;
+import sem.hoa.exceptions.HoaJoiningException;
 
 import java.time.Instant;
 import java.time.Period;
@@ -23,8 +24,12 @@ public class MemberManagementService {
     /**
      * When a user joins a Hoa, adds a new membership entry to the database.
      */
-    public void addMembership(Membership membership) {
-        memberManagementRepository.save(membership);
+    public void addMembership(Membership membership) throws HoaJoiningException {
+        try {
+            this.memberManagementRepository.save(membership);
+        } catch (Exception e) {
+            throw new HoaJoiningException("Could not save new member to repository: " + e.getMessage());
+        }
     }
 
     /**

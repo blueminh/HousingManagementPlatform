@@ -68,6 +68,10 @@ public class Hoa extends HasEvents {
         this.hoaName = hoaName;
     }
 
+    public String getHoaName() {
+        return this.hoaName;
+    }
+
     public Long getElectionStartTime() {
         return electionStartTime;
     }
