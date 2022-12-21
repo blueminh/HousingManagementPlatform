@@ -5,6 +5,7 @@ import sem.hoa.domain.entities.Hoa;
 import sem.hoa.domain.entities.Membership;
 import sem.hoa.domain.entities.MembershipId;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -41,6 +42,16 @@ public class MemberManagementService {
         return memberManagementRepository.findById(new MembershipId(username, hoaId));
     }
 
+    /**
+     * Find all board members of an HOA.
+     *
+     * @param hoaId id of the hoa
+     * @return list of memberships for all the board members.
+     */
+    public List<Membership> findBoardMembersByHoaId(int hoaId) {
+        return memberManagementRepository.findByHoaIdAndIsBoardMemberIsTrue(hoaId);
+    }
+
     public boolean addressCheck(Hoa hoa, Membership membership) {
         return hoa.getCountry().equals(membership.getCountry()) && hoa.getCity().equals(membership.getCity());
     }
@@ -58,4 +69,6 @@ public class MemberManagementService {
         }
         return membership.get().getHoaId();
     }
+
+
 }

@@ -174,7 +174,7 @@ public class MemberController {
     }
 
     /**
-     * Return the board joning date of a user given a hoaID.
+     * Return the board joining date of a user given a hoaID.
      * Username is taken from auth token.
      *
      * @param hoaId the hoaID
@@ -195,6 +195,30 @@ public class MemberController {
                 throw new BadRequestException(userNotBoardMemberError);
             }
             return ResponseEntity.ok(membership.get().getJoiningBoardDate().toString());
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    /**
+     * Endpoint to count the current number of board members of an HOA.
+     *
+     * @param hoaId the id of the hoa
+     * @return 200 and the number of board members, 400 otherwise
+     */
+    @GetMapping("/numberBoardMembers")
+    public ResponseEntity<String> countBoardMembers(@RequestParam Integer hoaId) {
+        try {
+            Optional<Hoa> hoa = hoaService.findHoaById(hoaId);
+            if (hoa.isEmpty()) {
+                throw new BadRequestException(noSuchHoaIdError + hoaId);
+            }
+
+            int count = memberManagementService.findBoardMembersByHoaId(hoaId).size();
+            return ResponseEntity.ok(Integer.toString(count));
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {

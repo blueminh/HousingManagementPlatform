@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import sem.voting.authentication.AuthManager;
+import sem.voting.communication.HoaCommunication;
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalHandlingService;
@@ -87,9 +88,16 @@ public class VotingController {
         Proposal toAdd = new Proposal();
 
         // Validate user
+        Validator validator = new NoBoardElectionValidator();
         try {
-            Validator validator = new MemberIsBoardMemberValidator();
-            validator.addLast(new NoBoardElectionValidator());
+            // check if the user is a member of the board only if there is any board to begin with
+            if (HoaCommunication.checkHoaHasBoard(authManager.getUserId(), request.getHoaId())) {
+                validator.addLast(new MemberIsBoardMemberValidator());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+        try {
             validator.handle(authManager.getUserId(), null, toAdd);
         } catch (InvalidRequestException ex) {
             return ResponseEntity.badRequest().build();

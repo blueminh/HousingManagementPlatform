@@ -86,6 +86,22 @@ public class HoaCommunication {
     }
 
     /**
+     * Check if an HOA has any board member.
+     *
+     * @param username  username of the user
+     * @param hoaId     hoaID
+     * @return          true if the HOA has at least one board member
+     * @throws Exception either a bad request or response has error
+     */
+    public static boolean checkHoaHasBoard(String username, int hoaId) throws Exception {
+        String url = HOAPath + "/member/findUserRoleByHoaID";
+        Map<String, String> params = new HashMap<>();
+        params.put(hoaIdParamName, hoaId + "");
+        String response = makeRequest(username, url, "", params);
+        return !objectMapper.readValue(response, String.class).equals("0");
+    }
+
+    /**
      * Check if a user is a board member of a hoa.
      *
      * @param username  username of the user
