@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import sem.hoa.authentication.AuthManager;
 import sem.hoa.authentication.JwtTokenVerifier;
 import sem.hoa.domain.entities.HOA;
-import sem.hoa.domain.entities.HasEvents;
 import sem.hoa.domain.services.HOARepository;
 import sem.hoa.domain.services.HOAService;
 import sem.hoa.dtos.HoaModifyDTO;

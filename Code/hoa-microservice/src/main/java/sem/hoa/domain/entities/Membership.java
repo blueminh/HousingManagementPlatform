@@ -38,10 +38,10 @@ public class Membership {
     @Column(name = "street")
     private String street;
 
-    @Column(name = "house Number")
+    @Column(name = "houseNumber")
     private int houseNumber;
 
-    @Column(name = "postal Code")
+    @Column(name = "postalCode")
     private String postalCode;
 
     public int getHoaID() {
