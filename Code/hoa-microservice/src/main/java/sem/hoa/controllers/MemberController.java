@@ -191,6 +191,9 @@ public class MemberController {
             if (membership.isEmpty()) {
                 throw new BadRequestException(userNotRegisteredError);
             }
+            if (!membership.get().isBoardMember()) {
+                throw new BadRequestException(userNotBoardMemberError);
+            }
             return ResponseEntity.ok(membership.get().getJoiningBoardDate().toString());
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
