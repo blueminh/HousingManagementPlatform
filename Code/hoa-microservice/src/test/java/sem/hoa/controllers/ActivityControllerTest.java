@@ -15,7 +15,6 @@ import sem.hoa.authentication.AuthManager;
 import sem.hoa.authentication.JwtTokenVerifier;
 import sem.hoa.domain.activity.Activity;
 import sem.hoa.domain.activity.ActivityRepository;
-import sem.hoa.domain.activity.ActivityService;
 import sem.hoa.domain.activity.Participation;
 import sem.hoa.domain.activity.ParticipationRepository;
 import sem.hoa.domain.utils.Clock;
@@ -31,7 +30,6 @@ import java.util.GregorianCalendar;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -57,9 +55,6 @@ class ActivityControllerTest {
 
     @Autowired
     private transient Clock clock;
-
-    @Autowired
-    private transient ActivityService activityService;
 
     @Autowired
     private transient ActivityRepository activityRepository;
@@ -89,6 +84,7 @@ class ActivityControllerTest {
         request.setDesc(testDesc);
         request.setHoaId(testHoaId);
         request.setDate(testDate);
+        request.setCreatedBy(userName);
 
         // Make request
         ResultActions resultActions = mockMvc.perform(post("/activity/add")
@@ -122,7 +118,7 @@ class ActivityControllerTest {
         final int testHoaId = 1;
         final Date testDate = calendar.getTime();
 
-        Activity activity = new Activity(testHoaId, testName, testDate, testDesc);
+        Activity activity = new Activity(testHoaId, testName, testDate, testDesc, userName);
         activityRepository.save(activity);
 
         // Setup request model
@@ -165,7 +161,7 @@ class ActivityControllerTest {
         final Date testDate = calendar.getTime();
 
         // Setup repository
-        final Activity activity = new Activity(testHoaId, testName, testDate, testDesc);
+        final Activity activity = new Activity(testHoaId, testName, testDate, testDesc, userName);
         activityRepository.save(activity);
         int id = activity.getActivityId();
 
@@ -222,7 +218,7 @@ class ActivityControllerTest {
         final Date testDate = calendar.getTime();
 
         // Setup repository
-        final Activity activity = new Activity(testHoaId, testName, testDate, testDesc);
+        final Activity activity = new Activity(testHoaId, testName, testDate, testDesc, userName);
         activityRepository.save(activity);
         int id = activity.getActivityId();
 
@@ -256,7 +252,7 @@ class ActivityControllerTest {
         final Date testDate = calendar.getTime();
 
         // Setup repository
-        final Activity activity = new Activity(testHoaId, testName, testDate, testDesc);
+        final Activity activity = new Activity(testHoaId, testName, testDate, testDesc, userName);
         int id = activity.getActivityId();
 
         // Make request
@@ -289,7 +285,7 @@ class ActivityControllerTest {
         final int testHoaId = 1;
         final Date testDate = calendar.getTime();
 
-        final Activity activity = new Activity(1, testHoaId, testName, testDate, testDesc);
+        final Activity activity = new Activity(1, testHoaId, testName, testDate, testDesc, username);
         activityRepository.save(activity);
 
         // Setup participation repo
@@ -336,7 +332,7 @@ class ActivityControllerTest {
         final int testHoaId = 1;
         final Date testDate = calendar.getTime();
 
-        final Activity activity = new Activity(1, testHoaId, testName, testDate, testDesc);
+        final Activity activity = new Activity(1, testHoaId, testName, testDate, testDesc, username);
         activityRepository.save(activity);
 
         // Setup request model
@@ -408,7 +404,7 @@ class ActivityControllerTest {
         final int testHoaId = 1;
         final Date testDate = calendar.getTime();
 
-        final Activity activity = new Activity(1, testHoaId, testName, testDate, testDesc);
+        final Activity activity = new Activity(1, testHoaId, testName, testDate, testDesc, username);
         activityRepository.save(activity);
 
         // Setup Participation Repository
@@ -484,7 +480,7 @@ class ActivityControllerTest {
 
         int activityId = 1;
 
-        final Activity activity = new Activity(activityId, testHoaId, testName, testDate, testDesc);
+        final Activity activity = new Activity(activityId, testHoaId, testName, testDate, testDesc, username);
         activityRepository.save(activity);
 
         // Setup request model
@@ -514,7 +510,7 @@ class ActivityControllerTest {
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
 
-        setupRepository(activityRepository);
+        setupRepository(activityRepository, username);
 
         // Set up request model
         Calendar calendar = new GregorianCalendar();
@@ -543,7 +539,7 @@ class ActivityControllerTest {
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
 
-        setupRepository(activityRepository);
+        setupRepository(activityRepository, username);
 
         // Set up request model
         Calendar calendar = new GregorianCalendar();
@@ -569,7 +565,7 @@ class ActivityControllerTest {
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
 
-        setupRepository(activityRepository);
+        setupRepository(activityRepository, username);
 
         // Set up request model
         Calendar calendar = new GregorianCalendar();
@@ -598,7 +594,7 @@ class ActivityControllerTest {
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
 
-        setupRepository(activityRepository);
+        setupRepository(activityRepository, username);
 
         // Set up request model
         Calendar calendar = new GregorianCalendar();
@@ -628,7 +624,7 @@ class ActivityControllerTest {
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
         when(clock.getCurrentDate()).thenReturn(calendar.getTime());
 
-        setupRepository(activityRepository);
+        setupRepository(activityRepository, username);
 
         ResultActions resultActions = mockMvc.perform(get("/activity/getAllFutureActivities")
                 .header("Authorization", "Bearer MockedToken"));
@@ -653,7 +649,7 @@ class ActivityControllerTest {
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
         when(clock.getCurrentDate()).thenReturn(calendar.getTime());
 
-        setupRepository(activityRepository);
+        setupRepository(activityRepository, username);
 
         ResultActions resultActions = mockMvc.perform(get("/activity/getAllFutureActivities")
                 .header("Authorization", "Bearer MockedToken"));
@@ -676,7 +672,7 @@ class ActivityControllerTest {
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
         when(clock.getCurrentDate()).thenReturn(calendar.getTime());
 
-        setupRepository(activityRepository);
+        setupRepository(activityRepository, username);
 
         ResultActions resultActions = mockMvc.perform(get("/activity/getAllPastActivities")
                 .header("Authorization", "Bearer MockedToken"));
@@ -702,7 +698,7 @@ class ActivityControllerTest {
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
         when(clock.getCurrentDate()).thenReturn(calendar.getTime());
 
-        setupRepository(activityRepository);
+        setupRepository(activityRepository, username);
 
         ResultActions resultActions = mockMvc.perform(get("/activity/getAllPastActivities")
                 .header("Authorization", "Bearer MockedToken"));
@@ -718,7 +714,7 @@ class ActivityControllerTest {
      *
      * @param activityRepository the repository to be setup
      */
-    private void setupRepository(ActivityRepository activityRepository) {
+    private void setupRepository(ActivityRepository activityRepository, String username) {
         Calendar calendar = new GregorianCalendar();
         calendar.set(2022, 1, 1, 0, 0);
 
@@ -729,7 +725,7 @@ class ActivityControllerTest {
         final Date testDate1 = calendar.getTime();
         int activityId1 = 1;
 
-        final Activity activity1 = new Activity(activityId1, testHoaId1, testName1, testDate1, testDesc1);
+        final Activity activity1 = new Activity(activityId1, testHoaId1, testName1, testDate1, testDesc1, username);
 
         calendar.set(2019, 1, 1, 0, 0);
         final String testName2 = "Test2";
@@ -738,7 +734,7 @@ class ActivityControllerTest {
         final Date testDate2 = calendar.getTime();
         int activityId2 = 2;
 
-        final Activity activity2 = new Activity(activityId2, testHoaId2, testName2, testDate2, testDesc2);
+        final Activity activity2 = new Activity(activityId2, testHoaId2, testName2, testDate2, testDesc2, username);
 
         calendar.set(2024, 1, 1, 0, 0);
         final String testName3 = "Test3";
@@ -747,7 +743,7 @@ class ActivityControllerTest {
         final Date testDate3 = calendar.getTime();
         int activityId3 = 3;
 
-        final Activity activity3 = new Activity(activityId3, testHoaId3, testName3, testDate3, testDesc3);
+        final Activity activity3 = new Activity(activityId3, testHoaId3, testName3, testDate3, testDesc3, username);
 
         activityRepository.save(activity1);
         activityRepository.save(activity2);

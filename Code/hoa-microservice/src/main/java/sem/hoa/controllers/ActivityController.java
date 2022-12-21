@@ -45,10 +45,10 @@ public class ActivityController {
     @PostMapping("/activity/add")
     public ResponseEntity<Integer> addActivity(@RequestBody ActivityCreationRequestModel req) throws Exception {
         try {
-            int res = activityService.addActivity(req.getHoaId(), req.getName(), req.getDate(), req.getDesc());
+            int res = activityService.addActivity(req.getHoaId(), req.getName(), req.getDate(), req.getDesc(), req.getCreatedBy());
             return ResponseEntity.ok(res);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
 
     }
@@ -66,10 +66,12 @@ public class ActivityController {
     public ResponseEntity<ActivityResponseModel> getActivity(@RequestParam(name = "id") int activityId) throws Exception {
         try {
             Activity activity = activityService.getActivity(activityId);
-            ActivityResponseModel responseModel = new ActivityResponseModel(activity.getActivityId(), activity.getHoaId(), activity.getName(), activity.getDescription(), activity.getDate());
+            ActivityResponseModel responseModel = new ActivityResponseModel(
+                    activity.getActivityId(), activity.getHoaId(), activity.getName(), activity.getDescription(), activity.getDate(), activity.getCreatedBy()
+            );
             return ResponseEntity.ok(responseModel);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
 
@@ -88,7 +90,7 @@ public class ActivityController {
             activityService.removeActivity(activityId);
 
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         return ResponseEntity.ok().build();
     }
@@ -105,7 +107,7 @@ public class ActivityController {
         try {
             activityService.participate(userParticipateModel.getUsername(), userParticipateModel.getActivityId());
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         return ResponseEntity.ok().build();
     }
@@ -122,7 +124,7 @@ public class ActivityController {
         try {
             activityService.removeParticipate(userParticipateModel.getUsername(), userParticipateModel.getActivityId());
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         return ResponseEntity.ok().build();
     }
@@ -139,7 +141,7 @@ public class ActivityController {
             ActivityResponseModel[] response = activityService.getAllActivitiesAfterDate(date.getDate());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
 
@@ -155,7 +157,7 @@ public class ActivityController {
             ActivityResponseModel[] response = activityService.getAllActivitiesBeforeDate(date.getDate());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
 
@@ -171,7 +173,7 @@ public class ActivityController {
             ActivityResponseModel[] response = activityService.getAllActivitiesAfterDate(currentDate);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
 
@@ -187,7 +189,7 @@ public class ActivityController {
             ActivityResponseModel[] response = activityService.getAllActivitiesBeforeDate(currentDate);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
 

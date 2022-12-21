@@ -17,6 +17,7 @@ public class ActivityResponseModel {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date date;
+    private String createdBy;
 
     /**
      * Constructor for the ActivityResponseModel.
@@ -25,12 +26,14 @@ public class ActivityResponseModel {
      * @param hoaId unique id of the hoa this activity belongs to
      * @param desc the description
      * @param date date at which the activity occurs
+     * @param createdBy username of the user that created the activity
      */
-    public ActivityResponseModel(int activityId, int hoaId, String name, String desc, Date date) {
+    public ActivityResponseModel(int activityId, int hoaId, String name, String desc, Date date, String createdBy) {
         this.activityId = activityId;
         this.hoaId = hoaId;
         this.name = name;
         this.desc = desc;
         this.date = date;
+        this.createdBy = createdBy;
     }
 }

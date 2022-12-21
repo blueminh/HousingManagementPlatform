@@ -27,9 +27,9 @@ public class ActivityService {
      * @param desc Description of the Activity.
      * @throws Exception This exception is thrown if we try to add an Activity that already exists. (I'll have to check this again because we do not generate activity Id)
      */
-    public Integer addActivity(int hoaId, String name, Date date, String desc) throws Exception {
+    public Integer addActivity(int hoaId, String name, Date date, String desc, String createdBy) throws Exception {
         // TODO: Add a check to see if the user creating the activity is from the same HOA or not
-        Activity activity = new Activity(hoaId, name, date, desc);
+        Activity activity = new Activity(hoaId, name, date, desc, createdBy);
         if (!activityRepository.existsActivityByName(activity.getName())) {
             activityRepository.save(activity);
             return activity.getActivityId();
@@ -131,7 +131,7 @@ public class ActivityService {
         ActivityResponseModel[] res = new ActivityResponseModel[activities.size()];
         int idx = 0;
         for (Activity activity : activities) {
-            res[idx++] = new ActivityResponseModel(activity.getActivityId(), activity.getHoaId(), activity.getName(), activity.getDescription(), activity.getDate());
+            res[idx++] = new ActivityResponseModel(activity.getActivityId(), activity.getHoaId(), activity.getName(), activity.getDescription(), activity.getDate(), activity.getCreatedBy());
         }
         return res;
     }
@@ -151,7 +151,7 @@ public class ActivityService {
         ActivityResponseModel[] res = new ActivityResponseModel[activities.size()];
         int idx = 0;
         for (Activity activity : activities) {
-            res[idx++] = new ActivityResponseModel(activity.getActivityId(), activity.getHoaId(), activity.getName(), activity.getDescription(), activity.getDate());
+            res[idx++] = new ActivityResponseModel(activity.getActivityId(), activity.getHoaId(), activity.getName(), activity.getDescription(), activity.getDate(), activity.getCreatedBy());
         }
         return res;
     }
