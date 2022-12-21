@@ -11,6 +11,10 @@ public class BoardMemberForLess10YearsValidator extends Validator {
     public boolean handle(String username, Option option, Proposal proposal) throws InvalidRequestException {
         try {
             long joinedBoardDate = HoaCommunication.getJoiningBoardDate(username, proposal.getHoaId());
+            if (joinedBoardDate == -1) {
+                // Member was never in the board
+                return true;
+            }
             long duration = new Date().getTime() - joinedBoardDate;
 
             final int daysInYear = 365;

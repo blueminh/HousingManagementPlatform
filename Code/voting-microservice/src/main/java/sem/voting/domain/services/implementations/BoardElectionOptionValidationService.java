@@ -3,6 +3,7 @@ package sem.voting.domain.services.implementations;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import sem.voting.authentication.AuthManager;
+import sem.voting.communication.HoaCommunication;
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.Vote;
@@ -23,8 +24,17 @@ public class BoardElectionOptionValidationService implements OptionValidationSer
         Validator validator = new UserIsMemberOfThisHoaValidator();
         validator.addLast(new MemberIsAddingThemselvesValidator());
         validator.addLast(new MemberIsNotBoardMemberOfAnyHoaValidator());
-        validator.addLast(new UserIsMemberForAtLeast3YearsValidator());
         validator.addLast(new BoardMemberForLess10YearsValidator());
+        try {
+            if (HoaCommunication.checkHoaHasBoard(userId, proposal.getHoaId())
+                    && HoaCommunication.checkHoaHasPossibleCandidates(userId, proposal.getHoaId())) {
+                // Limit of member longevity cannot apply on new HOAs
+                validator.addLast(new UserIsMemberForAtLeast3YearsValidator());
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
         try {
             return validator.handle(userId, option, proposal);
         } catch (InvalidRequestException e) {

@@ -5,6 +5,9 @@ import sem.hoa.domain.entities.Hoa;
 import sem.hoa.domain.entities.Membership;
 import sem.hoa.domain.entities.MembershipId;
 
+import java.time.Instant;
+import java.time.Period;
+import java.time.temporal.TemporalAmount;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,7 +60,7 @@ public class MemberManagementService {
     }
 
     /**
-     * Find the ID of the Hoa of which this user is a boardmember.
+     * Find the ID of the Hoa of which this user is a board-member.
      *
      * @param username username
      * @return the ID of the Hoa or -1 if user is not a board member of any HOAs
@@ -70,5 +73,9 @@ public class MemberManagementService {
         return membership.get().getHoaId();
     }
 
+    public boolean hasPossibleBoardCandidates(int hoaId) {
+        return memberManagementRepository.existsByHoaIdAndJoiningDateLessThanEqual(hoaId,
+                Instant.now().minus(Period.of(3, 0, 0)).getEpochSecond());
+    }
 
 }

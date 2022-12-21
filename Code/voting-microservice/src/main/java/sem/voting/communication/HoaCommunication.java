@@ -102,6 +102,22 @@ public class HoaCommunication {
     }
 
     /**
+     * Check if HOA has any possible candidates.
+     *
+     * @param username  username of the user
+     * @param hoaId     hoaID
+     * @return          true if any possible candidate is present
+     * @throws Exception either a bad request or response has error
+     */
+    public static boolean checkHoaHasPossibleCandidates(String username, int hoaId) throws Exception {
+        String url = HOAPath + "/member/hasEligibleMembers";
+        Map<String, String> params = new HashMap<>();
+        params.put(hoaIdParamName, hoaId + "");
+        String response = makeRequest(username, url, "", params);
+        return objectMapper.readValue(response, String.class).equals("true");
+    }
+
+    /**
      * Check if a user is a board member of a hoa.
      *
      * @param username  username of the user

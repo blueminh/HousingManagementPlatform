@@ -15,4 +15,6 @@ public interface MemberManagementRepository extends JpaRepository<Membership, Me
 
     List<Membership> findByHoaIdAndIsBoardMemberIsTrue(int hoaId);
 
+    boolean existsByHoaIdAndJoiningDateLessThanEqual(int hoaId, Long joiningDate);
+
 }

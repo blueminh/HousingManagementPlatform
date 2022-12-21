@@ -191,9 +191,6 @@ public class MemberController {
             if (membership.isEmpty()) {
                 throw new BadRequestException(userNotRegisteredError);
             }
-            if (membership.get().getJoiningBoardDate() == -1) {
-                throw new BadRequestException(userNotBoardMemberError);
-            }
             return ResponseEntity.ok(membership.get().getJoiningBoardDate().toString());
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -225,6 +222,22 @@ public class MemberController {
             System.out.println(e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
+    }
+
+    /**
+     * Indicates if there are possible candidates for the board.
+     *
+     * @param hoaId HOA to investigate
+     * @return 200 and "true" if at least one candidate exists, "false" otherwise
+     *      400 id the HOA doesn't exist
+     */
+    @GetMapping("/hasEligibleMembers")
+    public ResponseEntity<String> countEligibleMembers(@RequestParam Integer hoaId) {
+        Optional<Hoa> hoa = hoaService.findHoaById(hoaId);
+        if (hoa.isEmpty()) {
+            return ResponseEntity.badRequest().body(noSuchHoaIdError + hoaId);
+        }
+        return ResponseEntity.ok(Boolean.toString(memberManagementService.hasPossibleBoardCandidates(hoaId)));
     }
 
 }

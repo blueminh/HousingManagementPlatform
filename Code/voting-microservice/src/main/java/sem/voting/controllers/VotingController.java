@@ -136,7 +136,8 @@ public class VotingController {
         try {
             validator.handle(authManager.getUserId(), null, toAdd);
         } catch (InvalidRequestException ex) {
-            System.err.println(authManager.getUserId() + " does not have the rights to start a new proposal.");
+            System.err.println(authManager.getUserId() + " does not have the rights to start a new proposal:");
+            System.err.println(ex.getMessage());
             return ResponseEntity.badRequest().build();
         }
 
@@ -195,7 +196,15 @@ public class VotingController {
         if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
             return ResponseEntity.badRequest().build();
         }
-        // ToDo: check if authentication and HOA are valid
+        try {
+            if (!HoaCommunication.checkUserIsBoardMember(authManager.getUserId(), request.getHoaId())) {
+                System.out.println("User is not a board member.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        } catch (Exception e) {
+            System.out.println("Cannot find if user " + authManager.getUserId() + " is a board member of HOA " + request.getHoaId());
+            return ResponseEntity.badRequest().build();
+        }
 
         Optional<Proposal> proposal = proposalHandlingService.getProposalById(request.getProposalId());
         if (proposal.isEmpty()) {
