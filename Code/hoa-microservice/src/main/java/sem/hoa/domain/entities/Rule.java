@@ -1,11 +1,14 @@
 package sem.hoa.domain.entities;
 
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 
 @Entity
 @Table(name = "rule")
+@NoArgsConstructor
 public class Rule {
 
     @Id
@@ -14,7 +17,7 @@ public class Rule {
     private int id;
 
     @Column(name = "hoaId", nullable = false)
-    private final int hoaId;
+    private int hoaId;
 
     @Column(name = "description", nullable = false)
     private String description;
@@ -22,6 +25,10 @@ public class Rule {
     public Rule(int hoaId, String description) {
         this.hoaId = hoaId;
         this.description = description;
+    }
+
+    public int getRuleId() {
+        return id;
     }
 
     public int getHoaID() {

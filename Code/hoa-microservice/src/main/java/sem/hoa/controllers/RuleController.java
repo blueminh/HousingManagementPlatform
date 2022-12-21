@@ -48,6 +48,7 @@ public class RuleController {
         }
         List<Rule> rules = ruleService.getHoaRules(request.getHoaId());
         HoaIDRulesListModel response = new HoaIDRulesListModel();
+        response.setHoaId(request.getHoaId());
         response.setRules(rules);
         return ResponseEntity.ok(response);
     }
@@ -97,7 +98,8 @@ public class RuleController {
             return ResponseEntity.notFound().build();
         }
         ruleService.replaceRule(rule.get(), request.getChange());
-        return ResponseEntity.ok("Edited rule with id:" + request.getRuleId() +
+        ruleService.saveRule(rule.get());
+        return ResponseEntity.ok("Edited rule with id: " + request.getRuleId() +
                 "\nNew rule is: " + request.getChange());
 
     }

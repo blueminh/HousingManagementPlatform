@@ -14,13 +14,10 @@ import java.util.List;
 public class HoaIDRulesListModel {
 
     private int hoaId;
-    private List<String> rules;
+    private List<Rule> rules;
 
     public void setRules(List<Rule> list) {
-        rules = new ArrayList<>();
-        for(Rule r : list) {
-            rules.add(r.getDescription());
-        }
+        this.rules = list;
     }
 
     public int getHoaId() {
