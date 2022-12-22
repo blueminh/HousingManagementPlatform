@@ -1,6 +1,8 @@
 package sem.hoa.domain.entities;
 
-import javax.persistence.Column;
+
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -9,6 +11,8 @@ import javax.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import javax.persistence.Column;
+import javax.persistence.GenerationType;
 
 import java.util.Objects;
 
@@ -17,7 +21,7 @@ import java.util.Objects;
 @NoArgsConstructor
 public class Hoa extends HasEvents {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private int id;
 
@@ -31,12 +35,13 @@ public class Hoa extends HasEvents {
     @Column(name = "city", nullable = false, unique = false)
     private String city;
 
+
     /**
      * Constructor for a new HOA.
      *
-     * @param name    name
-     * @param country country
-     * @param city    city
+     * @param name    - name of HOA
+     * @param country - country of HOA
+     * @param city    - city of HOA
      */
     public Hoa(String name, String country, String city) {
         this.hoaName = name;
