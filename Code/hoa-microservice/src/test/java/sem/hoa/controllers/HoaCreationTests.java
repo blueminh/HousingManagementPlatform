@@ -54,7 +54,6 @@ public class HoaCreationTests {
     /**
      * try to create a HOA normally using the endpoint for it.
      *
-     * @throws Exception
      */
     @Test
     public void createOne() throws Exception {
@@ -100,7 +99,6 @@ public class HoaCreationTests {
      *  Try to pass a blank String or null or an int<0 as one of the variables
      *  should return bad request and nothing should be saved.
      *
-     * @throws Exception
      */
     @Test
     public void createBadRequest() throws Exception {
@@ -166,7 +164,6 @@ public class HoaCreationTests {
      *  tests the normal behaviour of the service related
      *  to HOA creation.
      *
-     * @throws Exception
      */
     @Test
     public void createService() throws Exception {
@@ -179,7 +176,6 @@ public class HoaCreationTests {
      *  tests the behaviour of the service related
      *  to HOA creation when trying to save a HOA with an existing name.
      *
-     * @throws Exception
      */
     @Test
     public void createServiceDup() throws Exception {
@@ -187,9 +183,9 @@ public class HoaCreationTests {
         hoaServiceMock.createNewHOA(hoaT);
         HOA hoaD = new HOA("name", "diffCountry", "diffCity");
 
-        assertThatThrownBy(()->hoaServiceMock.createNewHOA(hoaD))
+        assertThatThrownBy(() -> hoaServiceMock.createNewHOA(hoaD))
                 .isInstanceOf(HoaCreationException.class);
-        assertThatThrownBy(()->hoaServiceMock.createNewHOA(hoaD))
+        assertThatThrownBy(() -> hoaServiceMock.createNewHOA(hoaD))
                 .hasMessage("HOA was not saved successfully: HOA already exists");
     }
 
