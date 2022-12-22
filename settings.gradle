@@ -14,21 +14,3 @@ include 'Code:example-microservice'
 include 'Code:voting-microservice'
 include 'Code:hoa-microservice'
 include 'Code:users-microservice'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
