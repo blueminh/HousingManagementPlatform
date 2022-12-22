@@ -7,7 +7,7 @@ import sem.voting.domain.proposal.Proposal;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class UserIsMemberForAtLeast3YearsValidator extends Validator {
+public class UserIsMemberForAtLeast3YearsValidator extends BaseValidator {
     @Override
     public boolean handle(String username, Option option, Proposal proposal) throws InvalidRequestException {
         try {

@@ -4,7 +4,7 @@ import sem.voting.communication.HoaCommunication;
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
 
-public class MemberIsNotBoardMemberOfAnyHoaValidator extends Validator {
+public class MemberIsNotBoardMemberOfAnyHoaValidator extends BaseValidator {
     @Override
     public boolean handle(String username, Option option, Proposal proposal) throws InvalidRequestException {
         try {
