@@ -66,6 +66,16 @@ public class AppUser extends HasEvents {
         return fullname;
     }
 
+    public void changePassword(HashedPassword password) {
+        this.password = password;
+        this.recordThat(new PasswordWasChangedEvent(this));
+    }
+
+    public void changeFullName(FullName fullName) {
+        this.fullname = fullName;
+        this.recordThat(new FullNameWasChangedEvent(this));
+    }
+
     /**
      * Equality is only based on the identifier.
      */
@@ -85,4 +95,6 @@ public class AppUser extends HasEvents {
     public int hashCode() {
         return Objects.hash(username);
     }
+
+
 }
