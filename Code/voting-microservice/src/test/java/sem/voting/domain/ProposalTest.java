@@ -37,7 +37,7 @@ public class ProposalTest {
 
     private static Proposal makeProposal(int hoaId, long votingDeadline,
                                          VoteValidationService voteValidationService,
-                                         OptionValidationService optionValidationService){
+                                         OptionValidationService optionValidationService) {
         Proposal proposal = new Proposal();
         proposal.setHoaId(hoaId);
         proposal.setTitle("titile");
@@ -49,12 +49,12 @@ public class ProposalTest {
     }
 
     private VoteValidationService boardVoteService = mock(BoardElectionsVoteValidationService.class);
-    private  VoteValidationService ruleVoteService = mock(RuleChangesVoteValidationService.class);
-    private  OptionValidationService boardOptionService = mock(BoardElectionOptionValidationService.class);
-    private  OptionValidationService ruleOptionService = mock(RuleChangesOptionValidationService.class);
+    private VoteValidationService ruleVoteService = mock(RuleChangesVoteValidationService.class);
+    private OptionValidationService boardOptionService = mock(BoardElectionOptionValidationService.class);
+    private OptionValidationService ruleOptionService = mock(RuleChangesOptionValidationService.class);
 
     @Test
-    public void check_deadline_test(){
+    public void check_deadline_test() {
         long deadline = new Date().getTime() + 1000 * 60;
         Proposal proposal = makeProposal(1, deadline, boardVoteService, boardOptionService);
 
@@ -90,7 +90,8 @@ public class ProposalTest {
         Assertions.assertDoesNotThrow(() -> proposal.addOption(new Option("option"), "user"));
     }
 
-    @Test void add_option_fail() {
+    @Test
+    void add_option_fail() {
         long deadline = new Date().getTime() + 1000 * 60;
         Proposal proposal = makeProposal(1, deadline, boardVoteService, boardOptionService);
         Option option = new Option("option");
@@ -112,8 +113,8 @@ public class ProposalTest {
         long deadline = new Date().getTime() + 1000 * 60;
         Proposal proposal = makeProposal(1, deadline, boardVoteService, boardOptionService);
 
-        when(boardVoteService.isVoteValid(any(Vote.class), any(Proposal.class))).thenReturn( true);
-        when(boardOptionService.isOptionValid(any(String.class),any(Option.class), any(Proposal.class))).thenReturn( true);
+        when(boardVoteService.isVoteValid(any(Vote.class), any(Proposal.class))).thenReturn(true);
+        when(boardOptionService.isOptionValid(any(String.class), any(Option.class), any(Proposal.class))).thenReturn(true);
 
         try {
             proposal.addOption(new Option("user2"), "user2");
@@ -135,7 +136,7 @@ public class ProposalTest {
         }
 
         try {
-           assertThat(proposal.addVote(new Vote("user", null))).isTrue();
+            assertThat(proposal.addVote(new Vote("user", null))).isTrue();
         } catch (Exception e) {
             fail("error removing vote");
         }
@@ -154,12 +155,12 @@ public class ProposalTest {
         long deadline = new Date().getTime() + 1000 * 60;
         Proposal proposal = makeProposal(1, deadline, boardVoteService, boardOptionService);
 
-        when(boardVoteService.isVoteValid(any(Vote.class), any(Proposal.class))).thenReturn( true);
-        Assertions.assertThrows(VotingException.class,() -> proposal.addVote(new Vote("user", new Option("user2"))));
+        when(boardVoteService.isVoteValid(any(Vote.class), any(Proposal.class))).thenReturn(true);
+        Assertions.assertThrows(VotingException.class, () -> proposal.addVote(new Vote("user", new Option("user2"))));
 
         proposal.startVoting();
         when(boardVoteService.isVoteValid(any(Vote.class), any(Proposal.class))).thenReturn(false);
-        Assertions.assertThrows(VotingException.class,() -> proposal.addVote(new Vote("user", new Option("user2"))));
+        Assertions.assertThrows(VotingException.class, () -> proposal.addVote(new Vote("user", new Option("user2"))));
     }
 
     @Test
@@ -169,8 +170,8 @@ public class ProposalTest {
 
         Assertions.assertNull(proposal.getResults());
 
-        when(boardVoteService.isVoteValid(any(Vote.class), any(Proposal.class))).thenReturn( true);
-        when(boardOptionService.isOptionValid(any(String.class),any(Option.class), any(Proposal.class))).thenReturn( true);
+        when(boardVoteService.isVoteValid(any(Vote.class), any(Proposal.class))).thenReturn(true);
+        when(boardOptionService.isOptionValid(any(String.class), any(Option.class), any(Proposal.class))).thenReturn(true);
 
         proposal.setVotingDeadline(new Date(deadline - 1000 * 100));
         Set<Result> expected = new HashSet<>();
@@ -184,8 +185,8 @@ public class ProposalTest {
 
         Assertions.assertNull(proposal.getResults());
 
-        when(boardVoteService.isVoteValid(any(Vote.class), any(Proposal.class))).thenReturn( true);
-        when(boardOptionService.isOptionValid(any(String.class),any(Option.class), any(Proposal.class))).thenReturn( true);
+        when(boardVoteService.isVoteValid(any(Vote.class), any(Proposal.class))).thenReturn(true);
+        when(boardOptionService.isOptionValid(any(String.class), any(Option.class), any(Proposal.class))).thenReturn(true);
 
         try {
             proposal.addOption(new Option("user2"), "user2");
