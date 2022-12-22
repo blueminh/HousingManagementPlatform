@@ -25,6 +25,7 @@ import sem.users.domain.user.UserRepository;
 import sem.users.domain.user.Username;
 import sem.users.models.AuthenticationRequestModel;
 import sem.users.models.AuthenticationResponseModel;
+import sem.users.models.ChangeUserInfoRequestModel;
 import sem.users.models.FullnameRequestModel;
 import sem.users.models.FullnameResponseModel;
 import sem.users.models.RegistrationRequestModel;
@@ -332,5 +333,271 @@ public class IntegrationTests {
                     && wrongPassword.equals(authentication.getCredentials())));
 
         verify(mockJwtTokenGenerator, times(0)).generateToken(any());
+    }
+
+    @Test
+    public void changePassword() throws Exception {
+        // Arrange
+        final Username testUsername = new Username("SomeUser");
+        final Password currentTestPassword = new Password("password456");
+        final Password newTestPassword = new Password("password4567");
+        final HashedPassword existingTestPassword = new HashedPassword("password123");
+        final FullName testFullName = new FullName("firstname lastname");
+
+        when(mockPasswordEncoder.hash(newTestPassword)).thenReturn(new HashedPassword("hash"));
+        when(mockPasswordEncoder.hash(currentTestPassword)).thenReturn(new HashedPassword("password123"));
+        AppUser existingAppUser = new AppUser(testUsername, existingTestPassword, testFullName);
+        userRepository.save(existingAppUser);
+
+        ChangeUserInfoRequestModel model = new ChangeUserInfoRequestModel();
+        model.setUsername(testUsername.toString());
+        model.setPassword(currentTestPassword.toString());
+        model.setNewAttribute(newTestPassword.toString());
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/changepassword")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.serialize(model)));
+
+        // Assert
+        resultActions.andExpect(status().isOk());
+
+        AppUser savedUser = userRepository.findByUsername(testUsername).orElseThrow();
+
+        assertEquals(testUsername, savedUser.getUsername());
+        assertEquals(new HashedPassword("hash"), savedUser.getPassword());
+        assertEquals(testFullName, savedUser.getFullName());
+    }
+
+    @Test
+    public void changePasswordUserDoesntExist() throws Exception {
+        // Arrange
+        final Username testUsername = new Username("SomeUser");
+        final Password currentTestPassword = new Password("password456");
+        final Password newTestPassword = new Password("password4567");
+        final HashedPassword existingTestPassword = new HashedPassword("password123");
+        final FullName testFullName = new FullName("firstname lastname");
+
+        when(mockPasswordEncoder.hash(newTestPassword)).thenReturn(new HashedPassword("hash"));
+        when(mockPasswordEncoder.hash(currentTestPassword)).thenReturn(new HashedPassword("password123"));
+        AppUser existingAppUser = new AppUser(testUsername, existingTestPassword, testFullName);
+        userRepository.save(existingAppUser);
+
+        ChangeUserInfoRequestModel model = new ChangeUserInfoRequestModel();
+        model.setUsername("nonexistentuser");
+        model.setPassword(currentTestPassword.toString());
+        model.setNewAttribute(newTestPassword.toString());
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/changepassword")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.serialize(model)));
+
+        // Assert
+        resultActions.andExpect(status().isBadRequest());
+
+        AppUser savedUser = userRepository.findByUsername(testUsername).orElseThrow();
+
+        assertEquals(testUsername, savedUser.getUsername());
+        assertEquals(new HashedPassword("password123"), savedUser.getPassword());
+        assertEquals(testFullName, savedUser.getFullName());
+    }
+
+    @Test
+    public void changePasswordBadCredentials() throws Exception {
+        // Arrange
+        final Username testUsername = new Username("SomeUser");
+        final Password currentTestPassword = new Password("password456");
+        final Password newTestPassword = new Password("password4567");
+        final HashedPassword existingTestPassword = new HashedPassword("password123");
+        final FullName testFullName = new FullName("firstname lastname");
+
+        when(mockPasswordEncoder.hash(newTestPassword)).thenReturn(new HashedPassword("hash"));
+        when(mockPasswordEncoder.hash(currentTestPassword)).thenReturn(new HashedPassword("password123"));
+        AppUser existingAppUser = new AppUser(testUsername, existingTestPassword, testFullName);
+        userRepository.save(existingAppUser);
+
+        ChangeUserInfoRequestModel model = new ChangeUserInfoRequestModel();
+        model.setUsername(testUsername.toString());
+        model.setPassword(newTestPassword.toString());
+        model.setNewAttribute(newTestPassword.toString());
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/changepassword")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.serialize(model)));
+
+        // Assert
+        resultActions.andExpect(status().isUnauthorized());
+
+        AppUser savedUser = userRepository.findByUsername(testUsername).orElseThrow();
+
+        assertEquals(testUsername, savedUser.getUsername());
+        assertEquals(new HashedPassword("password123"), savedUser.getPassword());
+        assertEquals(testFullName, savedUser.getFullName());
+    }
+
+    @Test
+    public void changeSamePassword() throws Exception {
+        // Arrange
+        final Username testUsername = new Username("SomeUser");
+        final Password currentTestPassword = new Password("password456");
+        final Password newTestPassword = new Password("password456");
+        final HashedPassword existingTestPassword = new HashedPassword("password123");
+        final FullName testFullName = new FullName("firstname lastname");
+
+        when(mockPasswordEncoder.hash(newTestPassword)).thenReturn(new HashedPassword("hash"));
+        when(mockPasswordEncoder.hash(currentTestPassword)).thenReturn(new HashedPassword("password123"));
+        AppUser existingAppUser = new AppUser(testUsername, existingTestPassword, testFullName);
+        userRepository.save(existingAppUser);
+
+        ChangeUserInfoRequestModel model = new ChangeUserInfoRequestModel();
+        model.setUsername(testUsername.toString());
+        model.setPassword(currentTestPassword.toString());
+        model.setNewAttribute(newTestPassword.toString());
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/changepassword")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.serialize(model)));
+
+        // Assert
+        resultActions.andExpect(status().isBadRequest());
+
+        AppUser savedUser = userRepository.findByUsername(testUsername).orElseThrow();
+
+        assertEquals(testUsername, savedUser.getUsername());
+        assertEquals(existingTestPassword, savedUser.getPassword());
+        assertEquals(testFullName, savedUser.getFullName());
+    }
+
+    @Test
+    public void changeFullName() throws Exception {
+        // Arrange
+        final Username testUsername = new Username("SomeUser");
+        final Password currentTestPassword = new Password("password456");
+        final HashedPassword existingTestPassword = new HashedPassword("password123");
+        final FullName testFullName = new FullName("firstname lastname");
+        final FullName newtestFullName = new FullName("lastname firstname");
+
+        when(mockPasswordEncoder.hash(currentTestPassword)).thenReturn(new HashedPassword("password123"));
+        AppUser existingAppUser = new AppUser(testUsername, existingTestPassword, testFullName);
+        userRepository.save(existingAppUser);
+
+        ChangeUserInfoRequestModel model = new ChangeUserInfoRequestModel();
+        model.setUsername(testUsername.toString());
+        model.setPassword(currentTestPassword.toString());
+        model.setNewAttribute(newtestFullName.toString());
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/changefullname")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.serialize(model)));
+
+        // Assert
+        resultActions.andExpect(status().isOk());
+
+        AppUser savedUser = userRepository.findByUsername(testUsername).orElseThrow();
+
+        assertEquals(testUsername, savedUser.getUsername());
+        assertEquals(existingTestPassword, savedUser.getPassword());
+        assertEquals(newtestFullName, savedUser.getFullName());
+    }
+
+    @Test
+    public void changeSameFullName() throws Exception {
+        // Arrange
+        final Username testUsername = new Username("SomeUser");
+        final Password currentTestPassword = new Password("password456");
+        final HashedPassword existingTestPassword = new HashedPassword("password123");
+        final FullName testFullName = new FullName("firstname lastname");
+
+        when(mockPasswordEncoder.hash(currentTestPassword)).thenReturn(new HashedPassword("password123"));
+        AppUser existingAppUser = new AppUser(testUsername, existingTestPassword, testFullName);
+        userRepository.save(existingAppUser);
+
+        ChangeUserInfoRequestModel model = new ChangeUserInfoRequestModel();
+        model.setUsername(testUsername.toString());
+        model.setPassword(currentTestPassword.toString());
+        model.setNewAttribute(testFullName.toString());
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/changefullname")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.serialize(model)));
+
+        // Assert
+        resultActions.andExpect(status().isBadRequest());
+
+        AppUser savedUser = userRepository.findByUsername(testUsername).orElseThrow();
+
+        assertEquals(testUsername, savedUser.getUsername());
+        assertEquals(existingTestPassword, savedUser.getPassword());
+        assertEquals(testFullName, savedUser.getFullName());
+    }
+
+    @Test
+    public void changeFullNameUserNotFound() throws Exception {
+        // Arrange
+        final Username testUsername = new Username("SomeUser");
+        final Password currentTestPassword = new Password("password456");
+        final HashedPassword existingTestPassword = new HashedPassword("password123");
+        final FullName testFullName = new FullName("firstname lastname");
+
+        when(mockPasswordEncoder.hash(currentTestPassword)).thenReturn(new HashedPassword("password123"));
+        AppUser existingAppUser = new AppUser(testUsername, existingTestPassword, testFullName);
+        userRepository.save(existingAppUser);
+
+        ChangeUserInfoRequestModel model = new ChangeUserInfoRequestModel();
+        model.setUsername("this user does not exist");
+        model.setPassword(currentTestPassword.toString());
+        model.setNewAttribute("new full name");
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/changefullname")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.serialize(model)));
+
+        // Assert
+        resultActions.andExpect(status().isBadRequest());
+
+        AppUser savedUser = userRepository.findByUsername(testUsername).orElseThrow();
+
+        assertEquals(testUsername, savedUser.getUsername());
+        assertEquals(existingTestPassword, savedUser.getPassword());
+        assertEquals(testFullName, savedUser.getFullName());
+    }
+
+    @Test
+    public void changeFullNameBadCredentials() throws Exception {
+        // Arrange
+        final Username testUsername = new Username("SomeUser");
+        final Password currentTestPassword = new Password("password456");
+        final HashedPassword existingTestPassword = new HashedPassword("password123");
+        final FullName testFullName = new FullName("firstname lastname");
+        final FullName newtestFullName = new FullName("lastname firstname");
+
+        when(mockPasswordEncoder.hash(currentTestPassword)).thenReturn(new HashedPassword("password123"));
+        AppUser existingAppUser = new AppUser(testUsername, existingTestPassword, testFullName);
+        userRepository.save(existingAppUser);
+
+        ChangeUserInfoRequestModel model = new ChangeUserInfoRequestModel();
+        model.setUsername(testUsername.toString());
+        model.setPassword("invalidpass");
+        model.setNewAttribute(newtestFullName.toString());
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/changefullname")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.serialize(model)));
+
+        // Assert
+        resultActions.andExpect(status().isUnauthorized());
+
+        AppUser savedUser = userRepository.findByUsername(testUsername).orElseThrow();
+
+        assertEquals(testUsername, savedUser.getUsername());
+        assertEquals(existingTestPassword, savedUser.getPassword());
+        assertEquals(testFullName, savedUser.getFullName());
     }
 }

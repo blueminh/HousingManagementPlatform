@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -23,7 +24,7 @@ public class AppUser extends HasEvents {
      * Identifier for the application user.
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private int id;
     @Column(name = "username", nullable = false, unique = true)
@@ -65,6 +66,16 @@ public class AppUser extends HasEvents {
         return fullname;
     }
 
+    public void changePassword(HashedPassword password) {
+        this.password = password;
+        this.recordThat(new PasswordWasChangedEvent(this));
+    }
+
+    public void changeFullName(FullName fullName) {
+        this.fullname = fullName;
+        this.recordThat(new FullNameWasChangedEvent(this));
+    }
+
     /**
      * Equality is only based on the identifier.
      */
@@ -84,4 +95,6 @@ public class AppUser extends HasEvents {
     public int hashCode() {
         return Objects.hash(username);
     }
+
+
 }

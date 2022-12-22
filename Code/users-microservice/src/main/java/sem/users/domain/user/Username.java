@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
  * A DDD value object representing a Username in our domain.
  */
 @EqualsAndHashCode
-public class Username implements Comparable<Username> {
+public class Username {
     @EqualsAndHashCode.Include
     private final transient String usernamex;
 
@@ -18,10 +18,5 @@ public class Username implements Comparable<Username> {
     @Override
     public String toString() {
         return usernamex;
-    }
-
-    @Override
-    public int compareTo(Username o) {
-        return String.CASE_INSENSITIVE_ORDER.compare(this.usernamex, o.usernamex);
     }
 }
