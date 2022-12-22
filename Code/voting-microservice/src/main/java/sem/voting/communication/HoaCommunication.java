@@ -23,10 +23,9 @@ import java.util.Properties;
 
 @Component
 public class HoaCommunication {
-    private static ObjectMapper objectMapper = new ObjectMapper();
-    private static String HOAPath = "http://localhost:8086";
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final String HOAPath = "http://localhost:8086";
     private static final String hoaIdParamName = "hoaId";
-
 
     /**
      * Constructs a token from a userId.
@@ -36,9 +35,10 @@ public class HoaCommunication {
      */
     private static String getTokenFromId(String userId, String jwtSecret) {
         Date nowDate = new Date(Instant.now().toEpochMilli());
+        final int hourInSeconds = 60 * 60;
         return Jwts.builder().setClaims(new HashMap<>()).setSubject(userId)
             .setIssuedAt(nowDate)
-            .setExpiration(Date.from(nowDate.toInstant().plusSeconds(60 * 60)))
+            .setExpiration(Date.from(nowDate.toInstant().plusSeconds(hourInSeconds)))
             .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }
 
@@ -48,13 +48,12 @@ public class HoaCommunication {
      * @param userId    id of the user making the request
      * @param url       the endpoint to sent to
      * @return the body of the response as String if OK or the embedded error message if
-     * receiving a error
+     * receiving an error
      */
-    @SuppressWarnings("PMD.UseProperClassLoader")
-    private static String makeRequest(String userId, String url, String requestBody, Map<String, String> params) throws Exception {
+    private static String makeRequest(String userId, String url, Map<String, String> params) throws Exception {
         // Get the secret
         Properties properties = new Properties();
-        URL resourceUrl = HoaCommunication.class.getClassLoader().getResource("application.properties");
+        URL resourceUrl = Thread.currentThread().getContextClassLoader().getResource("application.properties");
         properties.load(new FileInputStream(Paths.get(resourceUrl.toURI()).toFile().getPath()));
 
         // Generate authToken for the given userId
@@ -62,7 +61,7 @@ public class HoaCommunication {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + authToken);
-        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+        HttpEntity<String> request = new HttpEntity<>("", headers);
 
         ResponseEntity<String> response;
         if (params == null) {
@@ -97,7 +96,7 @@ public class HoaCommunication {
         String url = HOAPath + "/member/numberBoardMembers";
         Map<String, String> params = new HashMap<>();
         params.put(hoaIdParamName, hoaId + "");
-        String response = makeRequest(username, url, "", params);
+        String response = makeRequest(username, url, params);
         return !objectMapper.readValue(response, String.class).equals("0");
     }
 
@@ -113,7 +112,7 @@ public class HoaCommunication {
         String url = HOAPath + "/member/hasEligibleMembers";
         Map<String, String> params = new HashMap<>();
         params.put(hoaIdParamName, hoaId + "");
-        String response = makeRequest(username, url, "", params);
+        String response = makeRequest(username, url, params);
         return objectMapper.readValue(response, String.class).equals("true");
     }
 
@@ -128,22 +127,27 @@ public class HoaCommunication {
     public static boolean checkUserIsBoardMember(String username, int hoaId) throws Exception {
         String url = HOAPath + "/member/findUserRoleByHoaID";
         Map<String, String> params = new HashMap<>();
-        params.put(hoaIdParamName, hoaId + "");
-        String response = makeRequest(username, url, "", params);
-        return objectMapper.readValue(response, String.class).equals("boardMember");
+        params.put(hoaIdParamName, Integer.toString(hoaId));
+        String response = makeRequest(username, url, params);
+        return response.equals("boardMember");
     }
 
     /**
      * Check if a user is NOT a board member of any HOA.
      *
      * @param username  username of the user
+     * @param currentHoa id of HOA in examine
      * @return whether the user is NOT a board member of any HOA
      * @throws Exception either a bad request or response has error
      */
-    public static boolean checkUserIsNotBoardMemberOfAnyHoa(String username) throws Exception {
+    public static boolean checkUserIsNotBoardMemberOfAnyHoa(String username, Integer currentHoa) throws Exception {
         String url = HOAPath + "/member/isaBoardMemberOfAny";
-        String response = makeRequest(username, url, "", null);
-        return objectMapper.readValue(response, Integer.class) == -1;
+        String response = makeRequest(username, url, null);
+        int boardHoaId = objectMapper.readValue(response, Integer.class);
+        if (currentHoa != null && boardHoaId == currentHoa) {
+            return true;
+        }
+        return boardHoaId == -1;
     }
 
     /**
@@ -158,7 +162,7 @@ public class HoaCommunication {
         String url = HOAPath + "/member/isMemberOf";
         Map<String, String> params = new HashMap<>();
         params.put(hoaIdParamName, hoaId + "");
-        String response = makeRequest(username, url, "", params);
+        String response = makeRequest(username, url, params);
         return objectMapper.readValue(response, Boolean.class);
     }
 
@@ -174,7 +178,7 @@ public class HoaCommunication {
         String url = HOAPath + "/member/joiningDate";
         Map<String, String> params = new HashMap<>();
         params.put(hoaIdParamName, hoaId + "");
-        String response = makeRequest(username, url, "", params);
+        String response = makeRequest(username, url, params);
         return objectMapper.readValue(response, Long.class);
     }
 
@@ -192,7 +196,7 @@ public class HoaCommunication {
         String url = HOAPath + "/member/joiningBoardDate";
         Map<String, String> params = new HashMap<>();
         params.put(hoaIdParamName, hoaId + "");
-        String response = makeRequest(username, url, "", params);
+        String response = makeRequest(username, url, params);
         return objectMapper.readValue(response, Long.class);
     }
 }

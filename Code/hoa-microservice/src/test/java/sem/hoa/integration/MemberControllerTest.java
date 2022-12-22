@@ -60,9 +60,9 @@ public class MemberControllerTest {
     @BeforeEach
     void setUp() {
         userName = "user1";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
         hoa = hoaRepository.save(new Hoa("hoa1", "country1", "city1"));
     }
 
@@ -126,8 +126,8 @@ public class MemberControllerTest {
         }
 
         String userName2 = "user2";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName2);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName2);
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName2);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName2);
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/findUserRoleByHoaName")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -202,8 +202,8 @@ public class MemberControllerTest {
         }
 
         userName = "user2";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/findUserRoleByHoaID")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -222,9 +222,9 @@ public class MemberControllerTest {
     void board_member_of_any_true() {
         // Arrange
         String userName = "user1";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
 
         final Membership membership1 = memberManagementRepository.save(new Membership("user1", hoa.getId(),
             false, "country1", "city1", "street1", 1, "postal1", new Date().getTime(), -1L));

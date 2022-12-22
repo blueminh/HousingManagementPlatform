@@ -1,7 +1,5 @@
 package sem.voting.domain.services.validators;
 
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalHandlingService;
@@ -16,8 +14,8 @@ public class NoBoardElectionValidator extends BaseValidator {
 
     @Override
     public boolean handle(String username, Option option, Proposal proposal) throws InvalidRequestException {
-        for (Proposal proposal1 : proposalHandlingService.getActiveProposals(proposal.getHoaId())) {
-            if (proposal1.getVoteValidationService() instanceof BoardElectionsVoteValidationService) {
+        for (Proposal prop : proposalHandlingService.getActiveProposals(proposal.getHoaId())) {
+            if (prop.getVoteValidationService() instanceof BoardElectionsVoteValidationService) {
                 throw new InvalidRequestException("A board election is ongoing");
             }
         }

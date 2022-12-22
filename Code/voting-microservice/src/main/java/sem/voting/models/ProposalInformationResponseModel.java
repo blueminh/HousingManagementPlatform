@@ -8,6 +8,8 @@ import lombok.Data;
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalStage;
+import sem.voting.domain.proposal.ProposalType;
+import sem.voting.domain.services.implementations.BoardElectionOptionValidationService;
 
 /**
  * Model representing a response to a request of information about a proposal.
@@ -21,6 +23,7 @@ public class ProposalInformationResponseModel {
     private Date deadline;
     private ProposalStage status;
     private List<String> options;
+    private ProposalType type;
 
     /**
      * Constructor from a Proposal object.
@@ -36,5 +39,10 @@ public class ProposalInformationResponseModel {
         this.status = proposal.getStatus();
         this.options = proposal.getAvailableOptions().stream()
             .map(Option::toString).collect(Collectors.toList());
+        if (proposal.getOptionValidationService() instanceof BoardElectionOptionValidationService) {
+            this.type = ProposalType.BoardElection;
+        } else {
+            this.type = ProposalType.HoaRuleChange;
+        }
     }
 }

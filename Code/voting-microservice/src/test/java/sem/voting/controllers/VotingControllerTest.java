@@ -30,9 +30,10 @@ import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalHandlingService;
 import sem.voting.domain.proposal.ProposalRepository;
 import sem.voting.domain.proposal.ProposalType;
+import sem.voting.domain.services.validators.MemberIsBoardMemberValidator;
+import sem.voting.domain.services.validators.Validator;
 import sem.voting.integration.utils.JsonUtil;
 import sem.voting.models.ProposalCreationRequestModel;
-import sem.voting.models.ProposalCreationResponseModel;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -57,11 +58,26 @@ class VotingControllerTest {
     private transient ProposalRepository proposalRepository;
 
     @Test
+    void testMockConstructor() throws Exception {
+        try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
+            com.when(() -> HoaCommunication.checkUserIsBoardMember("ciao", 1))
+                    .thenReturn(true);
+
+            assertThat(HoaCommunication.checkUserIsBoardMember("ciao", 1)).isTrue();
+
+            Validator val = new MemberIsBoardMemberValidator();
+            Proposal p = new Proposal();
+            p.setHoaId(1);
+            assertThat(val.handle("ciao", null, p)).isTrue();
+        }
+    }
+
+    @Test
     void addProposalNonBoardMember() throws Exception {
         // Arrange
         final String userName = "ExampleUser";
         final int testHoaId = 0;
-        when(mockAuthenticationManager.getUserId()).thenReturn(userName);
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
         final String testTitle = "New Amazing Board Members";
