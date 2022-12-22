@@ -35,31 +35,6 @@ public class HOAService {
         }
     }
 
-    /**
-     * Adds the given HOA to the HOA repository.
-     *
-     * @param hoa = hoa to be added to the repository
-     */
-    public HOA createNewHOAbyRequest(HoaModifyDTO request) throws HoaCreationException {
-        // TODO do some checks here
-        try {
-            //Checks
-            this.checkHoaModifyDTO(request);
-            //Creates and checks additionally
-            HOA hoa = new HOA(request.hoaName, request.userCountry, request.userCity);
-            if (!hoaRepository.findByHoaName(hoa.getHoaName()).isEmpty()) {
-                throw new HoaCreationException("HOA already exists");
-            }
-            //Saves to repository
-            hoaRepository.save(hoa);
-            System.out.println("new HOA created:" + hoa.getHoaName());
-            return hoa;
-        } catch (Exception e) {
-            System.err.println("HOA was not saved successfully");
-            throw new HoaCreationException("HOA was not saved successfully");
-        }
-    }
-
 
     public Optional<HOA> findHOAByName(String hoaName) {
         return hoaRepository.findByHoaName(hoaName);

@@ -69,7 +69,13 @@ public class HOAController {
     public ResponseEntity<HOA> createHOA(@RequestBody HoaModifyDTO request) {
 
         try {
-            HOA newHOA = hoaService.createNewHOAbyRequest(request);
+            //CHECKS
+            hoaService.checkHoaModifyDTO(request);
+
+            //Creation
+            HOA newHOA = new HOA(request.hoaName, request.userCountry, request.userCity);
+
+            hoaService.createNewHOA(newHOA);
 
             memberManagementService
                     .addMembership(new Membership(authManager.getNetId(), newHOA.getId(), true,
