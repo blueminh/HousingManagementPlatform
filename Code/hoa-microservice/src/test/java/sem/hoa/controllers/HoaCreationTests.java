@@ -13,9 +13,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import sem.hoa.authentication.AuthManager;
 import sem.hoa.authentication.JwtTokenVerifier;
-import sem.hoa.domain.entities.HOA;
-import sem.hoa.domain.services.HOARepository;
-import sem.hoa.domain.services.HOAService;
+import sem.hoa.domain.entities.Hoa;
+import sem.hoa.domain.services.HoaRepository;
+import sem.hoa.domain.services.HoaService;
 import sem.hoa.dtos.HoaModifyDTO;
 import sem.hoa.exceptions.HoaCreationException;
 import sem.hoa.utils.JsonUtil;
@@ -45,10 +45,10 @@ public class HoaCreationTests {
     private transient AuthManager mockAuthenticationManager;
 
     @Autowired
-    private transient HOAService hoaServiceMock;
+    private transient HoaService hoaServiceMock;
 
     @Autowired
-    private transient HOARepository hoaRepoMock;
+    private transient HoaRepository hoaRepoMock;
 
 
     /**
@@ -62,7 +62,7 @@ public class HoaCreationTests {
         // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         HoaModifyDTO request = new HoaModifyDTO();
         request.setHoaName("exampleName");
@@ -81,13 +81,13 @@ public class HoaCreationTests {
 
         resultActions.andExpect(status().isOk());
 
-        HOA responded = JsonUtil
+        Hoa responded = JsonUtil
                 .deserialize(resultActions.andReturn().getResponse().getContentAsString(),
-                        HOA.class);
+                        Hoa.class);
 
-        HOA saved = hoaRepoMock.findById(responded.getId()).orElseThrow();
+        Hoa saved = hoaRepoMock.findById(responded.getId()).orElseThrow();
 
-        HOA given = new HOA(request.hoaName, request.userCountry, request.userCity);
+        Hoa given = new Hoa(request.hoaName, request.userCountry, request.userCity);
 
         assertThat(saved.getHoaName()).isEqualTo(given.getHoaName());
         assertThat(saved.getCity()).isEqualTo(given.getCity());
@@ -107,7 +107,7 @@ public class HoaCreationTests {
         // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         HoaModifyDTO request = new HoaModifyDTO();
         request.setHoaName("exampleName");
@@ -167,7 +167,7 @@ public class HoaCreationTests {
      */
     @Test
     public void createService() throws Exception {
-        HOA hoaT = new HOA("name", "country", "city");
+        Hoa hoaT = new Hoa("name", "country", "city");
         hoaServiceMock.createNewHOA(hoaT);
         assertThat(hoaRepoMock.findByHoaName(hoaT.getHoaName())).isPresent();
     }
@@ -179,9 +179,9 @@ public class HoaCreationTests {
      */
     @Test
     public void createServiceDup() throws Exception {
-        HOA hoaT = new HOA("name", "country", "city");
+        Hoa hoaT = new Hoa("name", "country", "city");
         hoaServiceMock.createNewHOA(hoaT);
-        HOA hoaD = new HOA("name", "diffCountry", "diffCity");
+        Hoa hoaD = new Hoa("name", "diffCountry", "diffCity");
 
         assertThatThrownBy(() -> hoaServiceMock.createNewHOA(hoaD))
                 .isInstanceOf(HoaCreationException.class);
