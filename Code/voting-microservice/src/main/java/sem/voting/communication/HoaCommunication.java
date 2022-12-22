@@ -24,9 +24,8 @@ import java.util.Properties;
 @Component
 public class HoaCommunication {
     private static ObjectMapper objectMapper = new ObjectMapper();
-    private static String HOAPath = "http://localhost:8086";
+    private static final String HOAPath = "http://localhost:8086";
     private static final String hoaIdParamName = "hoaId";
-
 
     /**
      * Constructs a token from a userId.
@@ -36,9 +35,10 @@ public class HoaCommunication {
      */
     private static String getTokenFromId(String userId, String jwtSecret) {
         Date nowDate = new Date(Instant.now().toEpochMilli());
+        final int hourInSeconds = 60 * 60;
         return Jwts.builder().setClaims(new HashMap<>()).setSubject(userId)
             .setIssuedAt(nowDate)
-            .setExpiration(Date.from(nowDate.toInstant().plusSeconds(60 * 60)))
+            .setExpiration(Date.from(nowDate.toInstant().plusSeconds(hourInSeconds)))
             .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }
 

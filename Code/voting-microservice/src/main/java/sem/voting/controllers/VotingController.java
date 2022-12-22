@@ -60,7 +60,8 @@ public class VotingController {
      * @param proposalHandlingService Service to handle proposals
      */
     @Autowired
-    public VotingController(AuthManager authManager, ProposalHandlingService proposalHandlingService) {
+    public VotingController(AuthManager authManager,
+                            ProposalHandlingService proposalHandlingService) {
         this.authManager = authManager;
         this.proposalHandlingService = proposalHandlingService;
     }

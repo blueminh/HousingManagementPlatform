@@ -1,7 +1,5 @@
 package sem.voting.domain.services.validators;
 
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalHandlingService;

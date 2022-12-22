@@ -2,6 +2,7 @@ package sem.voting.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -12,6 +13,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,8 @@ import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalHandlingService;
 import sem.voting.domain.proposal.ProposalRepository;
 import sem.voting.domain.proposal.ProposalType;
+import sem.voting.domain.services.validators.MemberIsBoardMemberValidator;
+import sem.voting.domain.services.validators.Validator;
 import sem.voting.integration.utils.JsonUtil;
 import sem.voting.models.ProposalCreationRequestModel;
 import sem.voting.models.ProposalCreationResponseModel;
@@ -55,6 +59,21 @@ class VotingControllerTest {
 
     @Autowired
     private transient ProposalRepository proposalRepository;
+
+    @Test
+    void testMockConstructor() throws Exception {
+        try (MockedStatic<HoaCommunication> utilities = Mockito.mockStatic(HoaCommunication.class)) {
+            utilities.when(() -> HoaCommunication.checkUserIsBoardMember("ciao", 1))
+                    .thenReturn(true);
+
+            assertThat(HoaCommunication.checkUserIsBoardMember("ciao", 1)).isTrue();
+
+            Validator val = new MemberIsBoardMemberValidator();
+            Proposal p = new Proposal();
+            p.setHoaId(1);
+            assertThat(val.handle("ciao", null, p)).isTrue();
+        }
+    }
 
     @Test
     void addProposalNonBoardMember() throws Exception {
