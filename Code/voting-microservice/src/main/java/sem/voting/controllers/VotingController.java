@@ -124,9 +124,9 @@ public class VotingController {
         try {
             // board elections can be started by any user if there is no current board member
             if (HoaCommunication.checkHoaHasBoard(authManager.getUsername(), request.getHoaId())
-                && request.getType() == ProposalType.BoardElection) {
+                || request.getType() != ProposalType.BoardElection) {
                 validator.addLast(new MemberIsBoardMemberValidator());
-            } else if (request.getType() == ProposalType.BoardElection) {
+            } else {
                 System.out.println("HOA doesn't have a board.");
             }
         } catch (Exception e) {
