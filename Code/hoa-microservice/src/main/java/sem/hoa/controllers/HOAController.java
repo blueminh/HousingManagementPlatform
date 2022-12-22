@@ -21,9 +21,6 @@ import sem.hoa.dtos.UserHoaCreationDDTO;
 import sem.hoa.dtos.UserNameHoaIDDTO;
 import sem.hoa.dtos.UserNameHoaNameDTO;
 
-import java.sql.Struct;
-import java.util.Optional;
-
 /**
  * Hello World example controller.
  * <p>
@@ -56,7 +53,7 @@ public class HOAController {
      */
     @GetMapping("/welcomeHOA")
     public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getNetId() + "! \nWelcome to HOA!");
+        return ResponseEntity.ok("Hello " + authManager.getUsername() + "! \nWelcome to HOA!");
 
     }
 
@@ -75,7 +72,7 @@ public class HOAController {
             hoaService.createNewHOA(newHOA);
             //System.out.println("ok");
             memberManagementService
-                    .addMembership(new Membership(authManager.getNetId(), newHOA.getId(), true,
+                    .addMembership(new Membership(authManager.getUsername(), newHOA.getId(), true,
                     request.userCountry, request.userCity));
             //System.out.println("ok");
 
@@ -96,7 +93,7 @@ public class HOAController {
     @PostMapping("/joining")
     public ResponseEntity joiningHOA(@RequestBody UserNameHoaNameDTO request) {
         try {
-            if (!request.username.equals(authManager.getNetId())) {
+            if (!request.username.equals(authManager.getUsername())) {
                 throw new Exception("Wrong username");
             }
 
@@ -186,7 +183,7 @@ public class HOAController {
     @DeleteMapping("/leave")
     public ResponseEntity leaveHOA(@RequestBody UserNameHoaNameDTO request) {
         try {
-            if (!request.username.equals(authManager.getNetId())) {
+            if (!request.username.equals(authManager.getUsername())) {
                 throw new UsernameNotFoundException("User not found");
             }
 

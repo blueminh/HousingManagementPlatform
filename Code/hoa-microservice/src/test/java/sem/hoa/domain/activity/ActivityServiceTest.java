@@ -3,6 +3,8 @@ package sem.hoa.domain.activity;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +16,7 @@ import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.domain.utils.Clock;
 import sem.hoa.models.ActivityResponseModel;
 
+import java.security.InvalidParameterException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -45,6 +48,82 @@ class ActivityServiceTest {
 
     @Autowired
     private transient ActivityService activityService;
+
+    // Parameterized tests
+    @ParameterizedTest
+    @ValueSource(strings = {"*absjdh", "+92389", "", "38hud 982ue938enedhweiuyd82eyn3298eum2uidhen8923yne2heuiehn89e32"})
+    void testNameNotValid(String name) throws Exception {
+        // setup required variable
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2022, 1, 1, 0, 0);
+
+        final String userName = "ExampleUser";
+        final int testHoaId = 1;
+        final String testDesc = "Test Desc";
+        final Date testDate = calendar.getTime();
+
+        // mock
+        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(hoaRepository.existsById(testHoaId)).thenReturn(true);
+
+        // act
+        ThrowableAssert.ThrowingCallable action = () -> activityService.addActivity(testHoaId, name, testDate, testDesc, userName);
+
+        // assert
+        assertThatThrownBy(action).isInstanceOf(InvalidParameterException.class);
+    }
+
+
+    // Parameterized tests
+    @ParameterizedTest
+    @ValueSource(strings = {"", "38hud xQ4xeyiLsYmYUPJwPX3T0VSP7SW3SPeAfbyGOxcWJCPt8kJxMyrdLvVd5Fup2MDaSvW4x7uJVcnefe6z7wWtL6CS51n5W9BYTGPRA"})
+    void testDescTooLong(String desc) throws Exception {
+        // setup required variable
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2022, 1, 1, 0, 0);
+
+        final String userName = "ExampleUser";
+        final int testHoaId = 1;
+        final String testName = "Test Name";
+        final Date testDate = calendar.getTime();
+
+        // mock
+        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(hoaRepository.existsById(testHoaId)).thenReturn(true);
+
+        // act
+        ThrowableAssert.ThrowingCallable action = () -> activityService.addActivity(testHoaId, testName, testDate, desc, userName);
+
+        // assert
+        assertThatThrownBy(action).isInstanceOf(InvalidParameterException.class);
+    }
+
+    @Test
+    void testDateBeforeCurrentTime() throws Exception {
+        // setup required variable
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2022, 1, 1, 0, 0);
+
+        final String userName = "ExampleUser";
+        final int testHoaId = 1;
+        final String testName = "Test Name";
+        final String testDesc = "Test Desc";
+        final Date testDate = calendar.getTime();
+
+        // mock
+        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(hoaRepository.existsById(testHoaId)).thenReturn(true);
+
+        calendar.set(2020, 1, 1, 0, 0);
+        when(clock.getCurrentDate()).thenReturn(calendar.getTime());
+
+        // act
+
+        ThrowableAssert.ThrowingCallable action = () -> activityService.addActivity(testHoaId, testName, testDate, testDesc, userName);
+
+        // assert
+        assertThatThrownBy(action).isInstanceOf(InvalidParameterException.class);
+    }
 
     @Test
     void testActivityAddSuccess() throws Exception {

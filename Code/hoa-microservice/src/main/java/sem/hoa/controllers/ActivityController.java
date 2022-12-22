@@ -77,7 +77,7 @@ public class ActivityController {
     @GetMapping("/activity/get")
     public ResponseEntity<ActivityResponseModel> getActivity(@RequestParam(name = "name") String activityName) throws Exception {
         try {
-            Activity activity = activityService.getActivity(activityName, authManager.getNetId());
+            Activity activity = activityService.getActivity(activityName, authManager.getUsername());
             ActivityResponseModel responseModel = new ActivityResponseModel(
                     activity.getActivityId(), activity.getHoaId(), activity.getName(), activity.getDescription(), activity.getDate(), activity.getCreatedBy()
             );
@@ -99,7 +99,7 @@ public class ActivityController {
     @DeleteMapping ("/activity/remove")
     public ResponseEntity removeActivity(@RequestParam(name = "id") int activityId) throws Exception {
         try {
-            activityService.removeActivity(activityId, authManager.getNetId());
+            activityService.removeActivity(activityId, authManager.getUsername());
 
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -117,7 +117,7 @@ public class ActivityController {
     @PostMapping("/activity/participate")
     public ResponseEntity participate(@RequestBody UserParticipateModel userParticipateModel) throws Exception {
         try {
-            activityService.participate(authManager.getNetId(), userParticipateModel.getActivityId());
+            activityService.participate(authManager.getUsername(), userParticipateModel.getActivityId());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
@@ -134,7 +134,7 @@ public class ActivityController {
     @DeleteMapping("/activity/removeParticipate")
     public ResponseEntity removeParticipate(@RequestBody UserParticipateModel userParticipateModel) throws Exception {
         try {
-            activityService.removeParticipate(authManager.getNetId(), userParticipateModel.getActivityId());
+            activityService.removeParticipate(authManager.getUsername(), userParticipateModel.getActivityId());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
@@ -150,7 +150,7 @@ public class ActivityController {
     @GetMapping("/activity/getAllAfterDate")
     public ResponseEntity<ActivityResponseModel[]> getAllActivitiesAfterDate(@RequestBody GetActivityWithHoaIdAndDateRequestModel requestModel) throws Exception {
         try {
-            ActivityResponseModel[] response = activityService.getAllActivitiesAfterDate(requestModel.getDate(), requestModel.getHoaId(), authManager.getNetId());
+            ActivityResponseModel[] response = activityService.getAllActivitiesAfterDate(requestModel.getDate(), requestModel.getHoaId(), authManager.getUsername());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -166,7 +166,7 @@ public class ActivityController {
     @GetMapping("/activity/getAllBeforeDate")
     public ResponseEntity<ActivityResponseModel[]> getAllActivitiesBeforeDate(@RequestBody GetActivityWithHoaIdAndDateRequestModel requestModel) throws Exception {
         try {
-            ActivityResponseModel[] response = activityService.getAllActivitiesBeforeDate(requestModel.getDate(), requestModel.getHoaId(), authManager.getNetId());
+            ActivityResponseModel[] response = activityService.getAllActivitiesBeforeDate(requestModel.getDate(), requestModel.getHoaId(), authManager.getUsername());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -182,7 +182,7 @@ public class ActivityController {
     public ResponseEntity<ActivityResponseModel[]> getAllFutureActivities(@RequestBody GetActivitiesWithHoaIdRequestModel requestModel) throws Exception {
         Date currentDate = clock.getCurrentDate();
         try {
-            ActivityResponseModel[] response = activityService.getAllActivitiesAfterDate(currentDate, requestModel.getHoaId(), authManager.getNetId());
+            ActivityResponseModel[] response = activityService.getAllActivitiesAfterDate(currentDate, requestModel.getHoaId(), authManager.getUsername());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -198,7 +198,7 @@ public class ActivityController {
     public ResponseEntity<ActivityResponseModel[]> getAllPastActivities(@RequestBody GetActivitiesWithHoaIdRequestModel requestModel) throws Exception {
         Date currentDate = clock.getCurrentDate();
         try {
-            ActivityResponseModel[] response = activityService.getAllActivitiesBeforeDate(currentDate, requestModel.getHoaId(), authManager.getNetId());
+            ActivityResponseModel[] response = activityService.getAllActivitiesBeforeDate(currentDate, requestModel.getHoaId(), authManager.getUsername());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);

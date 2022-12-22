@@ -5,6 +5,8 @@ import sem.hoa.domain.services.HOARepository;
 import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.models.ActivityResponseModel;
 
+import java.security.InvalidParameterException;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -41,6 +43,16 @@ public class ActivityService {
      */
     @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     public Integer addActivity(int hoaId, String name, Date date, String desc, String createdBy) throws Exception {
+        // Checks
+        if (!checkNameValidity(name)) {
+            throw new InvalidParameterException("Activity name (" + name + ") is invalid");
+        }
+        if (desc.length() == 0 || desc.length() > 100) {
+            throw new InvalidParameterException("Description too long or blank");
+        }
+        if (date.before(new Date(Instant.now().getEpochSecond()))) {
+            throw new InvalidParameterException("Activity date before current time not possible");
+        }
         Activity activity = new Activity(hoaId, name, date, desc, createdBy);
         if (!hoaRepository.existsById(hoaId)) {
             throw new NoSuchHOAException("No HOAs with the id " + hoaId + " exists!");
@@ -54,6 +66,19 @@ public class ActivityService {
                     + "Change the name if it is the same activity but a new version of it;"
                     + "For example, \"activity v1\" and \"activity v2\"");
         }
+    }
+
+    /**
+     * Private utility method that checks if the name of the activity is valid.
+     * It ensures that the length is between 1 and 30, and it only includes characters from a-z, A-Z and 0-9.
+     * Special characters like - and _ are only allowed.
+     *
+     * @param name name to be checked for validity
+     * @return true if it matches; false otherwise
+     */
+    private static boolean checkNameValidity(String name) {
+        String regex = "[a-zA-Z0-9_-]{1,30}";
+        return name.matches(regex);
     }
 
     /**
