@@ -7,8 +7,6 @@ import sem.hoa.domain.entities.MembershipId;
 import sem.hoa.exceptions.HoaJoiningException;
 
 import java.time.Instant;
-import java.time.Period;
-import java.time.temporal.TemporalAmount;
 import java.util.List;
 import java.util.Optional;
 

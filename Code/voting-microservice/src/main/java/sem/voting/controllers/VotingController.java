@@ -108,7 +108,7 @@ public class VotingController {
         if (request.getOptions() != null) {
             for (String s : request.getOptions()) {
                 try {
-                    toAdd.addOption(new Option(s), authManager.getUserId());
+                    toAdd.addOption(new Option(s), authManager.getUsername());
                 } catch (AddOptionException e) {
                     System.out.println(e.getMessage());
                     return ResponseEntity.badRequest().build();
@@ -122,7 +122,7 @@ public class VotingController {
         Validator validator = new NoBoardElectionValidator(proposalHandlingService);
         try {
             // board elections can be started by any user if there is no current board member
-            if (HoaCommunication.checkHoaHasBoard(authManager.getUserId(), request.getHoaId())
+            if (HoaCommunication.checkHoaHasBoard(authManager.getUsername(), request.getHoaId())
                 && request.getType() == ProposalType.BoardElection) {
                 validator.addLast(new MemberIsBoardMemberValidator());
             } else if (request.getType() == ProposalType.BoardElection) {
@@ -134,9 +134,9 @@ public class VotingController {
             return ResponseEntity.badRequest().build();
         }
         try {
-            validator.handle(authManager.getUserId(), null, toAdd);
+            validator.handle(authManager.getUsername(), null, toAdd);
         } catch (InvalidRequestException ex) {
-            System.err.println(authManager.getUserId() + " does not have the rights to start a new proposal:");
+            System.err.println(authManager.getUsername() + " does not have the rights to start a new proposal:");
             System.err.println(ex.getMessage());
             return ResponseEntity.badRequest().build();
         }
@@ -171,7 +171,7 @@ public class VotingController {
         response.setProposalId(proposal.get().getProposalId());
         response.setHoaId(proposal.get().getHoaId());
         try {
-            proposal.get().addOption(new Option(request.getOption()), authManager.getUserId());
+            proposal.get().addOption(new Option(request.getOption()), authManager.getUsername());
         } catch (AddOptionException e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
@@ -197,12 +197,12 @@ public class VotingController {
             return ResponseEntity.badRequest().build();
         }
         try {
-            if (!HoaCommunication.checkUserIsBoardMember(authManager.getUserId(), request.getHoaId())) {
+            if (!HoaCommunication.checkUserIsBoardMember(authManager.getUsername(), request.getHoaId())) {
                 System.out.println("User is not a board member.");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
         } catch (Exception e) {
-            System.out.println("Cannot find if user " + authManager.getUserId() + " is a board member of HOA " + request.getHoaId());
+            System.out.println("Cannot find if user " + authManager.getUsername() + " is a board member of HOA " + request.getHoaId());
             return ResponseEntity.badRequest().build();
         }
 
@@ -246,7 +246,7 @@ public class VotingController {
             return ResponseEntity.notFound().build();
         }
         Option beingVoted = request.getOption().equals("") ? null : new Option(request.getOption());
-        Vote vote = new Vote(authManager.getUserId(), beingVoted);
+        Vote vote = new Vote(authManager.getUsername(), beingVoted);
 
 
         try {

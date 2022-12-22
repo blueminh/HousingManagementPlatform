@@ -58,7 +58,7 @@ public class MemberController {
                 throw new BadRequestException(noSuchHoaNameError + hoaName);
             }
 
-            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(authManager.getUserId(), hoa.get().getId());
+            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(authManager.getUsername(), hoa.get().getId());
             if (membership.isEmpty()) {
                 throw new BadRequestException(userNotRegisteredError);
             }
@@ -90,7 +90,7 @@ public class MemberController {
                 throw new BadRequestException(noSuchHoaIdError + hoaId);
             }
 
-            String username = authManager.getUserId();
+            String username = authManager.getUsername();
             Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(username, hoa.get().getId());
             if (membership.isEmpty()) {
                 throw new BadRequestException(userNotRegisteredError);
@@ -115,7 +115,7 @@ public class MemberController {
     @GetMapping("/isaBoardMemberOfAny")
     public ResponseEntity<Integer> isBoardMember() {
         try {
-            String username = authManager.getUserId();
+            String username = authManager.getUsername();
             int hoaId = memberManagementService.isBoardMemberOf(username);
             return ResponseEntity.ok(hoaId);
         } catch (Exception e) {
@@ -137,7 +137,7 @@ public class MemberController {
                 throw new BadRequestException(noSuchHoaIdError + hoaId);
             }
 
-            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(authManager.getUserId(), hoaId);
+            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(authManager.getUsername(), hoaId);
             return ResponseEntity.ok(Boolean.toString(membership.isPresent()));
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -161,7 +161,7 @@ public class MemberController {
                 throw new BadRequestException(noSuchHoaIdError + hoaId);
             }
 
-            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(authManager.getUserId(), hoaId);
+            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(authManager.getUsername(), hoaId);
             if (membership.isEmpty()) {
                 throw new BadRequestException(userNotRegisteredError);
             }
@@ -188,7 +188,7 @@ public class MemberController {
                 throw new BadRequestException(noSuchHoaIdError + hoaId);
             }
 
-            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(authManager.getUserId(), hoaId);
+            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(authManager.getUsername(), hoaId);
             if (membership.isEmpty()) {
                 throw new BadRequestException(userNotRegisteredError);
             }

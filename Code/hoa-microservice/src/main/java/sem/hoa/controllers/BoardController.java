@@ -16,7 +16,6 @@ import sem.hoa.domain.entities.Hoa;
 import sem.hoa.domain.services.HoaService;
 import sem.hoa.domain.services.MemberManagementService;
 import sem.hoa.dtos.CastVoteRequestModel;
-import sem.hoa.dtos.UserNameHoaIdDto;
 import sem.hoa.dtos.UserNameHoaNameDto;
 import java.util.Optional;
 
@@ -55,7 +54,7 @@ public class BoardController {
         }
         int proposalId;
         try {
-            proposalId = VotingCommunication.getCurrentElectionId(authManager.getUserId(), hoa.get().getId());
+            proposalId = VotingCommunication.getCurrentElectionId(authManager.getUsername(), hoa.get().getId());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -63,7 +62,7 @@ public class BoardController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No elections");
         }
         try {
-            VotingCommunication.redirectApplyingRequest(authManager.getUserId(), hoa.get().getId(), proposalId);
+            VotingCommunication.redirectApplyingRequest(authManager.getUsername(), hoa.get().getId(), proposalId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -78,7 +77,7 @@ public class BoardController {
         @RequestBody CastVoteRequestModel request
     ) {
         try {
-            VotingCommunication.redirectVotingRequest(authManager.getUserId(), request);
+            VotingCommunication.redirectVotingRequest(authManager.getUsername(), request);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

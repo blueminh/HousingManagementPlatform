@@ -17,7 +17,7 @@ import sem.hoa.domain.activity.Activity;
 import sem.hoa.domain.activity.ActivityRepository;
 import sem.hoa.domain.activity.Participation;
 import sem.hoa.domain.activity.ParticipationRepository;
-import sem.hoa.domain.services.HOARepository;
+import sem.hoa.domain.services.HoaRepository;
 import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.domain.utils.Clock;
 import sem.hoa.integeration.utils.JsonUtil;
@@ -70,7 +70,7 @@ class ActivityControllerTest {
     private  transient MemberManagementRepository memberManagementRepository;
 
     @Autowired
-    private transient HOARepository hoaRepository;
+    private transient HoaRepository hoaRepository;
 
     @Test
     public void testAddActivitySuccess() throws Exception {
@@ -88,8 +88,8 @@ class ActivityControllerTest {
         final String userName = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, userName)).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(1, userName)).thenReturn(true);
         when(hoaRepository.existsById(testHoaId)).thenReturn(true);
         calendar.set(2020, 1, 1, 0, 0);
         Date mockDate = calendar.getTime();
@@ -128,7 +128,7 @@ class ActivityControllerTest {
         final String userName = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
         when(hoaRepository.existsById(anyInt())).thenReturn(true);
         calendar.set(2020, 1, 1, 0, 0);
         Date mockDate = calendar.getTime();
@@ -169,8 +169,8 @@ class ActivityControllerTest {
         final String userName = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, userName)).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(1, userName)).thenReturn(true);
 
         Calendar calendar = new GregorianCalendar();
         calendar.set(2022, 0, 1, 0, 0);
@@ -208,7 +208,7 @@ class ActivityControllerTest {
         final String userName = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
 
         int activityId = 2;
         String testName = "non-existent-test";
@@ -232,8 +232,8 @@ class ActivityControllerTest {
         final String userName = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, userName)).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(1, userName)).thenReturn(true);
 
         Calendar calendar = new GregorianCalendar();
         calendar.set(2022, 1, 1, 0, 0);
@@ -267,7 +267,7 @@ class ActivityControllerTest {
         final String userName = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
 
         Calendar calendar = new GregorianCalendar();
         calendar.set(2022, 1, 1, 0, 0);
@@ -300,7 +300,7 @@ class ActivityControllerTest {
         final String username = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(username);
 
         Calendar calendar = new GregorianCalendar();
         calendar.set(2022, 1, 1, 0, 0);
@@ -344,8 +344,8 @@ class ActivityControllerTest {
         final String username = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, username)).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(username);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(1, username)).thenReturn(true);
 
         Calendar calendar = new GregorianCalendar();
         calendar.set(2022, 1, 1, 0, 0);
@@ -386,7 +386,7 @@ class ActivityControllerTest {
         final String username = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(username);
 
         final int activityId = 1;
 
@@ -415,7 +415,7 @@ class ActivityControllerTest {
         final String username = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(username);
 
         Calendar calendar = new GregorianCalendar();
         calendar.set(2022, 1, 1, 0, 0);
@@ -459,7 +459,7 @@ class ActivityControllerTest {
         final String username = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(username);
 
         final int activityId = 1;
 
@@ -489,7 +489,7 @@ class ActivityControllerTest {
         final String username = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(username);
 
         Calendar calendar = new GregorianCalendar();
         calendar.set(2022, 1, 1, 0, 0);
@@ -529,8 +529,8 @@ class ActivityControllerTest {
         final String username = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, username)).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(username);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(1, username)).thenReturn(true);
 
         setupRepository(activityRepository, username);
 
@@ -559,7 +559,7 @@ class ActivityControllerTest {
         final String username = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(username);
 
         setupRepository(activityRepository, username);
 
@@ -585,8 +585,8 @@ class ActivityControllerTest {
         final String username = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, username)).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(username);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(1, username)).thenReturn(true);
         setupRepository(activityRepository, username);
 
         // Set up request model
@@ -614,7 +614,7 @@ class ActivityControllerTest {
         final String username = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(username);
 
         setupRepository(activityRepository, username);
 
@@ -643,8 +643,8 @@ class ActivityControllerTest {
 
         when(mockAuthenticationManager.getUsername()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, username)).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(username);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(1, username)).thenReturn(true);
         when(clock.getCurrentDate()).thenReturn(calendar.getTime());
 
         setupRepository(activityRepository, username);
@@ -674,8 +674,8 @@ class ActivityControllerTest {
 
         when(mockAuthenticationManager.getUsername()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, username)).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(username);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(1, username)).thenReturn(true);
         when(clock.getCurrentDate()).thenReturn(calendar.getTime());
 
         setupRepository(activityRepository, username);
@@ -703,8 +703,8 @@ class ActivityControllerTest {
 
         when(mockAuthenticationManager.getUsername()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, username)).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(username);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(1, username)).thenReturn(true);
         when(clock.getCurrentDate()).thenReturn(calendar.getTime());
 
         setupRepository(activityRepository, username);
@@ -736,7 +736,7 @@ class ActivityControllerTest {
 
         when(mockAuthenticationManager.getUsername()).thenReturn(username);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(username);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(username);
         when(clock.getCurrentDate()).thenReturn(calendar.getTime());
 
         setupRepository(activityRepository, username);
