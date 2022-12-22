@@ -17,9 +17,11 @@ import sem.hoa.domain.entities.HOA;
 import sem.hoa.domain.services.HOARepository;
 import sem.hoa.domain.services.HOAService;
 import sem.hoa.dtos.HoaModifyDTO;
+import sem.hoa.exceptions.HoaCreationException;
 import sem.hoa.utils.JsonUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -126,7 +128,8 @@ public class HoaCreationTests {
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(request)));
 
-        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Attempted to create HOA, but Fields can not be Empty"));
 
         request.setUserCity(null);
 
@@ -135,7 +138,8 @@ public class HoaCreationTests {
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(request)));
 
-        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Attempted to create HOA, but Fields can not be Invalid(null)"));
 
         request.setUserCity("null");
 
@@ -153,8 +157,40 @@ public class HoaCreationTests {
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(request)));
 
-        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Attempted to create HOA, but House Number must be a positive integer"));
 
+    }
+
+    /**
+     *  tests the normal behaviour of the service related
+     *  to HOA creation.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void createService() throws Exception {
+        HOA hoaT = new HOA("name", "country", "city");
+        hoaServiceMock.createNewHOA(hoaT);
+        assertThat(hoaRepoMock.findByHoaName(hoaT.getHoaName())).isPresent();
+    }
+
+    /**
+     *  tests the behaviour of the service related
+     *  to HOA creation when trying to save a HOA with an existing name.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void createServiceDup() throws Exception {
+        HOA hoaT = new HOA("name", "country", "city");
+        hoaServiceMock.createNewHOA(hoaT);
+        HOA hoaD = new HOA("name", "diffCountry", "diffCity");
+
+        assertThatThrownBy(()->hoaServiceMock.createNewHOA(hoaD))
+                .isInstanceOf(HoaCreationException.class);
+        assertThatThrownBy(()->hoaServiceMock.createNewHOA(hoaD))
+                .hasMessage("HOA was not saved successfully: HOA already exists");
     }
 
 }
