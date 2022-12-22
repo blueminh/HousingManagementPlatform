@@ -1,6 +1,15 @@
-package sem.users.domain.user;
+package sem.users.services;
 
 import org.springframework.stereotype.Service;
+import sem.users.domain.user.AppUser;
+import sem.users.domain.user.FullName;
+import sem.users.domain.user.HashedPassword;
+import sem.users.domain.user.Password;
+import sem.users.domain.user.PasswordHashingService;
+import sem.users.domain.user.UserNotFoundException;
+import sem.users.domain.user.UserRepository;
+import sem.users.domain.user.Username;
+import sem.users.domain.user.UsernameAlreadyInUseException;
 
 import javax.naming.directory.InvalidAttributesException;
 import java.util.Optional;
@@ -33,6 +42,24 @@ public class RegistrationService {
      */
 
     public AppUser registerUser(Username username, Password password, FullName fullname) throws Exception {
+        int minlength = 1;
+
+        if (username.toString().length() < minlength || password.toString().length() < minlength || fullname.toString().length() < minlength) {
+            throw new InvalidAttributesException("One of the attributes is empty!");
+        }
+
+        int maxlength = 100;
+        // Setting a 100 character limit to all attributes
+        if (username.toString().length() > maxlength) {
+            throw new InvalidAttributesException("Username is too long! maximum 100 characters");
+        }
+        if (password.toString().length() > maxlength) {
+            throw new InvalidAttributesException("Password is too long! maximum 100 characters");
+        }
+        if (fullname.toString().length() > maxlength) {
+            throw new InvalidAttributesException("Full Name is too long! maximum 100 characters");
+        }
+
 
         if (!userExists(username)) {
             // Hash password

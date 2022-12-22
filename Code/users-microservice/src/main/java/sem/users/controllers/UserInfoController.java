@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import sem.users.domain.user.RegistrationService;
+import sem.users.services.RegistrationService;
 import sem.users.domain.user.UserNotFoundException;
 import sem.users.domain.user.Username;
 import sem.users.models.FullnameRequestModel;

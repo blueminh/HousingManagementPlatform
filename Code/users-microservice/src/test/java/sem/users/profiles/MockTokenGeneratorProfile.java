@@ -1,14 +1,14 @@
-package sem.hoa.profiles;
+package sem.users.profiles;
 
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import sem.hoa.authentication.AuthManager;
+import sem.users.authentication.JwtTokenGenerator;
 
 /**
- * A configuration profile to allow injection of a mock AuthenticationManager.
+ * This is a configuration profile.
  * A configuration can be used to define beans to be used during injection.
  * When this profile is active spring dependency injection will use this class to look for bean methods.
  * It will then prioritise these beans due to their @Primary tag.
@@ -17,20 +17,21 @@ import sem.hoa.authentication.AuthManager;
  * The profile tag will give a name to this configuration.
  * With the tag applied the profile will be inactive by default unless activated.
  * When the profile is active its bean will be used when looking for Beans to auto-inject.
+ *.
+ * A configuration profile to allow injection of a mock TokenGenerator.
  */
-@Profile("mockAuthenticationManager")
+@Profile("mockTokenGenerator")
 @Configuration
-public class MockAuthenticationManagerProfile {
+public class MockTokenGeneratorProfile {
 
     /**
-     * Mocks the AuthenticationManager.
+     * Mocks the TokenGenerator.
      *
-     * @return A mocked AuthenticationManager.
+     * @return A mocked TokenGenerator.
      */
     @Bean
-    @Primary  // marks this bean as the first bean to use when trying to inject an AuthenticationManager
-    public AuthManager getMockAuthenticationManager() {
-        return Mockito.mock(AuthManager.class);
+    @Primary  // marks this bean as the first bean to use when trying to inject a TokenGenerator
+    public JwtTokenGenerator getMockTokenGenerator() {
+        return Mockito.mock(JwtTokenGenerator.class);
     }
 }
-

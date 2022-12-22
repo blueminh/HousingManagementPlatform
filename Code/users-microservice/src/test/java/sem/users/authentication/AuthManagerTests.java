@@ -1,4 +1,4 @@
-package sem.hoa.authentication;
+package sem.users.authentication;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ public class AuthManagerTests {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         // Act
-        String actual = authManager.getUserId();
+        String actual = authManager.getUsername();
 
         // Assert
         assertThat(actual).isEqualTo(expected);

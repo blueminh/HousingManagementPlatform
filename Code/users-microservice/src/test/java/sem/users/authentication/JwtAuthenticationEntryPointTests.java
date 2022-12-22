@@ -1,4 +1,4 @@
-package sem.hoa.authentication;
+package sem.users.authentication;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
