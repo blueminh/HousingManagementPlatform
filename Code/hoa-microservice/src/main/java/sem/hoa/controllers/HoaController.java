@@ -112,7 +112,7 @@ public class HoaController {
                 request.userHouseNumber, request.userPostalCode,
                 new Date().getTime(), -1L);
             if (!memberManagementService.addressCheck(hoa, membership)) {
-                throw new HoaJoiningException("Invalid address");
+                throw new HoaJoiningException("Address not compatible with HOA area");
             }
             //CREATION
             memberManagementService.addMembership(membership);
