@@ -32,6 +32,8 @@ import sem.voting.domain.services.validators.MemberIsBoardMemberValidator;
 import sem.voting.domain.services.validators.MemberIsNotBoardMemberOfAnyHoaValidator;
 import sem.voting.domain.services.validators.NoBoardElectionValidator;
 import sem.voting.domain.services.validators.NoSelfVoteValidator;
+import sem.voting.domain.services.validators.UserIsMemberForAtLeast3YearsValidator;
+import sem.voting.domain.services.validators.UserIsMemberOfThisHoaValidator;
 import sem.voting.domain.services.validators.Validator;
 
 import java.util.ArrayList;
@@ -54,11 +56,10 @@ public class ValidatorsTest {
     private transient ProposalHandlingService proposalHandlingService;
 
     @Test
-    public void board_member_less_10() throws Exception{
+    public void board_member_less_10() throws Exception {
         try (MockedStatic<HoaCommunication> utilities = Mockito.mockStatic(HoaCommunication.class)) {
             String username = "user1";
-            utilities.when(() -> HoaCommunication.getJoiningBoardDate(username, 1))
-                .thenReturn(-1L);
+            utilities.when(() -> HoaCommunication.getJoiningBoardDate(username, 1)).thenReturn(-1L);
 
             Validator validator = new BoardMemberForLess10YearsValidator();
             Proposal p = new Proposal();
@@ -66,12 +67,10 @@ public class ValidatorsTest {
 
             assertThat(validator.handle(username, new Option("option"), p)).isTrue();
 
-            utilities.when(() -> HoaCommunication.getJoiningBoardDate(username, 1))
-                .thenReturn(new Date().getTime());
+            utilities.when(() -> HoaCommunication.getJoiningBoardDate(username, 1)).thenReturn(new Date().getTime());
             assertThat(validator.handle(username, new Option("option"), p)).isTrue();
 
-            utilities.when(() -> HoaCommunication.getJoiningBoardDate(username, 1))
-                .thenReturn(new Date().getTime() - 10L * 365 * 24 * 60 * 60 * 1000);
+            utilities.when(() -> HoaCommunication.getJoiningBoardDate(username, 1)).thenReturn(new Date().getTime() - 10L * 365 * 24 * 60 * 60 * 1000);
             Assertions.assertThrows(InvalidRequestException.class, () -> validator.handle(username, new Option("option"), p));
         }
     }
@@ -98,11 +97,10 @@ public class ValidatorsTest {
     }
 
     @Test
-    public void member_is_board_member() throws Exception{
+    public void member_is_board_member() throws Exception {
         try (MockedStatic<HoaCommunication> utilities = Mockito.mockStatic(HoaCommunication.class)) {
             String username = "user1";
-            utilities.when(() -> HoaCommunication.checkUserIsBoardMember(username, 1))
-                .thenReturn(true);
+            utilities.when(() -> HoaCommunication.checkUserIsBoardMember(username, 1)).thenReturn(true);
 
             Validator validator = new MemberIsBoardMemberValidator();
             Proposal p = new Proposal();
@@ -110,18 +108,16 @@ public class ValidatorsTest {
 
             assertThat(validator.handle(username, new Option("option"), p)).isTrue();
 
-            utilities.when(() -> HoaCommunication.checkUserIsBoardMember(username, 1))
-                .thenReturn(false);
+            utilities.when(() -> HoaCommunication.checkUserIsBoardMember(username, 1)).thenReturn(false);
             Assertions.assertThrows(InvalidRequestException.class, () -> validator.handle(username, new Option("option"), p));
         }
     }
 
     @Test
-    public void member_is_not_board_member_of_any() throws  Exception{
+    public void member_is_not_board_member_of_any() throws Exception {
         try (MockedStatic<HoaCommunication> utilities = Mockito.mockStatic(HoaCommunication.class)) {
             String username = "user1";
-            utilities.when(() -> HoaCommunication.checkUserIsNotBoardMemberOfAnyHoa(username, 1))
-                .thenReturn(true);
+            utilities.when(() -> HoaCommunication.checkUserIsNotBoardMemberOfAnyHoa(username, 1)).thenReturn(true);
 
             Validator validator = new MemberIsNotBoardMemberOfAnyHoaValidator();
             Proposal p = new Proposal();
@@ -129,36 +125,45 @@ public class ValidatorsTest {
 
             assertThat(validator.handle(username, new Option("option"), p)).isTrue();
 
-            utilities.when(() -> HoaCommunication.checkUserIsNotBoardMemberOfAnyHoa(username, 1))
-                .thenReturn(false);
+            utilities.when(() -> HoaCommunication.checkUserIsNotBoardMemberOfAnyHoa(username, 1)).thenReturn(false);
             Assertions.assertThrows(InvalidRequestException.class, () -> validator.handle(username, new Option("option"), p));
         }
     }
 
     @Test
-    public void no_self_vote() throws Exception {
-        String username = "user1";
-        Validator validator = new NoSelfVoteValidator();
+    public void member_at_least_3_years() throws Exception {
+        try (MockedStatic<HoaCommunication> utilities = Mockito.mockStatic(HoaCommunication.class)) {
+            String username = "user1";
+            long joiningDate = new Date().getTime() - 4L * 365 * 24 * 60 * 60 * 1000;
+            utilities.when(() -> HoaCommunication.getJoiningDate(username, 1)).thenReturn(joiningDate);
 
-        Proposal p = new Proposal();
-        p.setHoaId(1);
-        VoteValidationService boardVoteService = mock(BoardElectionsVoteValidationService.class);
-        p.setVoteValidationService(boardVoteService);
-        OptionValidationService boardOptionService = mock(BoardElectionOptionValidationService.class);
-        p.setOptionValidationService(boardOptionService);
-        when(boardOptionService.isOptionValid(anyString(), any(Option.class), p)).thenReturn(true);
-        when(boardVoteService.isVoteValid(any(Vote.class), p)).thenReturn(true);
+            Validator validator = new UserIsMemberForAtLeast3YearsValidator();
+            Proposal p = new Proposal();
+            p.setHoaId(1);
 
-        p.addOption(new Option("user1"), "user1");
-        p.startVoting();
+            assertThat(validator.handle(username, new Option("option"), p)).isTrue();
 
-        assertThat(validator.handle("user2", new Option(username), p)).isTrue();
-        Assertions.assertThrows(InvalidRequestException.class, () -> validator.handle(username, new Option("user1"), p));
+            utilities.when(() -> HoaCommunication.getJoiningDate(username, 1)).thenReturn(new Date().getTime() + 2L * 365 * 24 * 60 * 60 * 1000);
+            Assertions.assertThrows(InvalidRequestException.class, () -> validator.handle(username, new Option("option"), p));
+        }
     }
 
     @Test
-    public void member_at_least_3_years() throws Exception {
+    public void member_of_this_hoa() throws Exception {
+        try (MockedStatic<HoaCommunication> utilities = Mockito.mockStatic(HoaCommunication.class)) {
+            String username = "user1";
+            utilities.when(() -> HoaCommunication.checkUserIsMemberOfThisHoa(username, 1)).thenReturn(true);
 
+            Validator validator = new UserIsMemberOfThisHoaValidator();
+            Proposal p = new Proposal();
+            p.setHoaId(1);
+
+            assertThat(validator.handle(username, new Option("option"), p)).isTrue();
+
+            utilities.when(() -> HoaCommunication.checkUserIsMemberOfThisHoa(username, 1)).thenReturn(false);
+            Assertions.assertThrows(InvalidRequestException.class, () -> validator.handle(username, new Option("option"), p));
+        }
     }
+
 
 }
