@@ -1,11 +1,8 @@
 package sem.hoa.domain.services;
 
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import sem.hoa.domain.entities.HOA;
 import sem.hoa.dtos.HoaModifyDTO;
-import sem.hoa.dtos.Pair;
 import sem.hoa.exceptions.HoaCreationException;
 
 import java.util.Optional;
@@ -24,9 +21,7 @@ public class HOAService {
     * @param hoa = hoa to be added to the repository
     */
     public void createNewHOA(HOA hoa) throws HoaCreationException {
-        // TODO do some checks here
         try {
-            //System.out.println(hoa.toString());
             if (!hoaRepository.findByHoaName(hoa.getHoaName()).isEmpty()) {
                 throw new HoaCreationException("HOA already exists");
             }
@@ -34,29 +29,10 @@ public class HOAService {
             System.out.println("new HOA created:" + hoa.getHoaName());
         } catch (Exception e) {
             System.err.println("HOA was not saved successfully");
-            throw new HoaCreationException("HOA was not saved successfully");
+            throw new HoaCreationException("HOA was not saved successfully: " + e.getMessage());
         }
     }
 
-    /**
-    * Either find the name of the HOA or the hoaID.
-    *
-    * @param hoaName make this null or empty if hoaID is used
-    * @param hoaID   id of the HOA
-    * @return the start time and end time of the HOA's board election
-    */
-    public Pair<Long, Long> findBoardElectionStartTime(@Nullable String hoaName, int hoaID) {
-        Optional<HOA> hoa;
-        if (hoaName != null) {
-            hoa = hoaRepository.findByHoaName(hoaName);
-        }  else {
-            hoa = hoaRepository.findById(hoaID);
-        }
-        if (hoa.isEmpty()) {
-            return null;
-        }
-        return new Pair<Long, Long>(hoa.get().getElectionStartTime(), hoa.get().getElectionEndTime());
-    }
 
     public Optional<HOA> findHOAByName(String hoaName) {
         return hoaRepository.findByHoaName(hoaName);

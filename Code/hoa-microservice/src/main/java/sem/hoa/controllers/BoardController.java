@@ -1,21 +1,11 @@
 package sem.hoa.controllers;
 
-import java.util.Date;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import sem.hoa.authentication.AuthManager;
-import sem.hoa.domain.entities.HOA;
-import sem.hoa.domain.entities.Membership;
 import sem.hoa.domain.services.HOAService;
 import sem.hoa.domain.services.MemberManagementService;
-import sem.hoa.dtos.Pair;
 
 /**
  * REST controller for the board.
@@ -37,40 +27,5 @@ public class BoardController {
         this.authManager = authManager;
         this.memberManagementService = memberManagementService;
         this.hoaService = hoaService;
-    }
-
-    /**
-     * Any users can apply for board election.
-     *
-     * @param hoaName name of the hoa
-     */
-    @PostMapping("/apply")
-    public ResponseEntity applyForBoard(@RequestBody String hoaName) {
-        try {
-
-            Optional<HOA> hoa = hoaService.findHOAByName(hoaName);
-            if (hoa.isEmpty()) {
-                throw new Exception("No such HOA with this name: " + hoaName);
-            }
-
-            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(authManager.getUsername(), hoa.get().getId());
-            if (membership.isEmpty()) {
-                throw new Exception("User is not in this HOA");
-            }
-            if (membership.get().isBoardMember()) {
-                throw new Exception("User is already a board member of this HOA");
-            }
-
-            Pair<Long, Long> electionTime = hoaService.findBoardElectionStartTime(null, hoa.get().getId());
-            Date now = new Date();
-            if (now.getTime() < electionTime.getFirst() || now.getTime() > electionTime.getSecond()) {
-                throw new Exception("This HOA is not having a board election at the moment");
-            }
-
-            // TODO request the voting system here
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-        return ResponseEntity.ok().build();
     }
 }
