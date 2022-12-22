@@ -28,7 +28,9 @@ public class ActivityService {
      * @param hoaRepository              hoa repository
      * @param clock                      clock
      */
-    public ActivityService(ActivityRepository activityRepository, ParticipationRepository participationRepository, MemberManagementRepository memberManagementRepository, HOARepository hoaRepository, Clock clock) {
+    public ActivityService(
+            ActivityRepository activityRepository, ParticipationRepository participationRepository, MemberManagementRepository memberManagementRepository, HOARepository hoaRepository, Clock clock
+    ) {
         this.activityRepository = activityRepository;
         this.participationRepository = participationRepository;
         this.memberManagementRepository = memberManagementRepository;

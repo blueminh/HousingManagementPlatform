@@ -91,6 +91,9 @@ class ActivityControllerTest {
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
         when(memberManagementRepository.existsMembershipByHoaIDAndUsername(1, userName)).thenReturn(true);
         when(hoaRepository.existsById(testHoaId)).thenReturn(true);
+        calendar.set(2020, 1, 1, 0, 0);
+        Date mockDate = calendar.getTime();
+        when(clock.getCurrentDate()).thenReturn(mockDate);
 
         // Setup request model
         final ActivityCreationRequestModel request = new ActivityCreationRequestModel();
@@ -118,15 +121,18 @@ class ActivityControllerTest {
     @Test
     public void testAddActivityAlreadyExists() throws Exception {
 
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2022, 1, 1, 0, 0);
+
         // Setup mocking for authentication
         final String userName = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
         when(hoaRepository.existsById(anyInt())).thenReturn(true);
-
-        Calendar calendar = new GregorianCalendar();
-        calendar.set(2022, 1, 1, 0, 0);
+        calendar.set(2020, 1, 1, 0, 0);
+        Date mockDate = calendar.getTime();
+        when(clock.getCurrentDate()).thenReturn(mockDate);
 
         final String testName = "Test";
         final String testDesc = "Test Desc";
