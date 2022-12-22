@@ -49,25 +49,4 @@ public class Membership {
 
     @Column(name = "joiningBoardDate")
     private Long joiningBoardDate;
-
-//    /**
-//     * Constructor of a Membership object.
-//     *
-//     * @param username         username
-//     * @param hoaId            hoaId
-//     * @param isBoardMember    isBoardMember
-//     * @param country          country
-//     * @param city             city
-//     * @param joiningDate      joiningDate
-//     * @param joiningBoardDate joiningBoardDate
-//     */
-//    public Membership(String username, int hoaId, boolean isBoardMember, String country, String city, Long joiningDate, Long joiningBoardDate) {
-//        this.username = username;
-//        this.hoaId = hoaId;
-//        this.isBoardMember = isBoardMember;
-//        this.country = country;
-//        this.city = city;
-//        this.joiningDate = joiningDate;
-//        this.joiningBoardDate = joiningBoardDate;
-//    }
 }

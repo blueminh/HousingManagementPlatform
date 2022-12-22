@@ -14,12 +14,9 @@ import sem.hoa.domain.entities.Membership;
 import sem.hoa.domain.services.HoaService;
 import sem.hoa.domain.services.MemberManagementService;
 import sem.hoa.dtos.HoaModifyDTO;
-import sem.hoa.dtos.JoiningRequestModel;
-import sem.hoa.dtos.UserHoaCreationDto;
 import sem.hoa.exceptions.HoaJoiningException;
 
 import java.util.Date;
-import java.util.Optional;
 
 /**
  * Hello World example controller.
@@ -61,6 +58,7 @@ public class HoaController {
      * Create a new Hoa.
      *
      * @param request information about the HOA
+     * @return 200 if successfully created a HOA
      */
     @PostMapping("/createHOA")
     public ResponseEntity<Hoa> createHOA(@RequestBody HoaModifyDTO request) {

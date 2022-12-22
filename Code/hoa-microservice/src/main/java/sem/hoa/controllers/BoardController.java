@@ -76,7 +76,7 @@ public class BoardController {
         @RequestBody CastVoteRequestModel request
     ) {
         try {
-            CastVoteRequestModel info = new CastVoteRequestModel(request.getProposalId(), request.getProposalId(), authManager.getNetId(), request.getOption());
+            CastVoteRequestModel info = new CastVoteRequestModel(request.getProposalId(), request.getHoaId(), authManager.getNetId(), request.getOption());
             VotingCommunication.redirectVotingRequest(authToken.split(" ")[1], info);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
