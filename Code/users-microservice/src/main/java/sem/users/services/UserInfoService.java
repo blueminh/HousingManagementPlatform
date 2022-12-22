@@ -62,14 +62,14 @@ public class UserInfoService {
             throw new InvalidParameterException("New full name cannot be longer than 100 characters!");
         }
         if (fullName.toString().length() < RegistrationService.getMinlength()) {
-            throw new InvalidParameterException("New full name cannot be longer than 100 characters!");
+            throw new InvalidParameterException("New full name cannot be empty!");
         }
         AppUser user = userRepository.findByUsername(username).orElseThrow();
         if (!user.getPassword().equals(passwordHashingService.hash(password))) {
             throw new BadCredentialsException("Current password does not match!");
         }
         if (user.getFullName().equals(fullName)) {
-            throw new InvalidParameterException("New Full Name must be different from current password!");
+            throw new InvalidParameterException("New full name must be different from current full name!");
         }
         user.changeFullName(fullName);
         userRepository.save(user);

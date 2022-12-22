@@ -98,13 +98,13 @@ public class RegistrationService {
      */
     public void changePassword(Username username, Password oldpassword, Password newpassword) {
 
-        AppUser user = userRepository.findByUsername(username).orElseThrow();
         if (newpassword.toString().length() > maxlength) {
             throw new InvalidParameterException("The new password is too long! maximum 100 characters");
         }
         if (newpassword.toString().length() < minlength) {
             throw new InvalidParameterException("The new password cannot be empty!");
         }
+        AppUser user = userRepository.findByUsername(username).orElseThrow();
         if (!user.getPassword().equals(passwordHashingService.hash(oldpassword))) {
             throw new BadCredentialsException("Current password does not match!");
         }
