@@ -3,7 +3,7 @@ package sem.voting.domain.services.validators;
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
 
-public class IsAffirmativeOrNegativeValidator extends Validator {
+public class IsAffirmativeOrNegativeValidator extends BaseValidator {
     private static final String affirmativeVote = "Yes";
     private static final String negativeVote = "No";
 

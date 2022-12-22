@@ -14,12 +14,9 @@ import sem.hoa.domain.entities.Membership;
 import sem.hoa.domain.services.HoaService;
 import sem.hoa.domain.services.MemberManagementService;
 import sem.hoa.dtos.HoaModifyDTO;
-import sem.hoa.dtos.JoiningRequestModel;
-import sem.hoa.dtos.UserHoaCreationDto;
 import sem.hoa.exceptions.HoaJoiningException;
 
 import java.util.Date;
-import java.util.Optional;
 
 /**
  * Hello World example controller.
@@ -53,7 +50,7 @@ public class HoaController {
      */
     @GetMapping("/welcomeHOA")
     public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getNetId() + "! \nWelcome to Hoa!");
+        return ResponseEntity.ok("Hello " + authManager.getUsername() + "! \nWelcome to Hoa!");
 
     }
 
@@ -61,6 +58,7 @@ public class HoaController {
      * Create a new Hoa.
      *
      * @param request information about the HOA
+     * @return 200 if successfully created a HOA
      */
     @PostMapping("/createHOA")
     public ResponseEntity<Hoa> createHOA(@RequestBody HoaModifyDTO request) {
@@ -75,7 +73,7 @@ public class HoaController {
             hoaService.createNewHOA(newHOA);
 
             memberManagementService
-                .addMembership(new Membership(authManager.getNetId(), newHOA.getId(), true,
+                .addMembership(new Membership(authManager.getUsername(), newHOA.getId(), true,
                     request.userCountry, request.userCity,
                     request.userStreet, request.userHouseNumber, request.userPostalCode,
                     new Date().getTime(), new Date().getTime()));
@@ -104,11 +102,11 @@ public class HoaController {
             }
             Hoa hoa = hoaService.findHoaByName(request.hoaName).get();
             if (memberManagementService
-                .findByUsernameAndHoaId(authManager.getNetId(), hoa.getId())
+                .findByUsernameAndHoaId(authManager.getUsername(), hoa.getId())
                 .isPresent()) {
                 throw new HoaJoiningException("User is already in this HOA"); //need explanation
             }
-            Membership membership = new Membership(authManager.getNetId(),
+            Membership membership = new Membership(authManager.getUsername(),
                 hoaService.findHoaByName(request.hoaName).get().getId(), false,
                 request.userCountry, request.userCity, request.userStreet,
                 request.userHouseNumber, request.userPostalCode,
@@ -118,7 +116,7 @@ public class HoaController {
             }
             //CREATION
             memberManagementService.addMembership(membership);
-            System.out.println("Member " + authManager.getNetId() + " added successfully to " + request.getHoaName());
+            System.out.println("Member " + authManager.getUsername() + " added successfully to " + request.getHoaName());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

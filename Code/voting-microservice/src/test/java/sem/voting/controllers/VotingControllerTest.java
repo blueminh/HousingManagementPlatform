@@ -27,8 +27,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import sem.voting.authentication.AuthManager;
 import sem.voting.authentication.JwtTokenVerifier;
-import sem.voting.communication.HoaCommunication;
-import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalHandlingService;
 import sem.voting.domain.proposal.ProposalRepository;
 import sem.voting.domain.proposal.ProposalType;
@@ -36,7 +34,6 @@ import sem.voting.domain.services.validators.MemberIsBoardMemberValidator;
 import sem.voting.domain.services.validators.Validator;
 import sem.voting.integration.utils.JsonUtil;
 import sem.voting.models.ProposalCreationRequestModel;
-import sem.voting.models.ProposalCreationResponseModel;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -80,7 +77,7 @@ class VotingControllerTest {
         // Arrange
         final String userName = "ExampleUser";
         final int testHoaId = 0;
-        when(mockAuthenticationManager.getUserId()).thenReturn(userName);
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
         final String testTitle = "New Amazing Board Members";

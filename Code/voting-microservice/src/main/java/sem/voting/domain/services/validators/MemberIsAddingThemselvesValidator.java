@@ -6,7 +6,7 @@ import sem.voting.authentication.AuthManager;
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
 
-public class MemberIsAddingThemselvesValidator extends Validator {
+public class MemberIsAddingThemselvesValidator extends BaseValidator {
     @Override
     public boolean handle(String username, Option option, Proposal proposal) throws InvalidRequestException {
         if (!username.equals(option.toString())) {

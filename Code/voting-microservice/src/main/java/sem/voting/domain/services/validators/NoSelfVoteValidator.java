@@ -3,7 +3,7 @@ package sem.voting.domain.services.validators;
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
 
-public class NoSelfVoteValidator extends Validator {
+public class NoSelfVoteValidator extends BaseValidator {
     @Override
     public boolean handle(String username, Option option, Proposal proposal) throws InvalidRequestException {
         if (proposal.getAvailableOptions().contains(new Option(username))) {

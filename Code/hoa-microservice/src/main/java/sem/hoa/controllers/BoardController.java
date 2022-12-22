@@ -1,8 +1,5 @@
 package sem.hoa.controllers;
 
-import java.util.Date;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,10 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import sem.hoa.authentication.AuthManager;
 import sem.hoa.communications.VotingCommunication;
+import sem.hoa.domain.entities.Hoa;
 import sem.hoa.domain.services.HoaService;
 import sem.hoa.domain.services.MemberManagementService;
 import sem.hoa.dtos.CastVoteRequestModel;
 import sem.hoa.dtos.UserNameHoaNameDto;
+import java.util.Optional;
 
 /**
  * REST controller for the board.
@@ -44,24 +43,26 @@ public class BoardController {
 
     /*** Redirect this request to the Voting service.*/
     @PostMapping("/apply")
+    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     public ResponseEntity<String> applyForBoard(
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken,
         @RequestBody UserNameHoaNameDto request) {
+        // Contact the voting system
+        Optional<Hoa> hoa = hoaService.findHoaByName(request.getHoaName());
+        if (hoa.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "HOA not found");
+        }
+        int proposalId;
         try {
-            //      These checks are also done in the voting service
-            //      Optional<Hoa> hoa = hoaService.findHOAByName(hoaName);
-            //      if (hoa.isEmpty()) throw new Exception("No such Hoa with this name: " + hoaName);
-            //
-            //      Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(authManager.getNetId(), hoa.get().getId());
-            //      if (membership.isEmpty()) throw new Exception("User is not in this Hoa");
-            //      if (membership.get().isBoardMember()) throw new Exception("User is already a board member of this Hoa");
-            //
-            //      Pair<Long, Long> electionTime = hoaService.findBoardElectionStartTime(null, hoa.get().getId());
-            //      Date now = new Date();
-            //      if (now.getTime() < electionTime.first|| now.getTime() > electionTime.second)
-            //      throw new Exception("This Hoa is not having a board election at the moment");
-            UserNameHoaNameDto info = new UserNameHoaNameDto(authManager.getNetId(), request.hoaName);
-            VotingCommunication.redirectApplyingRequest(authToken.split(" ")[1], info);
+            proposalId = VotingCommunication.getCurrentElectionId(authManager.getUsername(), hoa.get().getId());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        if (proposalId == -1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No elections");
+        }
+        try {
+            VotingCommunication.redirectApplyingRequest(authManager.getUsername(), hoa.get().getId(), proposalId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -76,8 +77,7 @@ public class BoardController {
         @RequestBody CastVoteRequestModel request
     ) {
         try {
-            CastVoteRequestModel info = new CastVoteRequestModel(request.getProposalId(), request.getProposalId(), authManager.getNetId(), request.getOption());
-            VotingCommunication.redirectVotingRequest(authToken.split(" ")[1], info);
+            VotingCommunication.redirectVotingRequest(authManager.getUsername(), request);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

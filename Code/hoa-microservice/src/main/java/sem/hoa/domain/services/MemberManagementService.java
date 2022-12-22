@@ -7,8 +7,6 @@ import sem.hoa.domain.entities.MembershipId;
 import sem.hoa.exceptions.HoaJoiningException;
 
 import java.time.Instant;
-import java.time.Period;
-import java.time.temporal.TemporalAmount;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,16 +69,23 @@ public class MemberManagementService {
      * @return the ID of the Hoa or -1 if user is not a board member of any HOAs
      */
     public Integer isBoardMemberOf(String username) {
-        Optional<Membership> membership = memberManagementRepository.findMembershipByUsernameAndIsBoardMemberIsTrue(username);
+        List<Membership> membership = memberManagementRepository.findByUsernameAndIsBoardMemberIsTrue(username);
         if (membership.isEmpty()) {
             return -1;
         }
-        return membership.get().getHoaId();
+        return membership.get(0).getHoaId();
     }
 
+    /**
+     * Check if at least one member can be on the board.
+     *
+     * @param hoaId hoa ID
+     * @return true if at least one member has been in the HOA for more than 3 years.
+     */
     public boolean hasPossibleBoardCandidates(int hoaId) {
+        final long yearInSeconds = 365 * 24 * 60 * 60;
         return memberManagementRepository.existsByHoaIdAndJoiningDateLessThanEqual(hoaId,
-                Instant.now().minus(Period.of(3, 0, 0)).getEpochSecond());
+                Instant.now().minusSeconds(yearInSeconds * 3).getEpochSecond());
     }
 
 }

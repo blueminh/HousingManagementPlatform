@@ -22,13 +22,13 @@ public class AuthManagerTests {
         // Arrange
         String expected = "user123";
         var authenticationToken = new UsernamePasswordAuthenticationToken(
-            expected,
-            null, List.of() // no credentials and no authorities
+                expected,
+                null, List.of() // no credentials and no authorities
         );
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         // Act
-        String actual = authManager.getNetId();
+        String actual = authManager.getUsername();
 
         // Assert
         assertThat(actual).isEqualTo(expected);
