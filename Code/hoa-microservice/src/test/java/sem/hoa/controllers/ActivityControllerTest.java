@@ -101,7 +101,6 @@ class ActivityControllerTest {
         request.setDesc(testDesc);
         request.setHoaId(testHoaId);
         request.setDate(testDate);
-        request.setCreatedBy(userName);
 
         // Make request
         ResultActions resultActions = mockMvc.perform(post("/activity/add")
