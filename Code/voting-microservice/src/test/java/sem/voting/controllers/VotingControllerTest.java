@@ -59,8 +59,8 @@ class VotingControllerTest {
 
     @Test
     void testMockConstructor() throws Exception {
-        try (MockedStatic<HoaCommunication> utilities = Mockito.mockStatic(HoaCommunication.class)) {
-            utilities.when(() -> HoaCommunication.checkUserIsBoardMember("ciao", 1))
+        try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
+            com.when(() -> HoaCommunication.checkUserIsBoardMember("ciao", 1))
                     .thenReturn(true);
 
             assertThat(HoaCommunication.checkUserIsBoardMember("ciao", 1)).isTrue();
