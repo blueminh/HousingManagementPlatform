@@ -50,7 +50,7 @@ public class HoaController {
      */
     @GetMapping("/welcomeHOA")
     public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getNetId() + "! \nWelcome to Hoa!");
+        return ResponseEntity.ok("Hello " + authManager.getUserId() + "! \nWelcome to Hoa!");
 
     }
 
@@ -73,7 +73,7 @@ public class HoaController {
             hoaService.createNewHOA(newHOA);
 
             memberManagementService
-                .addMembership(new Membership(authManager.getNetId(), newHOA.getId(), true,
+                .addMembership(new Membership(authManager.getUserId(), newHOA.getId(), true,
                     request.userCountry, request.userCity,
                     request.userStreet, request.userHouseNumber, request.userPostalCode,
                     new Date().getTime(), new Date().getTime()));
@@ -102,11 +102,11 @@ public class HoaController {
             }
             Hoa hoa = hoaService.findHoaByName(request.hoaName).get();
             if (memberManagementService
-                .findByUsernameAndHoaId(authManager.getNetId(), hoa.getId())
+                .findByUsernameAndHoaId(authManager.getUserId(), hoa.getId())
                 .isPresent()) {
                 throw new HoaJoiningException("User is already in this HOA"); //need explanation
             }
-            Membership membership = new Membership(authManager.getNetId(),
+            Membership membership = new Membership(authManager.getUserId(),
                 hoaService.findHoaByName(request.hoaName).get().getId(), false,
                 request.userCountry, request.userCity, request.userStreet,
                 request.userHouseNumber, request.userPostalCode,
@@ -116,7 +116,7 @@ public class HoaController {
             }
             //CREATION
             memberManagementService.addMembership(membership);
-            System.out.println("Member " + authManager.getNetId() + " added successfully to " + request.getHoaName());
+            System.out.println("Member " + authManager.getUserId() + " added successfully to " + request.getHoaName());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

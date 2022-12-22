@@ -125,7 +125,7 @@ public class VotingController {
             if (HoaCommunication.checkHoaHasBoard(authManager.getUserId(), request.getHoaId())
                 && request.getType() == ProposalType.BoardElection) {
                 validator.addLast(new MemberIsBoardMemberValidator());
-            } else {
+            } else if (request.getType() == ProposalType.BoardElection) {
                 System.out.println("HOA doesn't have a board.");
             }
         } catch (Exception e) {

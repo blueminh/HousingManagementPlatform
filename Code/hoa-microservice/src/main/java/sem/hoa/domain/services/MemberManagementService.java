@@ -71,16 +71,17 @@ public class MemberManagementService {
      * @return the ID of the Hoa or -1 if user is not a board member of any HOAs
      */
     public Integer isBoardMemberOf(String username) {
-        Optional<Membership> membership = memberManagementRepository.findMembershipByUsernameAndIsBoardMemberIsTrue(username);
+        List<Membership> membership = memberManagementRepository.findByUsernameAndIsBoardMemberIsTrue(username);
         if (membership.isEmpty()) {
             return -1;
         }
-        return membership.get().getHoaId();
+        return membership.get(0).getHoaId();
     }
 
     public boolean hasPossibleBoardCandidates(int hoaId) {
+        final long yearInSeconds = 365 * 24 * 60 * 60;
         return memberManagementRepository.existsByHoaIdAndJoiningDateLessThanEqual(hoaId,
-                Instant.now().minus(Period.of(3, 0, 0)).getEpochSecond());
+                Instant.now().minusSeconds(yearInSeconds * 3).getEpochSecond());
     }
 
 }

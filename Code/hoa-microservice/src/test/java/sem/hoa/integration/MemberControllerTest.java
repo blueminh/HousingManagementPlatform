@@ -60,7 +60,7 @@ public class MemberControllerTest {
     @BeforeEach
     void setUp() {
         userName = "user1";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
+        when(mockAuthenticationManager.getUserId()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
         hoa = hoaRepository.save(new Hoa("hoa1", "country1", "city1"));
@@ -126,7 +126,7 @@ public class MemberControllerTest {
         }
 
         String userName2 = "user2";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName2);
+        when(mockAuthenticationManager.getUserId()).thenReturn(userName2);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName2);
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/findUserRoleByHoaName")
@@ -202,7 +202,7 @@ public class MemberControllerTest {
         }
 
         userName = "user2";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
+        when(mockAuthenticationManager.getUserId()).thenReturn(userName);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
         try {
             ResultActions resultActions = mockMvc.perform(get("/member/findUserRoleByHoaID")
@@ -222,7 +222,7 @@ public class MemberControllerTest {
     void board_member_of_any_true() {
         // Arrange
         String userName = "user1";
-        when(mockAuthenticationManager.getNetId()).thenReturn(userName);
+        when(mockAuthenticationManager.getUserId()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
 
