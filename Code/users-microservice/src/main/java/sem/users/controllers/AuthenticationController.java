@@ -16,7 +16,7 @@ import sem.users.authentication.JwtTokenGenerator;
 import sem.users.authentication.JwtUserDetailsService;
 import sem.users.domain.user.FullName;
 import sem.users.domain.user.Password;
-import sem.users.domain.user.RegistrationService;
+import sem.users.services.RegistrationService;
 import sem.users.domain.user.Username;
 import sem.users.models.AuthenticationRequestModel;
 import sem.users.models.AuthenticationResponseModel;
