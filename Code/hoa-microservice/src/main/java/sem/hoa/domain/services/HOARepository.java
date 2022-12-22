@@ -17,5 +17,7 @@ public interface HOARepository extends JpaRepository<HOA, Integer> {
     @Override
     Optional<HOA> findById(Integer integer);
 
+    Boolean existsById(int id);
+
     Optional<HOA> findByHoaName(String hoaName);
 }

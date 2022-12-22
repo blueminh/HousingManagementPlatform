@@ -24,7 +24,7 @@ public class Activity {
     @Column(name = "hoaId", nullable = false)
     private Integer hoaId;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @Column(name = "date", nullable = false, unique = false)
@@ -34,35 +34,39 @@ public class Activity {
     @Column(name = "description", nullable = true, unique = false)
     private String description;
 
+    @Column(name = "createdBy", nullable = false)
+    private String createdBy;
+
     /**
      * Create a new Activity.
      *
-     * @param activityId unique id used for identifying an Activity
-     *
-     * @param date date on which the activity takes place
-     *
+     * @param activityId  unique id used for identifying an Activity
+     * @param date        date on which the activity takes place
      * @param description description about the activity
+     * @param createdBy username of the user that created the activity
      */
-    public Activity(Integer activityId, Integer hoaId, String name, Date date, String description) {
+    public Activity(Integer activityId, Integer hoaId, String name, Date date, String description, String createdBy) {
         this.activityId = activityId;
         this.hoaId = hoaId;
         this.name = name;
         this.date = date;
         this.description = description;
+        this.createdBy = createdBy;
     }
 
     /**
      * Create a new Activity but without activityId.
      *
-     * @param date date on which the activity takes place
-     *
+     * @param date        date on which the activity takes place
      * @param description description about the activity
+     * @param createdBy username of the user that created the activity
      */
-    public Activity(Integer hoaId, String name, Date date, String description) {
+    public Activity(Integer hoaId, String name, Date date, String description, String createdBy) {
         this.hoaId = hoaId;
         this.name = name;
         this.date = date;
         this.description = description;
+        this.createdBy = createdBy;
     }
 
     public int getActivityId() {
@@ -83,5 +87,9 @@ public class Activity {
 
     public Integer getHoaId() {
         return hoaId;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
     }
 }

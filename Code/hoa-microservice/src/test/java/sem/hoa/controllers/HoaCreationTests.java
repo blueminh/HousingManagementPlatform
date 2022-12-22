@@ -60,7 +60,7 @@ public class HoaCreationTests {
         // Arrange
         // Notice how some custom parts of authorisation need to be mocked.
         // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
-        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
+        when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
 

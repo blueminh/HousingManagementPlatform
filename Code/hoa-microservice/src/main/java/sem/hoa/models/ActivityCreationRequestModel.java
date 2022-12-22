@@ -12,4 +12,5 @@ public class ActivityCreationRequestModel {
     private String desc;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date date;
+    private String createdBy;
 }
