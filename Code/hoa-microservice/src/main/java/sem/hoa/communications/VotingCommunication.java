@@ -46,6 +46,7 @@ public class VotingCommunication {
      * @param url the endpoint to sent to
      * @return the body of the response as String if OK or the embedded error message if receiving an error
      */
+    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     private static String makeRequest(String userId, String url, String requestBody) throws Exception {
         // Get the secret
         Properties properties = new Properties();

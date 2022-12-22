@@ -78,6 +78,12 @@ public class MemberManagementService {
         return membership.get(0).getHoaId();
     }
 
+    /**
+     * Check if at least one member can be on the board.
+     *
+     * @param hoaId hoa ID
+     * @return true if at least one member has been in the HOA for more than 3 years.
+     */
     public boolean hasPossibleBoardCandidates(int hoaId) {
         final long yearInSeconds = 365 * 24 * 60 * 60;
         return memberManagementRepository.existsByHoaIdAndJoiningDateLessThanEqual(hoaId,
