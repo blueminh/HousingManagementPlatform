@@ -68,16 +68,16 @@ public class ActivityController {
     /**
      * API call for getting details about an Activity.
      *
-     * @param activityId Unique id of the activity to get
+     * @param activityName Unique name of the activity to get
      *
      * @return Returns 200 OK Response along with the ActivityResponseModel
      *
      * @throws Exception In case the retrieval of Activity fails, it throws a BAD REQUEST and a NoSuchActivityException
      */
     @GetMapping("/activity/get")
-    public ResponseEntity<ActivityResponseModel> getActivity(@RequestParam(name = "id") int activityId) throws Exception {
+    public ResponseEntity<ActivityResponseModel> getActivity(@RequestParam(name = "name") String activityName) throws Exception {
         try {
-            Activity activity = activityService.getActivity(activityId, authManager.getNetId());
+            Activity activity = activityService.getActivity(activityName, authManager.getNetId());
             ActivityResponseModel responseModel = new ActivityResponseModel(
                     activity.getActivityId(), activity.getHoaId(), activity.getName(), activity.getDescription(), activity.getDate(), activity.getCreatedBy()
             );

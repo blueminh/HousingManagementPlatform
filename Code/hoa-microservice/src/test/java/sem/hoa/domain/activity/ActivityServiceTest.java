@@ -285,7 +285,7 @@ class ActivityServiceTest {
         when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
-        Activity res =  activityService.getActivity(activityId, userName);
+        Activity res =  activityService.getActivity(testName, userName);
 
         // assert
         assertThat(res.getCreatedBy()).isEqualTo(userName);
@@ -318,7 +318,7 @@ class ActivityServiceTest {
         when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(false);
 
         // act
-        ThrowableAssert.ThrowingCallable action = () -> activityService.getActivity(activityId, userName);
+        ThrowableAssert.ThrowingCallable action = () -> activityService.getActivity(testName, userName);
 
         // assert
         assertThatThrownBy(action).isInstanceOf(NoAccessToHoaException.class);
@@ -345,7 +345,7 @@ class ActivityServiceTest {
         when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
-        ThrowableAssert.ThrowingCallable action = () -> activityService.getActivity(activityId, userName);
+        ThrowableAssert.ThrowingCallable action = () -> activityService.getActivity(testName, userName);
 
         // assert
         assertThatThrownBy(action).isInstanceOf(NoSuchActivityException.class);

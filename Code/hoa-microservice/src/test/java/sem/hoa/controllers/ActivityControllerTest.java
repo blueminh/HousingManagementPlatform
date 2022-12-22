@@ -183,7 +183,7 @@ class ActivityControllerTest {
         int id = activity.getActivityId();
 
         // Make request
-        ResultActions resultActions = mockMvc.perform(get("/activity/get?id=" + id)
+        ResultActions resultActions = mockMvc.perform(get("/activity/get?name=" + testName)
                 .header("Authorization", "Bearer MockedToken"));
 
         resultActions.andExpect(status().isOk());
@@ -205,9 +205,10 @@ class ActivityControllerTest {
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn(userName);
 
         int activityId = 2;
+        String testName = "non-existent-test";
 
         // Make request
-        ResultActions resultActions = mockMvc.perform(get("/activity/get?id=" + activityId)
+        ResultActions resultActions = mockMvc.perform(get("/activity/get?name=" + testName)
                 .header("Authorization", "Bearer MockedToken"));
 
         // Assert the response

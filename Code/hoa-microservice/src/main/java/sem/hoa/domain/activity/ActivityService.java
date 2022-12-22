@@ -85,15 +85,15 @@ public class ActivityService {
     /**
      * Gets the specified activity from the database.
      *
-     * @param activityId activity id of the activity to be fetched
+     * @param activityName activity name of the activity to be fetched
      *
      * @return the activity retrieved from the database
      * @throws Exception throws an exception if no such activity was found
      */
-    public Activity getActivity(int activityId, String requestBy) throws Exception {
+    public Activity getActivity(String activityName, String requestBy) throws Exception {
 
-        if (activityRepository.findByActivityId(activityId).isPresent()) {
-            Activity activity = activityRepository.findByActivityId(activityId).get();
+        if (activityRepository.findActivityByName(activityName).isPresent()) {
+            Activity activity = activityRepository.findActivityByName(activityName).get();
             int hoaId = activity.getHoaId();
             if (!memberManagementRepository.existsMembershipByHoaIDAndUsername(hoaId, requestBy)) {
                 throw new NoAccessToHoaException(requestBy + " is not a member of the HOA " + hoaId);

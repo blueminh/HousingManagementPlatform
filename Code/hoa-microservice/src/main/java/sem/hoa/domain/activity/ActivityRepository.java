@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface ActivityRepository extends JpaRepository<Activity, Integer> {
     Optional<Activity> findByActivityId(Integer activityId);
 
+    Optional<Activity> findActivityByName(String activityName);
+
     List<Activity> findActivitiesByHoaId(Integer hoaId);
 
     List<Activity> findActivitiesByDateAfterAndHoaId(Date date, int hoaId);
