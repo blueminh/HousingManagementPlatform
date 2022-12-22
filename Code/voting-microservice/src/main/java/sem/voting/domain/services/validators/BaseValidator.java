@@ -17,7 +17,7 @@ import sem.voting.domain.proposal.Proposal;
 // * - check how long have a user been a board member: username, hoaID
 // * x - member cannot vote for themselves: username
 // */
-public abstract class BaseValidator implements Validator{
+public abstract class BaseValidator implements Validator {
     @Setter
     @Getter
     private Validator next = null;
@@ -35,15 +35,11 @@ public abstract class BaseValidator implements Validator{
      * @param next validator to add last.
      */
     public void addLast(Validator next) {
-        if (this.next == null)
+        if (this.next == null) {
             this.next = next;
-        else
+        } else {
             this.next.addLast(next);
-//        Validator curr = this;
-//        while (curr.next != null) {
-//            curr = curr.next;
-//        }
-//        curr.setNext(next);
+        }
     }
 
     public abstract boolean handle(String username, Option option, Proposal proposal) throws InvalidRequestException;
