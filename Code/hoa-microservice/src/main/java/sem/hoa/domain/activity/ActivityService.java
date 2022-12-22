@@ -3,10 +3,10 @@ package sem.hoa.domain.activity;
 import org.springframework.stereotype.Service;
 import sem.hoa.domain.services.HOARepository;
 import sem.hoa.domain.services.MemberManagementRepository;
+import sem.hoa.domain.utils.Clock;
 import sem.hoa.models.ActivityResponseModel;
 
 import java.security.InvalidParameterException;
-import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +17,7 @@ public class ActivityService {
     private final transient ParticipationRepository participationRepository;
     private final transient MemberManagementRepository memberManagementRepository;
     private final transient HOARepository hoaRepository;
+    private final transient Clock clock;
 
     /**
      * Constructor for ActivityService.
@@ -24,13 +25,15 @@ public class ActivityService {
      * @param activityRepository         repositories that stores activities
      * @param participationRepository    participation repository
      * @param memberManagementRepository membership repository
-     * @param hoaRepository hoa repository
+     * @param hoaRepository              hoa repository
+     * @param clock                      clock
      */
-    public ActivityService(ActivityRepository activityRepository, ParticipationRepository participationRepository, MemberManagementRepository memberManagementRepository, HOARepository hoaRepository) {
+    public ActivityService(ActivityRepository activityRepository, ParticipationRepository participationRepository, MemberManagementRepository memberManagementRepository, HOARepository hoaRepository, Clock clock) {
         this.activityRepository = activityRepository;
         this.participationRepository = participationRepository;
         this.memberManagementRepository = memberManagementRepository;
         this.hoaRepository = hoaRepository;
+        this.clock = clock;
     }
 
     /**
@@ -50,7 +53,8 @@ public class ActivityService {
         if (desc.length() == 0 || desc.length() > 100) {
             throw new InvalidParameterException("Description too long or blank");
         }
-        if (date.before(new Date(Instant.now().getEpochSecond()))) {
+        Date curDate = clock.getCurrentDate();
+        if (date.before(curDate)) {
             throw new InvalidParameterException("Activity date before current time not possible");
         }
         Activity activity = new Activity(hoaId, name, date, desc, createdBy);
@@ -77,7 +81,7 @@ public class ActivityService {
      * @return true if it matches; false otherwise
      */
     private static boolean checkNameValidity(String name) {
-        String regex = "[a-zA-Z0-9_-]{1,30}";
+        String regex = "[ a-zA-Z0-9_-]{1,30}";
         return name.matches(regex);
     }
 

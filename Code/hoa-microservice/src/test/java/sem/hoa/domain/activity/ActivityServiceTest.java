@@ -65,6 +65,9 @@ class ActivityServiceTest {
         // mock
         when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
         when(hoaRepository.existsById(testHoaId)).thenReturn(true);
+        calendar.set(2020, 1, 1, 0, 0);
+        Date mockDate = calendar.getTime();
+        when(clock.getCurrentDate()).thenReturn(mockDate);
 
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.addActivity(testHoaId, name, testDate, testDesc, userName);
@@ -90,6 +93,9 @@ class ActivityServiceTest {
         // mock
         when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
         when(hoaRepository.existsById(testHoaId)).thenReturn(true);
+        calendar.set(2020, 1, 1, 0, 0);
+        Date mockDate = calendar.getTime();
+        when(clock.getCurrentDate()).thenReturn(mockDate);
 
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.addActivity(testHoaId, testName, testDate, desc, userName);
@@ -102,7 +108,7 @@ class ActivityServiceTest {
     void testDateBeforeCurrentTime() throws Exception {
         // setup required variable
         Calendar calendar = new GregorianCalendar();
-        calendar.set(2022, 1, 1, 0, 0);
+        calendar.set(2020, 1, 1, 0, 0);
 
         final String userName = "ExampleUser";
         final int testHoaId = 1;
@@ -114,11 +120,11 @@ class ActivityServiceTest {
         when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
         when(hoaRepository.existsById(testHoaId)).thenReturn(true);
 
-        calendar.set(2020, 1, 1, 0, 0);
-        when(clock.getCurrentDate()).thenReturn(calendar.getTime());
+        calendar.set(2022, 1, 1, 0, 0);
+        Date mockDate = calendar.getTime();
+        when(clock.getCurrentDate()).thenReturn(mockDate);
 
         // act
-
         ThrowableAssert.ThrowingCallable action = () -> activityService.addActivity(testHoaId, testName, testDate, testDesc, userName);
 
         // assert
@@ -141,6 +147,9 @@ class ActivityServiceTest {
         // mock
         when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
         when(hoaRepository.existsById(testHoaId)).thenReturn(true);
+        calendar.set(2020, 1, 1, 0, 0);
+        Date mockDate = calendar.getTime();
+        when(clock.getCurrentDate()).thenReturn(mockDate);
         // act
         int res = activityService.addActivity(testHoaId, testName, testDate, testDesc, userName);
 
@@ -165,6 +174,10 @@ class ActivityServiceTest {
         // mock
         when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(false);
         when(hoaRepository.existsById(testHoaId)).thenReturn(true);
+        calendar.set(2020, 1, 1, 0, 0);
+        Date mockDate = calendar.getTime();
+        when(clock.getCurrentDate()).thenReturn(mockDate);
+
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.addActivity(testHoaId, testName, testDate, testDesc, userName);
 
@@ -188,6 +201,9 @@ class ActivityServiceTest {
         // mock
         when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
         when(hoaRepository.existsById(testHoaId)).thenReturn(false);
+        calendar.set(2020, 1, 1, 0, 0);
+        Date mockDate = calendar.getTime();
+        when(clock.getCurrentDate()).thenReturn(mockDate);
 
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.addActivity(testHoaId, testName, testDate, testDesc, userName);
@@ -216,7 +232,9 @@ class ActivityServiceTest {
         // mock
         when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
         when(hoaRepository.existsById(testHoaId)).thenReturn(true);
-
+        calendar.set(2020, 1, 1, 0, 0);
+        Date mockDate = calendar.getTime();
+        when(clock.getCurrentDate()).thenReturn(mockDate);
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.addActivity(testHoaId, testName, testDate, testDesc, userName);
 
