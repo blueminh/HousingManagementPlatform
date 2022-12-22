@@ -94,7 +94,11 @@ jacocoTestCoverageVerification() {
 
 checkstyle {
 	toolVersion "8.37"
-	configFile = file("${rootDir}/Code/config/checkstyle/checkstyle.xml")
+	// If I use this, it runs
+	// On the other hand, if we use the below, it runs when we call the build.gradle from the root directory
+	// But doesn't work if I call the build.gradle of HOA microservice alone
+//	configFile = file("${rootDir}/Code/config/checkstyle/checkstyle.xml")
+	configFile = file("${projectDir}/../config/checkstyle/checkstyle.xml")
 	ignoreFailures = false
 	maxErrors = 0
 	maxWarnings = 0

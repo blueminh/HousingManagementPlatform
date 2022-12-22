@@ -53,7 +53,7 @@ public class BoardController {
                 throw new Exception("No such HOA with this name: " + hoaName);
             }
 
-            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(authManager.getNetId(), hoa.get().getId());
+            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaID(authManager.getUsername(), hoa.get().getId());
             if (membership.isEmpty()) {
                 throw new Exception("User is not in this HOA");
             }
