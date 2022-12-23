@@ -36,7 +36,7 @@ public class ProposalHandlingService {
         if (p == null) {
             return null;
         }
-        return p.getHoaId() == hoaId? p : null;
+        return p.getHoaId() == hoaId ? p : null;
     }
 
     /**
