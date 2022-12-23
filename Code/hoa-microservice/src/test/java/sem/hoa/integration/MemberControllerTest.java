@@ -424,7 +424,7 @@ public class MemberControllerTest {
 
             resultActions.andExpect(status().isOk());
             response = resultActions.andReturn().getResponse().getContentAsString();
-            String beginningOfTime = Date.from(Instant.ofEpochMilli(0)).toString();
+            String beginningOfTime = Date.from(Instant.ofEpochMilli(0)).getTime() + "";
             assertThat(response).isEqualTo(beginningOfTime);
         } catch (Exception e) {
             fail("Exception when making request");
