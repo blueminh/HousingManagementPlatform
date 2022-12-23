@@ -68,7 +68,7 @@ public class RuleControllerTest {
     public void emptyDisplayRules() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getExpirationDateFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         Hoa hoa = new Hoa("ExampleName", "ExampleCountry", "ExampleCity");
 
@@ -98,7 +98,7 @@ public class RuleControllerTest {
     public void displayRulesHoaNotFound() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getExpirationDateFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         Hoa hoa = new Hoa("ExampleName", "ExampleCountry", "ExampleCity");
 
@@ -119,7 +119,7 @@ public class RuleControllerTest {
     public void displayRulesHoaBadRequest() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getExpirationDateFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         Hoa hoa = new Hoa("ExampleName", "ExampleCountry", "ExampleCity");
 
@@ -142,7 +142,7 @@ public class RuleControllerTest {
     public void addTest() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getExpirationDateFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         Hoa hoa = new Hoa("ExampleName", "ExampleCountry", "ExampleCity");
 
@@ -171,7 +171,7 @@ public class RuleControllerTest {
     public void notFoundAddRule() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getExpirationDateFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         Hoa hoa = new Hoa("ExampleName", "ExampleCountry", "ExampleCity");
 
@@ -193,7 +193,7 @@ public class RuleControllerTest {
     public void addRuleBadRequest() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getExpirationDateFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         Hoa hoa = new Hoa("ExampleName", "ExampleCountry", "ExampleCity");
 
@@ -211,7 +211,7 @@ public class RuleControllerTest {
     public void editRule() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getExpirationDateFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         Hoa hoa = new Hoa("ExampleName", "ExampleCountry", "ExampleCity");
         hoaRepoMock.save(hoa);
@@ -239,7 +239,7 @@ public class RuleControllerTest {
     public void editRuleNotFound() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getExpirationDateFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         Hoa hoa = new Hoa("ExampleName", "ExampleCountry", "ExampleCity");
         hoaRepoMock.save(hoa);
@@ -263,7 +263,7 @@ public class RuleControllerTest {
     public void editRuleBadRequest() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getExpirationDateFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         Hoa hoa = new Hoa("ExampleName", "ExampleCountry", "ExampleCity");
         hoaRepoMock.save(hoa);
@@ -284,7 +284,7 @@ public class RuleControllerTest {
     public void deleteRule() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getExpirationDateFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         Hoa hoa = new Hoa("ExampleName", "ExampleCountry", "ExampleCity");
         hoaRepoMock.save(hoa);
@@ -340,7 +340,7 @@ public class RuleControllerTest {
     public void deleteRuleNotFoundRuleId() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getExpirationDateFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         Hoa hoa = new Hoa("ExampleName", "ExampleCountry", "ExampleCity");
         hoaRepoMock.save(hoa);
@@ -364,7 +364,7 @@ public class RuleControllerTest {
     public void deleteRuleNotFoundHoaId() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getExpirationDateFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         Hoa hoa = new Hoa("ExampleName", "ExampleCountry", "ExampleCity");
         hoaRepoMock.save(hoa);
@@ -388,7 +388,7 @@ public class RuleControllerTest {
     public void deleteRuleBadRequest() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getExpirationDateFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
 
         Hoa hoa = new Hoa("ExampleName", "ExampleCountry", "ExampleCity");
         hoaRepoMock.save(hoa);

@@ -140,8 +140,9 @@ public class RuleController {
         Optional<Rule> rule = ruleService.findRuleById(request.getRuleId());
         Optional<Hoa> hoa = hoaService.findHoaById(request.getHoaId());
         if (rule.isEmpty() || hoa.isEmpty()) {
-            ruleService.removeRuleById(request.getRuleId());
+            return ResponseEntity.notFound().build();
         }
+        ruleService.removeRuleById(request.getRuleId());
         return ResponseEntity.ok("Deleted rule with id: " + request.getRuleId()
                 + "\nPart of hoa with id: " + request.getHoaId());
 
