@@ -55,7 +55,7 @@ public class ActivityController {
     @PostMapping("/activity/add")
     public ResponseEntity<Integer> addActivity(@RequestBody ActivityCreationRequestModel req) throws Exception {
         try {
-            int res = activityService.addActivity(req.getHoaId(), req.getName(), req.getDate(), req.getDesc(), req.getCreatedBy());
+            int res = activityService.addActivity(req.getHoaId(), req.getName(), req.getDate(), req.getDesc(), authManager.getUsername());
             return ResponseEntity.ok(res);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);

@@ -138,7 +138,8 @@ public class RuleController {
             return ResponseEntity.badRequest().build();
         }
         Optional<Rule> rule = ruleService.findRuleById(request.getRuleId());
-        if (rule.isEmpty()) {
+        Optional<Hoa> hoa = hoaService.findHoaById(request.getHoaId());
+        if (rule.isEmpty() || hoa.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         ruleService.removeRuleById(request.getRuleId());
