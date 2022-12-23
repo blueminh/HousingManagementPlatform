@@ -286,7 +286,7 @@ public class MemberController {
             }
             membership2.get().setBoardMember(isBoardMember);
 
-            Membership newMembership = memberManagementRepository.save(membership2.get());
+            memberManagementRepository.save(membership2.get());
             return ResponseEntity.ok().body("User's role successfully updated");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
