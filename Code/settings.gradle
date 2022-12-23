@@ -1,0 +1,6 @@
+rootProject.name = 'SEM 22b'
+
+include 'voting-microservice'
+include 'users-microservice'
+include 'hoa-microservice'
+
