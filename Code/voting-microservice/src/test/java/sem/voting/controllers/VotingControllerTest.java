@@ -474,8 +474,7 @@ class VotingControllerTest {
         current.setMotion(testMotion);
         current.setTitle(testTitle);
         current.setProposalId(testProposalId);
-        when(proposalHandlingService.getProposalById(testProposalId)).thenReturn(Optional.of(current));
-        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(true);
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(current);
 
         TestProposal returned = new TestProposal();
         returned.setHoaId(model.getHoaId());
@@ -547,8 +546,7 @@ class VotingControllerTest {
         current.setMotion(testMotion);
         current.setTitle(testTitle);
         current.setProposalId(testProposalId);
-        when(proposalHandlingService.getProposalById(testProposalId)).thenReturn(Optional.of(current));
-        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(true);
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(current);
 
         try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
             com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
@@ -602,8 +600,7 @@ class VotingControllerTest {
         current.setMotion(testMotion);
         current.setTitle(testTitle);
         current.setProposalId(testProposalId);
-        when(proposalHandlingService.getProposalById(testProposalId)).thenReturn(Optional.of(current));
-        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(true);
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(current);
 
         TestProposal returned = new TestProposal();
         returned.setHoaId(model.getHoaId());
@@ -668,8 +665,7 @@ class VotingControllerTest {
         current.setMotion(testMotion);
         current.setTitle(testTitle);
         current.setProposalId(testProposalId);
-        when(proposalHandlingService.getProposalById(testProposalId)).thenReturn(Optional.of(current));
-        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(true);
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(current);
 
         TestProposal returned = new TestProposal();
         returned.setHoaId(model.getHoaId());
@@ -734,8 +730,7 @@ class VotingControllerTest {
         current.setMotion(testMotion);
         current.setTitle(testTitle);
         current.setProposalId(testProposalId);
-        when(proposalHandlingService.getProposalById(testProposalId)).thenReturn(Optional.of(current));
-        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(true);
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(current);
 
         TestProposal returned = new TestProposal();
         returned.setHoaId(model.getHoaId());
@@ -803,8 +798,7 @@ class VotingControllerTest {
         current.setMotion(testMotion);
         current.setTitle(testTitle);
         current.setProposalId(testProposalId);
-        when(proposalHandlingService.getProposalById(testProposalId)).thenReturn(Optional.of(current));
-        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(true);
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(current);
 
         try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
             com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
@@ -858,8 +852,7 @@ class VotingControllerTest {
         current.setMotion(testMotion);
         current.setTitle(testTitle);
         current.setProposalId(testProposalId);
-        when(proposalHandlingService.getProposalById(testProposalId)).thenReturn(Optional.of(current));
-        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(true);
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(current);
 
         TestProposal returned = new TestProposal();
         returned.setHoaId(model.getHoaId());
@@ -932,8 +925,7 @@ class VotingControllerTest {
         current.setMotion(testMotion);
         current.setTitle(testTitle);
         current.setProposalId(testProposalId);
-        when(proposalHandlingService.getProposalById(testProposalId)).thenReturn(Optional.of(current));
-        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(true);
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(current);
 
         TestProposal returned = new TestProposal();
         returned.setHoaId(model.getHoaId());
@@ -1001,7 +993,7 @@ class VotingControllerTest {
     }
 
     @Test
-    void startproposalNotFound() throws Exception {
+    void startProposalNotFound() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("username");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("username");
@@ -1028,7 +1020,6 @@ class VotingControllerTest {
         resultActions.andExpect(status().isNotFound());
     }
 
-
     @Test
     void startProposalPass() throws Exception {
         final String userName = "ExampleUser";
@@ -1054,8 +1045,7 @@ class VotingControllerTest {
         returned.setMotion(testMotion);
         returned.setTitle(testTitle);
         returned.setProposalId(testProposalId);
-        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(true);
-        when(proposalHandlingService.getProposalById((testProposalId))).thenReturn(Optional.of(returned));
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(returned);
         when(proposalHandlingService.save(returned)).thenReturn(returned);
 
         try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
@@ -1107,8 +1097,7 @@ class VotingControllerTest {
         returned.setMotion(testMotion);
         returned.setTitle(testTitle);
         returned.setProposalId(testProposalId);
-        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(false);
-        when(proposalHandlingService.getProposalById((testProposalId))).thenReturn(Optional.of(returned));
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(returned);
         when(proposalHandlingService.save(returned)).thenReturn(returned);
 
         // Act
@@ -1122,7 +1111,7 @@ class VotingControllerTest {
     }
 
     @Test
-    void startProposalUnauthorizes() throws Exception {
+    void startProposalUnauthorized() throws Exception {
         final String userName = "ExampleUser";
         final int testHoaId = 0;
         final int testProposalId = 3;
@@ -1146,8 +1135,7 @@ class VotingControllerTest {
         returned.setMotion(testMotion);
         returned.setTitle(testTitle);
         returned.setProposalId(testProposalId);
-        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(true);
-        when(proposalHandlingService.getProposalById((testProposalId))).thenReturn(Optional.of(returned));
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(returned);
         when(proposalHandlingService.save(returned)).thenReturn(returned);
 
 
