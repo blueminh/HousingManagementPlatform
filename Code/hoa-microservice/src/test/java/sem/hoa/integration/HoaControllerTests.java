@@ -383,5 +383,59 @@ public class HoaControllerTests {
 
         resultActions.andExpect(status().isOk());
     }
+
+    /**
+     * Tests if user who gives wrong HOA name is able to leave.
+     */
+    @Test
+    public void leaveHoaNotMember() throws Exception {
+
+
+        ResultActions resultActions = mockMvc.perform(delete("/leave" + "wrongHoaName")
+                .header("Authorization", "Bearer MockedToken")
+        );
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("No such HOA with this name: wrongHoaName"));
+
+        ///
+        hoaServiceMock.createNewHOA(new Hoa(request.hoaName, request.userCountry,
+                request.userCity));
+
+        resultActions = mockMvc.perform(post("/joining")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+
+        resultActions.andExpect(status().isOk());
+
+        Optional<Membership> savedOpt = memberRepoMock
+                .findById(new MembershipId(mockAuthenticationManager.getUsername(), 1));
+
+        assertThat(savedOpt.isPresent());
+
+        resultActions = mockMvc.perform(delete("/leave" + "wrongHoaName")
+                .header("Authorization", "Bearer MockedToken")
+        );
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("No such HOA with this name: wrongHoaName"));
+    }
+
+    /**
+     * Leave an existing HOA, which user is not a part of.
+     */
+    @Test
+    public void leaveWrongHoa() throws Exception {
+        hoaServiceMock.createNewHOA(new Hoa(request.hoaName, request.userCountry,
+                request.userCity));
+
+        ResultActions resultActions = mockMvc.perform(delete("/leave" + request.hoaName)
+                .header("Authorization", "Bearer MockedToken"));
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("User not found"));
+    }
 }
 
