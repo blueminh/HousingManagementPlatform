@@ -17,9 +17,11 @@ import sem.hoa.domain.entities.Hoa;
 import sem.hoa.domain.services.HoaRepository;
 import sem.hoa.domain.services.HoaService;
 import sem.hoa.dtos.HoaModifyDTO;
+import sem.hoa.exceptions.HoaCreationException;
 import sem.hoa.utils.JsonUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
