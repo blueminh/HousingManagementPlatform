@@ -17,11 +17,9 @@ import sem.hoa.domain.entities.HOA;
 import sem.hoa.domain.services.HOARepository;
 import sem.hoa.domain.services.HOAService;
 import sem.hoa.dtos.HoaModifyDTO;
-import sem.hoa.exceptions.HoaCreationException;
 import sem.hoa.utils.JsonUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-public class HoaCreationTests {
+public class HoaControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -160,33 +158,5 @@ public class HoaCreationTests {
 
     }
 
-    /**
-     *  tests the normal behaviour of the service related
-     *  to HOA creation.
-     *
-     */
-    @Test
-    public void createService() throws Exception {
-        HOA hoaT = new HOA("name", "country", "city");
-        hoaServiceMock.createNewHOA(hoaT);
-        assertThat(hoaRepoMock.findByHoaName(hoaT.getHoaName())).isPresent();
-    }
-
-    /**
-     *  tests the behaviour of the service related
-     *  to HOA creation when trying to save a HOA with an existing name.
-     *
-     */
-    @Test
-    public void createServiceDup() throws Exception {
-        HOA hoaT = new HOA("name", "country", "city");
-        hoaServiceMock.createNewHOA(hoaT);
-        HOA hoaD = new HOA("name", "diffCountry", "diffCity");
-
-        assertThatThrownBy(() -> hoaServiceMock.createNewHOA(hoaD))
-                .isInstanceOf(HoaCreationException.class);
-        assertThatThrownBy(() -> hoaServiceMock.createNewHOA(hoaD))
-                .hasMessage("HOA was not saved successfully: HOA already exists");
-    }
-
 }
+
