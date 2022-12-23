@@ -202,7 +202,7 @@ public class MemberController {
             if (!membership.get().isBoardMember()) {
                 // Return the minimum Date to indicate that the user was never on the board
                 Date neverDate = Date.from(Instant.ofEpochMilli(0));
-                return ResponseEntity.ok(neverDate.getTime()+"");
+                return ResponseEntity.ok(neverDate.getTime() + "");
             }
             return ResponseEntity.ok(membership.get().getJoiningBoardDate().toString());
         } catch (BadRequestException e) {
