@@ -154,6 +154,17 @@ class VotingControllerTest {
         model.setHoaId(testHoaId);
         model.setType(testType);
 
+        Proposal returned = new Proposal();
+        returned.setHoaId(model.getHoaId());
+        returned.setVotingDeadline(model.getDeadline());
+        returned.setOptionValidationService(new BoardElectionOptionValidationService());
+        returned.setVoteValidationService(new BoardElectionsVoteValidationService());
+        returned.setMotion(model.getMotion());
+        returned.setTitle(model.getTitle());
+        final int testProposalId = 3;
+        returned.setProposalId(testProposalId);
+        when(proposalHandlingService.save(any(Proposal.class))).thenReturn(returned);
+
         try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
             com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
                     .thenReturn(false);
@@ -200,7 +211,7 @@ class VotingControllerTest {
         returned.setTitle(model.getTitle());
         final int testProposalId = 3;
         returned.setProposalId(testProposalId);
-        when(proposalRepository.save(any(Proposal.class))).thenReturn(returned);
+        when(proposalHandlingService.save(any(Proposal.class))).thenReturn(returned);
 
         try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
             com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
