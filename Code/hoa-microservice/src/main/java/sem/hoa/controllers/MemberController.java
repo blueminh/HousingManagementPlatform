@@ -15,6 +15,8 @@ import sem.hoa.domain.entities.Membership;
 import sem.hoa.domain.services.HoaService;
 import sem.hoa.domain.services.MemberManagementService;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
 
 @RestController
@@ -193,7 +195,9 @@ public class MemberController {
                 throw new BadRequestException(userNotRegisteredError);
             }
             if (!membership.get().isBoardMember()) {
-                throw new BadRequestException(userNotBoardMemberError);
+                // Return the minimum Date to indicate that the user was never on the board
+                Date neverDate = Date.from(Instant.ofEpochMilli(0));
+                return ResponseEntity.ok(neverDate.toString());
             }
             return ResponseEntity.ok(membership.get().getJoiningBoardDate().toString());
         } catch (BadRequestException e) {

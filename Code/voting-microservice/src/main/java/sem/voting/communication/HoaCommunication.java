@@ -197,6 +197,10 @@ public class HoaCommunication {
         Map<String, String> params = new HashMap<>();
         params.put(hoaIdParamName, hoaId + "");
         String response = makeRequest(username, url, params);
-        return objectMapper.readValue(response, Long.class);
+        long joinBoardEpoch = objectMapper.readValue(response, Date.class).toInstant().toEpochMilli();
+        if (joinBoardEpoch == 0) {
+            return -1L;
+        }
+        return joinBoardEpoch;
     }
 }
