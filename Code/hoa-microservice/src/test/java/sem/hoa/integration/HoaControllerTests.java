@@ -22,6 +22,7 @@ import sem.hoa.domain.services.HoaRepository;
 import sem.hoa.domain.services.HoaService;
 import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.dtos.HoaModifyDTO;
+import sem.hoa.dtos.UserNameHoaNameDto;
 import sem.hoa.utils.JsonUtil;
 
 import java.util.Optional;
@@ -29,6 +30,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -333,6 +335,53 @@ public class HoaControllerTests {
 
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(status().reason("Address not compatible with HOA area"));
+    }
+
+    /**
+     * Tests if user with correct request is able to leave
+     */
+    @Test
+    public void leaveHoaNormal() throws Exception {
+        hoaServiceMock.createNewHOA(new Hoa(request.hoaName, request.userCountry,
+                request.userCity));
+
+        ResultActions resultActions = mockMvc.perform(post("/joining")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+
+        resultActions.andExpect(status().isOk());
+
+        Optional<Membership> savedOpt = memberRepoMock
+                .findById(new MembershipId(mockAuthenticationManager.getUsername(), 1));
+
+        assertThat(savedOpt.isPresent());
+
+        when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser2");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser2");
+
+        request.setUserHouseNumber(25);
+        request.setUserPostalCode("HOP");
+
+        resultActions = mockMvc.perform(post("/joining")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isOk());
+
+        Optional<Membership> saved2Opt = memberRepoMock
+                .findById(new MembershipId(mockAuthenticationManager.getUsername(), 1));
+
+        assertThat(saved2Opt.isPresent());
+
+        resultActions = mockMvc.perform(delete("/leave" + request.hoaName)
+                .header("Authorization", "Bearer MockedToken")
+                );
+
+        resultActions.andExpect(status().isOk());
     }
 }
 
