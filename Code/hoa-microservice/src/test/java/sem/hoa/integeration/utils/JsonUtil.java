@@ -3,6 +3,8 @@ package sem.hoa.integeration.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.TimeZone;
+
 /**
  * The Json util for tests.
  */
@@ -16,6 +18,7 @@ public class JsonUtil {
      */
     public static String serialize(Object object) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setTimeZone(TimeZone.getDefault());
         return objectMapper.writeValueAsString(object);
     }
 
@@ -29,6 +32,7 @@ public class JsonUtil {
      */
     public static <T> T deserialize(String json, Class<T> type) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setTimeZone(TimeZone.getDefault());
         return objectMapper.readValue(json, type);
     }
 }
