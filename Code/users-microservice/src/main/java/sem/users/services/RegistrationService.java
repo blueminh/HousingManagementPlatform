@@ -1,6 +1,5 @@
 package sem.users.services;
 
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import sem.users.domain.user.AppUser;
 import sem.users.domain.user.FullName;
@@ -105,9 +104,6 @@ public class RegistrationService {
             throw new InvalidParameterException("The new password cannot be empty!");
         }
         AppUser user = userRepository.findByUsername(username).orElseThrow();
-        if (!user.getPassword().equals(passwordHashingService.hash(oldpassword))) {
-            throw new BadCredentialsException("Current password does not match!");
-        }
         if (user.getPassword().equals(passwordHashingService.hash(newpassword))) {
             throw new InvalidParameterException("New password must be different from current password!");
         }
