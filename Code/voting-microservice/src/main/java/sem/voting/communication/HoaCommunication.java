@@ -155,7 +155,7 @@ public class HoaCommunication {
      *
      * @param username  username of the user
      * @param hoaId     hoaId
-     * @return whether the user is a ember of this hoa
+     * @return whether the user is a member of this hoa
      * @throws Exception either a bad request or response has error
      */
     public static boolean checkUserIsMemberOfThisHoa(String username, int hoaId) throws Exception {
