@@ -64,7 +64,7 @@ public class ActivityService {
             throw new NoSuchHOAException("No HOAs with the id " + hoaId + " exists!");
         } else if (!memberManagementRepository.existsMembershipByHoaIdAndUsername(hoaId, createdBy)) {
             throw new NoAccessToHoaException(createdBy + " is not a member of the HOA " + hoaId);
-        } else if (!activityRepository.existsActivityByName(activity.getName())) {
+        } else if (!activityRepository.existsActivityByNameAndHoaId(activity.getName(), activity.getHoaId())) {
             activityRepository.save(activity);
             return activity.getActivityId();
         } else {
