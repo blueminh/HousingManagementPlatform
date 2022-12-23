@@ -3,13 +3,14 @@ package sem.hoa.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.server.ResponseStatusException;
 import sem.hoa.authentication.AuthManager;
 import sem.hoa.domain.entities.Hoa;
@@ -18,7 +19,6 @@ import sem.hoa.domain.entities.MembershipId;
 import sem.hoa.domain.services.HoaService;
 import sem.hoa.domain.services.MemberManagementService;
 import sem.hoa.dtos.HoaModifyDTO;
-import sem.hoa.dtos.UserNameHoaNameDto;
 import sem.hoa.exceptions.HoaJoiningException;
 
 import java.util.Date;
@@ -132,28 +132,26 @@ public class HoaController {
     /**
      * Allows the user to leave an HOA.
      *
-     * @param request contains hoa ID and username
+     * @param hoaName is a path variable that contains the name of the Hoa the user wants to leave
      * @return a message that confirms that the user has left the HOA or throws an exception
      */
-    @DeleteMapping("/leave")
-    public ResponseEntity leaveHOA(@RequestBody UserNameHoaNameDto request) {
+    @DeleteMapping("/leave{hoaName}")
+    public ResponseEntity leaveHOA(@PathVariable("hoaName") String hoaName) {
         try {
-            if (!request.username.equals(authManager.getUsername())) {
-                throw new UsernameNotFoundException("User not found");
-            }
 
-            Optional<Hoa> hoa = hoaService.findHoaByName(request.hoaName);
+            Optional<Hoa> hoa = hoaService.findHoaByName(hoaName);
             if (hoa.isEmpty()) {
-                throw new Exception("No such HOA with this name: " + request.hoaName);
+                throw new Exception("No such HOA with this name: " + hoaName);
             }
 
-            Optional<Membership> membership = memberManagementService.findByUsernameAndHoaId(request.username, hoa.get().getId());
+            Optional<Membership> membership = memberManagementService
+                    .findByUsernameAndHoaId(authManager.getUsername(), hoa.get().getId());
             if (membership.isEmpty()) {
                 throw new Exception("User not found");
             }
-            MembershipId toBeRemoved = new MembershipId(request.username, hoa.get().getId());
+            MembershipId toBeRemoved = new MembershipId(authManager.getUsername(), hoa.get().getId());
             memberManagementService.removeMembership(toBeRemoved);
-            return ResponseEntity.ok("User has successfully left");
+            return ResponseEntity.ok(authManager.getUsername() + " has successfully left " + hoaName);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

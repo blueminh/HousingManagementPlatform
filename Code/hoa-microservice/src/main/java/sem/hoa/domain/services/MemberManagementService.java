@@ -12,7 +12,6 @@ import java.util.Optional;
 
 @Service
 public class MemberManagementService {
-    // TODO to be implemented
     private final transient MemberManagementRepository memberManagementRepository;
 
     public MemberManagementService(MemberManagementRepository memberManagementRepository) {
