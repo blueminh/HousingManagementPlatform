@@ -338,7 +338,7 @@ public class HoaControllerTests {
     }
 
     /**
-     * Tests if user with correct request is able to leave
+     * Tests if user with correct request is able to leave.
      */
     @Test
     public void leaveHoaNormal() throws Exception {
