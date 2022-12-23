@@ -24,7 +24,7 @@ public class Activity {
     @Column(name = "hoaId", nullable = false)
     private Integer hoaId;
 
-    @Column(name = "name", unique = true)
+    @Column(name = "name")
     private String name;
 
     @Column(name = "date", nullable = false, unique = false)
