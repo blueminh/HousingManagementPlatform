@@ -159,25 +159,26 @@ public class VotingController {
     @PostMapping("/add-option")
     public ResponseEntity<AddOptionResponseModel> addOption(
         @RequestBody AddOptionRequestModel request) {
-        if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
+        if (request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
+        if (proposal == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        Optional<Proposal> proposal = proposalHandlingService.getProposalById(request.getProposalId());
-        if (proposal.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
         AddOptionResponseModel response = new AddOptionResponseModel();
-        response.setProposalId(proposal.get().getProposalId());
-        response.setHoaId(proposal.get().getHoaId());
+        response.setProposalId(proposal.getProposalId());
+        response.setHoaId(proposal.getHoaId());
         try {
-            proposal.get().addOption(new Option(request.getOption()), authManager.getUsername());
+            proposal.addOption(new Option(request.getOption()), authManager.getUsername());
         } catch (AddOptionException e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
-        proposal = Optional.of(proposalHandlingService.save(proposal.get()));
-        response.setOptions(proposal.get().getAvailableOptions().stream()
+
+        proposal = proposalHandlingService.save(proposal);
+        response.setOptions(proposal.getAvailableOptions().stream()
             .map(Option::toString).collect(Collectors.toList()));
         return ResponseEntity.ok(response);
     }
@@ -196,13 +197,11 @@ public class VotingController {
         if (request == null) {
             return ResponseEntity.badRequest().build();
         }
-        Optional<Proposal> proposal = proposalHandlingService.getProposalById(request.getProposalId());
-        if (proposal.isEmpty()) {
+        Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
+        if (proposal == null) {
             return ResponseEntity.notFound().build();
         }
-        if (!proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
-            return ResponseEntity.badRequest().build();
-        }
+
         try {
             if (!HoaCommunication.checkUserIsBoardMember(authManager.getUsername(), request.getHoaId())) {
                 System.out.println("User is not a board member.");
@@ -213,13 +212,13 @@ public class VotingController {
             return ResponseEntity.badRequest().build();
         }
 
-        proposal.get().startVoting();
-        proposal = Optional.of(proposalHandlingService.save(proposal.get()));
+        proposal.startVoting();
+        proposal = proposalHandlingService.save(proposal);
         ProposalStartVotingResponseModel response = new ProposalStartVotingResponseModel();
-        response.setProposalId(proposal.get().getProposalId());
-        response.setHoaId(proposal.get().getHoaId());
-        response.setStatus(proposal.get().getStatus());
-        if (proposal.get().getStatus() != ProposalStage.Voting) {
+        response.setProposalId(proposal.getProposalId());
+        response.setHoaId(proposal.getHoaId());
+        response.setStatus(proposal.getStatus());
+        if (proposal.getStatus() != ProposalStage.Voting) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
         return ResponseEntity.ok(response);
@@ -238,33 +237,30 @@ public class VotingController {
     @PostMapping("/vote")
     public ResponseEntity<ProposalInformationResponseModel> castVote(
         @RequestBody CastVoteRequestModel request) {
-        if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
-
+        if (request == null) {
             return ResponseEntity.badRequest().build();
         }
-        // ToDo: check if authentication and HOA are valid
-
-        Optional<Proposal> proposal = proposalHandlingService.getProposalById(request.getProposalId());
-        if (proposal.isEmpty()) {
+        Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
+        if (proposal == null) {
             return ResponseEntity.notFound().build();
         }
+
         Option beingVoted = request.getOption().equals("") ? null : new Option(request.getOption());
         Vote vote = new Vote(authManager.getUsername(), beingVoted);
 
-
         try {
-            if (!proposal.get().addVote(vote)) {
+            if (!proposal.addVote(vote)) {
                 // Proposal needs to be saved because even if Vote wasn't successful, the status might have changed.
-                proposalHandlingService.save(proposal.get());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProposalInformationResponseModel(proposal.get()));
+                proposal = proposalHandlingService.save(proposal);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProposalInformationResponseModel(proposal));
             }
         } catch (VotingException e) {
             System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        proposalHandlingService.save(proposal.get());
-        return ResponseEntity.ok(new ProposalInformationResponseModel(proposal.get()));
+        proposal = proposalHandlingService.save(proposal);
+        return ResponseEntity.ok(new ProposalInformationResponseModel(proposal));
     }
 
     /**
@@ -291,23 +287,22 @@ public class VotingController {
     @PostMapping("/results")
     public ResponseEntity<ProposalResultsResponseModel> getResults(
         @RequestBody ProposalGenericRequestModel request) {
-        if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
+        if (request == null) {
             return ResponseEntity.badRequest().build();
         }
-        // ToDo: check if authentication and HOA are valid
-
-        Optional<Proposal> proposal = proposalHandlingService.getProposalById(request.getProposalId());
-        if (proposal.isEmpty()) {
+        Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
+        if (proposal == null) {
             return ResponseEntity.notFound().build();
         }
-        Set<Result> results = proposal.get().getResults();
-        proposalHandlingService.save(proposal.get());
+
+        Set<Result> results = proposal.getResults();
+        proposalHandlingService.save(proposal);
         if (results == null) {
             return ResponseEntity.badRequest().build();
         }
         ProposalResultsResponseModel response = new ProposalResultsResponseModel();
-        response.setProposalId(proposal.get().getProposalId());
-        response.setHoaId(proposal.get().getHoaId());
+        response.setProposalId(proposal.getProposalId());
+        response.setHoaId(proposal.getHoaId());
         response.setAllResults(results);
         return ResponseEntity.ok(response);
     }
@@ -325,7 +320,6 @@ public class VotingController {
         if (request == null) {
             return ResponseEntity.badRequest().build();
         }
-        // ToDo: check if authentication and HOA are valid
 
         List<Proposal> active = proposalHandlingService.getActiveProposals(request.getHoaId());
         return ResponseEntity.ok(active.stream().map(p -> {
@@ -347,7 +341,6 @@ public class VotingController {
         if (request == null) {
             return ResponseEntity.badRequest().build();
         }
-        // ToDo: check if authentication and HOA are valid
 
         List<Proposal> history = proposalHandlingService.getHistoryProposals(request.getHoaId());
         return ResponseEntity.ok(history.stream().map(p -> {
