@@ -1,7 +1,13 @@
 package sem.voting.authentication;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import java.time.Instant;
+import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Authentication Manager.
@@ -13,7 +19,7 @@ public class AuthManager {
      *
      * @return The name of the user.
      */
-    public String getNetId() {
+    public String getUsername() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }

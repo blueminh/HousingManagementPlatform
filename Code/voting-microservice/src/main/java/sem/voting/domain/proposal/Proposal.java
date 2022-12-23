@@ -12,11 +12,14 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import sem.voting.domain.services.OptionValidationService;
 import sem.voting.domain.services.VoteValidationService;
-import sem.voting.domain.services.VotingRightsService;
+import sem.voting.domain.services.implementations.AddOptionException;
+import sem.voting.domain.services.implementations.VotingException;
 
 /**
  * Entity representing a proposal people can vote on.
@@ -69,11 +72,11 @@ public class Proposal {
 
     @Getter
     @Setter
-    private VotingRightsService votingRightsService;
+    private VoteValidationService voteValidationService;
 
     @Getter
     @Setter
-    private VoteValidationService voteValidationService;
+    private OptionValidationService optionValidationService;
 
     /**
      * Returns the number of votes each option got.
@@ -129,14 +132,21 @@ public class Proposal {
      * Add an option to vote on. This can be done only in the UnderConstruction stage of the proposal.
      *
      * @param newOption Option to add.
+     * @param userId Id of the user adding the option.
      * @return true if the option was added, false otherwise.
      */
-    public boolean addOption(Option newOption) {
+    public boolean addOption(Option newOption, String userId) throws AddOptionException {
         checkDeadline();
-        if (this.status == ProposalStage.UnderConstruction) {
-            return this.availableOptions.add(newOption);
+        if (this.status != ProposalStage.UnderConstruction) {
+            // I'm not sure if Applying is the right word here
+            throw new AddOptionException("Proposal is not accepting new options");
         }
-        return false;
+
+        if (!this.optionValidationService.isOptionValid(userId, newOption, this)) {
+            throw new AddOptionException("Option is not valid");
+        }
+
+        return this.availableOptions.add(newOption);
     }
 
     /**
@@ -145,18 +155,23 @@ public class Proposal {
      * @param newVote Vote to add.
      * @return true if vote was edited successfully, false otherwise.
      */
-    public boolean addVote(Vote newVote) {
+    public boolean addVote(Vote newVote) throws VotingException {
         checkDeadline();
-        if (this.status == ProposalStage.Voting
-                && this.votingRightsService.canVote(newVote.getVoter(), this)
-                && this.voteValidationService.isVoteValid(newVote, this)) {
-            if (newVote.getChoice() == null) {
-                return this.votes.remove(newVote.getVoter()) != null;
-            }
-            if (this.availableOptions.contains(newVote.getChoice())) {
-                this.votes.put(newVote.getVoter(), newVote.getChoice());
-                return true;
-            }
+        if (this.status != ProposalStage.Voting) {
+            throw new VotingException("Proposal is not in Voting phase");
+        }
+
+        if (!this.voteValidationService.isVoteValid(newVote, this)) {
+            throw new VotingException("Vote is not valid");
+        }
+
+        if (newVote.getChoice() == null) {
+            return this.votes.remove(newVote.getVoter()) != null;
+        }
+
+        if (this.availableOptions.contains(newVote.getChoice())) {
+            this.votes.put(newVote.getVoter(), newVote.getChoice());
+            return true;
         }
         return false;
     }

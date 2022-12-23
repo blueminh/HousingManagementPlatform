@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Profile;
  * The profile tag will give a name to this configuration.
  * With the tag applied the profile will be inactive by default unless activated.
  * When the profile is active its bean will be used when looking for Beans to auto-inject.
- *.
+ * .
  * A configuration profile to allow injection of a mock TokenGenerator.
  */
 @Profile("mockTokenGenerator")

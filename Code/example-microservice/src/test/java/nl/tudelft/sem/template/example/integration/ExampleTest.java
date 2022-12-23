@@ -49,8 +49,8 @@ public class ExampleTest {
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
         ResultActions result = mockMvc.perform(get("/hello")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken"));
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer MockedToken"));
 
         // Assert
         result.andExpect(status().isOk());

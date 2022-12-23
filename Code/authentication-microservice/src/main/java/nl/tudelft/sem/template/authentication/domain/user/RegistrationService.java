@@ -13,7 +13,7 @@ public class RegistrationService {
     /**
      * Instantiates a new UserService.
      *
-     * @param userRepository  the user repository
+     * @param userRepository         the user repository
      * @param passwordHashingService the password encoder
      */
     public RegistrationService(UserRepository userRepository, PasswordHashingService passwordHashingService) {

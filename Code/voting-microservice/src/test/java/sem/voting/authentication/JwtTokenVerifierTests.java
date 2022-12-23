@@ -8,10 +8,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
+
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +51,7 @@ public class JwtTokenVerifierTests {
 
         // Assert
         assertThatExceptionOfType(ExpiredJwtException.class)
-                .isThrownBy(action);
+            .isThrownBy(action);
     }
 
     @Test
@@ -62,7 +64,7 @@ public class JwtTokenVerifierTests {
 
         // Assert
         assertThatExceptionOfType(SignatureException.class)
-                .isThrownBy(action);
+            .isThrownBy(action);
     }
 
     @Test
@@ -75,7 +77,7 @@ public class JwtTokenVerifierTests {
 
         // Assert
         assertThatExceptionOfType(MalformedJwtException.class)
-                .isThrownBy(action);
+            .isThrownBy(action);
     }
 
     @Test
@@ -94,9 +96,9 @@ public class JwtTokenVerifierTests {
     private String generateToken(String jwtSecret, String netid, long issuanceOffset, long expirationOffset) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder().setClaims(claims).setSubject(netid)
-                .setIssuedAt(new Date(System.currentTimeMillis() + issuanceOffset))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationOffset))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+            .setIssuedAt(new Date(System.currentTimeMillis() + issuanceOffset))
+            .setExpiration(new Date(System.currentTimeMillis() + expirationOffset))
+            .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }
 
     private void injectSecret(String secret) throws NoSuchFieldException, IllegalAccessException {

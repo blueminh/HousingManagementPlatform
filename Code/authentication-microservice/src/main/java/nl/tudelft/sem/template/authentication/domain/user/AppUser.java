@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.authentication.domain.HasEvents;
 
@@ -36,7 +37,7 @@ public class AppUser extends HasEvents {
     /**
      * Create new application user.
      *
-     * @param netId The NetId for the new user
+     * @param netId    The NetId for the new user
      * @param password The password for the new user
      */
     public AppUser(NetId netId, HashedPassword password) {

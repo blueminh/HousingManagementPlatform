@@ -29,7 +29,7 @@ public class RegistrationService {
     /**
      * Instantiates a new RegistrationService.
      *
-     * @param userRepository  the user repository
+     * @param userRepository         the user repository
      * @param passwordHashingService the password encoder
      */
     public RegistrationService(UserRepository userRepository, PasswordHashingService passwordHashingService) {

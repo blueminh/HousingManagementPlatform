@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import sem.hoa.domain.services.HOARepository;
+import sem.hoa.domain.services.HoaRepository;
 
 @Profile("hoaRepo")
 @Configuration
@@ -17,7 +17,7 @@ public class MockHoaRepositoryProfile {
      */
     @Bean
     @Primary
-    public HOARepository getHoaRepository() {
-        return Mockito.mock(HOARepository.class);
+    public HoaRepository getHoaRepository() {
+        return Mockito.mock(HoaRepository.class);
     }
 }

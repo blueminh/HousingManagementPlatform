@@ -7,12 +7,14 @@ import static org.mockito.Mockito.when;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+
 import java.io.IOException;
 import java.util.stream.Stream;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,7 +68,7 @@ public class JwtRequestFilterTests {
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication().getName())
-                .isEqualTo(user);
+            .isEqualTo(user);
     }
 
     @Test
@@ -83,7 +85,7 @@ public class JwtRequestFilterTests {
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
     }
 
     /**
@@ -94,7 +96,7 @@ public class JwtRequestFilterTests {
     @ParameterizedTest
     @MethodSource("tokenVerificationExceptionGenerator")
     public void tokenVerificationException(Class<? extends Throwable> throwable)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         // Arrange
         String token = "randomtoken123";
         String user = "user123";
@@ -107,14 +109,14 @@ public class JwtRequestFilterTests {
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
     }
 
     private static Stream<Arguments> tokenVerificationExceptionGenerator() {
         return Stream.of(
-                Arguments.of(ExpiredJwtException.class),
-                Arguments.of(IllegalArgumentException.class),
-                Arguments.of(JwtException.class)
+            Arguments.of(ExpiredJwtException.class),
+            Arguments.of(IllegalArgumentException.class),
+            Arguments.of(JwtException.class)
 
         );
     }
@@ -129,7 +131,7 @@ public class JwtRequestFilterTests {
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
     }
 
     @Test
@@ -146,7 +148,7 @@ public class JwtRequestFilterTests {
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
     }
 
     @Test
@@ -163,6 +165,6 @@ public class JwtRequestFilterTests {
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
     }
 }

@@ -64,6 +64,6 @@ public class JwtUserDetailsServiceTests {
 
         // Assert
         assertThatExceptionOfType(UsernameNotFoundException.class)
-                .isThrownBy(action);
+            .isThrownBy(action);
     }
 }

@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -41,7 +42,7 @@ public class JwtAuthenticationEntryPointTests {
         // Assert
         verifyNoInteractions(mockRequest);
         verify(mockResponse).addHeader(JwtRequestFilter.WWW_AUTHENTICATE_HEADER,
-                JwtRequestFilter.AUTHORIZATION_AUTH_SCHEME);
+            JwtRequestFilter.AUTHORIZATION_AUTH_SCHEME);
         verify(mockResponse).sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
         verifyNoMoreInteractions(mockResponse);
     }

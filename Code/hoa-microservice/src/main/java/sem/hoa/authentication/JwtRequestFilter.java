@@ -64,13 +64,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
                 try {
                     if (jwtTokenVerifier.validateToken(token)) {
-                        String netId = jwtTokenVerifier.getNetIdFromToken(token);
+                        String netId = jwtTokenVerifier.getUsernameFromToken(token);
                         var authenticationToken = new UsernamePasswordAuthenticationToken(
-                                netId,
-                                null, List.of() // no credentials and no authorities
+                            netId,
+                            null, List.of() // no credentials and no authorities
                         );
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource()
-                                .buildDetails(request));
+                            .buildDetails(request));
 
                         // After setting the Authentication in the context, we specify
                         // that the current user is authenticated. So it passes the

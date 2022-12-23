@@ -44,8 +44,8 @@ public class JwtTokenGenerator {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder().setClaims(claims).setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(timeProvider.getCurrentTime().toEpochMilli()))
-                .setExpiration(new Date(timeProvider.getCurrentTime().toEpochMilli() + JWT_TOKEN_VALIDITY))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+            .setIssuedAt(new Date(timeProvider.getCurrentTime().toEpochMilli()))
+            .setExpiration(new Date(timeProvider.getCurrentTime().toEpochMilli() + JWT_TOKEN_VALIDITY))
+            .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }
 }

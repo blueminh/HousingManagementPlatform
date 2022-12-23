@@ -62,7 +62,7 @@ public class RegistrationServiceTests {
 
         // Assert
         assertThatExceptionOfType(Exception.class)
-                .isThrownBy(action);
+            .isThrownBy(action);
 
         AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
 

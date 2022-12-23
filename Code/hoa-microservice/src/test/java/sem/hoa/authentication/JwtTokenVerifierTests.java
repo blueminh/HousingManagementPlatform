@@ -50,7 +50,7 @@ public class JwtTokenVerifierTests {
 
         // Assert
         assertThatExceptionOfType(ExpiredJwtException.class)
-                .isThrownBy(action);
+            .isThrownBy(action);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class JwtTokenVerifierTests {
 
         // Assert
         assertThatExceptionOfType(SignatureException.class)
-                .isThrownBy(action);
+            .isThrownBy(action);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class JwtTokenVerifierTests {
 
         // Assert
         assertThatExceptionOfType(MalformedJwtException.class)
-                .isThrownBy(action);
+            .isThrownBy(action);
     }
 
     @Test
@@ -86,7 +86,7 @@ public class JwtTokenVerifierTests {
         String token = generateToken(secret, expected, -10_000_000, 10_000_000);
 
         // Act
-        String actual = jwtTokenVerifier.getNetIdFromToken(token);
+        String actual = jwtTokenVerifier.getUsernameFromToken(token);
 
         // Assert
         assertThat(actual).isEqualTo(expected);
@@ -95,9 +95,9 @@ public class JwtTokenVerifierTests {
     private String generateToken(String jwtSecret, String netid, long issuanceOffset, long expirationOffset) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder().setClaims(claims).setSubject(netid)
-                .setIssuedAt(new Date(System.currentTimeMillis() + issuanceOffset))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationOffset))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+            .setIssuedAt(new Date(System.currentTimeMillis() + issuanceOffset))
+            .setExpiration(new Date(System.currentTimeMillis() + expirationOffset))
+            .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }
 
     private void injectSecret(String secret) throws NoSuchFieldException, IllegalAccessException {
