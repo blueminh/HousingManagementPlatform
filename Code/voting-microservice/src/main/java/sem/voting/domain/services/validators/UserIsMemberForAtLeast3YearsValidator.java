@@ -17,7 +17,8 @@ public class UserIsMemberForAtLeast3YearsValidator extends BaseValidator {
 
             final int daysInYear = 365;
             final int minMembershipYears = 3;
-            if (TimeUnit.MILLISECONDS.toDays(duration) / daysInYear < minMembershipYears) {
+            long durationDays = TimeUnit.MILLISECONDS.toDays(duration);
+            if (durationDays / daysInYear < minMembershipYears) {
                 throw new InvalidRequestException("User has not been a member for at least 3 years");
             }
             return super.checkNext(username, option, proposal);

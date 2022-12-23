@@ -13,7 +13,7 @@ public class BoardMemberForLess10YearsValidator extends BaseValidator {
             long joinedBoardDate = HoaCommunication.getJoiningBoardDate(username, proposal.getHoaId());
             if (joinedBoardDate == -1) {
                 // Member was never in the board
-                return true;
+                return super.checkNext(username, option, proposal);
             }
             long duration = new Date().getTime() - joinedBoardDate;
 
