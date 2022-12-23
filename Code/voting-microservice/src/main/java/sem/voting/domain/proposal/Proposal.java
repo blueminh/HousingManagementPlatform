@@ -140,7 +140,6 @@ public class Proposal {
     public boolean addOption(Option newOption, String userId) throws AddOptionException {
         checkDeadline();
         if (this.status != ProposalStage.UnderConstruction) {
-            // I'm not sure if Applying is the right word here
             throw new AddOptionException("Proposal is not accepting new options");
         }
 
