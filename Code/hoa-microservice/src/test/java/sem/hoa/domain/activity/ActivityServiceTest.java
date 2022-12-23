@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import sem.hoa.domain.services.HOARepository;
+import sem.hoa.domain.services.HoaRepository;
 import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.domain.utils.Clock;
 import sem.hoa.models.ActivityResponseModel;
@@ -42,9 +42,9 @@ class ActivityServiceTest {
     private transient ParticipationRepository participationRepository;
 
     @Autowired
-    private  transient MemberManagementRepository memberManagementRepository;
+    private transient MemberManagementRepository memberManagementRepository;
     @Autowired
-    private transient HOARepository hoaRepository;
+    private transient HoaRepository hoaRepository;
 
     @Autowired
     private transient ActivityService activityService;
@@ -63,7 +63,7 @@ class ActivityServiceTest {
         final Date testDate = calendar.getTime();
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
         when(hoaRepository.existsById(testHoaId)).thenReturn(true);
         calendar.set(2020, 1, 1, 0, 0);
         Date mockDate = calendar.getTime();
@@ -91,7 +91,7 @@ class ActivityServiceTest {
         final Date testDate = calendar.getTime();
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
         when(hoaRepository.existsById(testHoaId)).thenReturn(true);
         calendar.set(2020, 1, 1, 0, 0);
         Date mockDate = calendar.getTime();
@@ -117,7 +117,7 @@ class ActivityServiceTest {
         final Date testDate = calendar.getTime();
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
         when(hoaRepository.existsById(testHoaId)).thenReturn(true);
 
         calendar.set(2022, 1, 1, 0, 0);
@@ -145,7 +145,7 @@ class ActivityServiceTest {
         final Date testDate = calendar.getTime();
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
         when(hoaRepository.existsById(testHoaId)).thenReturn(true);
         calendar.set(2020, 1, 1, 0, 0);
         Date mockDate = calendar.getTime();
@@ -172,7 +172,7 @@ class ActivityServiceTest {
         final Date testDate = calendar.getTime();
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(false);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(false);
         when(hoaRepository.existsById(testHoaId)).thenReturn(true);
         calendar.set(2020, 1, 1, 0, 0);
         Date mockDate = calendar.getTime();
@@ -199,7 +199,7 @@ class ActivityServiceTest {
         final Date testDate = calendar.getTime();
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
         when(hoaRepository.existsById(testHoaId)).thenReturn(false);
         calendar.set(2020, 1, 1, 0, 0);
         Date mockDate = calendar.getTime();
@@ -230,7 +230,7 @@ class ActivityServiceTest {
         activityRepository.save(activity);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
         when(hoaRepository.existsById(testHoaId)).thenReturn(true);
         calendar.set(2020, 1, 1, 0, 0);
         Date mockDate = calendar.getTime();
@@ -263,7 +263,7 @@ class ActivityServiceTest {
         activityRepository.save(activity);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         activityService.removeActivity(activityId, userName);
@@ -291,7 +291,7 @@ class ActivityServiceTest {
         // Nothing because it should not be found
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.removeActivity(activityId, userName);
@@ -322,7 +322,7 @@ class ActivityServiceTest {
         activityRepository.save(activity);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(false);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(false);
 
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.removeActivity(activityId, userName);
@@ -351,7 +351,7 @@ class ActivityServiceTest {
         activityRepository.save(activity);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.removeActivity(activityId, userName);
@@ -379,7 +379,7 @@ class ActivityServiceTest {
         activityRepository.save(activity);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         Activity res =  activityService.getActivity(testName, userName);
@@ -412,7 +412,7 @@ class ActivityServiceTest {
         activityRepository.save(activity);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(false);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(false);
 
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.getActivity(testName, userName);
@@ -439,7 +439,7 @@ class ActivityServiceTest {
         // Nothing
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.getActivity(testName, userName);
@@ -467,7 +467,7 @@ class ActivityServiceTest {
         activityRepository.save(activity);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         activityService.participate(userName, activityId);
@@ -494,7 +494,7 @@ class ActivityServiceTest {
         // Nothing
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.participate(userName, activityId);
@@ -523,7 +523,7 @@ class ActivityServiceTest {
         activityRepository.save(activity);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.participate(userName, activityId);
@@ -551,7 +551,7 @@ class ActivityServiceTest {
         activityRepository.save(activity);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(false);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(false);
 
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.participate(userName, activityId);
@@ -580,7 +580,7 @@ class ActivityServiceTest {
         activityRepository.save(activity);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         activityService.removeParticipate(userName, activityId);
@@ -607,7 +607,7 @@ class ActivityServiceTest {
         // Nothing
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.removeParticipate(userName, activityId);
@@ -635,7 +635,7 @@ class ActivityServiceTest {
         activityRepository.save(activity);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         ThrowableAssert.ThrowingCallable action = () -> activityService.removeParticipate(userName, activityId);
@@ -659,7 +659,7 @@ class ActivityServiceTest {
         setupRepository(activityRepository, userName);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         calendar.set(2021, 1, 1, 0, 0);
@@ -683,7 +683,7 @@ class ActivityServiceTest {
         setupRepository(activityRepository, userName);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(false);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(false);
 
         // act
         calendar.set(2021, 1, 1, 0, 0);
@@ -707,7 +707,7 @@ class ActivityServiceTest {
         setupRepository(activityRepository, userName);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         calendar.set(2030, 1, 1, 0, 0);
@@ -732,7 +732,7 @@ class ActivityServiceTest {
         setupRepository(activityRepository, userName);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         calendar.set(2021, 1, 1, 0, 0);
@@ -756,7 +756,7 @@ class ActivityServiceTest {
         setupRepository(activityRepository, userName);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(false);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(false);
 
         // act
         calendar.set(2021, 1, 1, 0, 0);
@@ -780,7 +780,7 @@ class ActivityServiceTest {
         setupRepository(activityRepository, userName);
 
         // mock
-        when(memberManagementRepository.existsMembershipByHoaIDAndUsername(testHoaId, userName)).thenReturn(true);
+        when(memberManagementRepository.existsMembershipByHoaIdAndUsername(testHoaId, userName)).thenReturn(true);
 
         // act
         calendar.set(2010, 1, 1, 0, 0);

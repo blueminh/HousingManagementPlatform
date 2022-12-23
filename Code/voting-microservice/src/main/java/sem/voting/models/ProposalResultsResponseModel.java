@@ -3,6 +3,7 @@ package sem.voting.models;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
 import lombok.Data;
 import sem.voting.domain.proposal.Result;
 

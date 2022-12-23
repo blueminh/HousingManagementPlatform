@@ -16,8 +16,7 @@ public class ParticipationKey implements Serializable {
      * Constructor for ParticipationKey. This is used to represent a composite key
      *
      * @param activityId the unique activity id
-     *
-     * @param username the unique user id
+     * @param username   the unique user id
      */
     public ParticipationKey(int activityId, String username) {
         this.activityId = activityId;

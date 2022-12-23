@@ -1,7 +1,7 @@
 package sem.hoa.domain.activity;
 
 import org.springframework.stereotype.Service;
-import sem.hoa.domain.services.HOARepository;
+import sem.hoa.domain.services.HoaRepository;
 import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.domain.utils.Clock;
 import sem.hoa.models.ActivityResponseModel;
@@ -16,7 +16,7 @@ public class ActivityService {
     private final transient ActivityRepository activityRepository;
     private final transient ParticipationRepository participationRepository;
     private final transient MemberManagementRepository memberManagementRepository;
-    private final transient HOARepository hoaRepository;
+    private final transient HoaRepository hoaRepository;
     private final transient Clock clock;
 
     /**
@@ -29,7 +29,7 @@ public class ActivityService {
      * @param clock                      clock
      */
     public ActivityService(
-            ActivityRepository activityRepository, ParticipationRepository participationRepository, MemberManagementRepository memberManagementRepository, HOARepository hoaRepository, Clock clock
+            ActivityRepository activityRepository, ParticipationRepository participationRepository, MemberManagementRepository memberManagementRepository, HoaRepository hoaRepository, Clock clock
     ) {
         this.activityRepository = activityRepository;
         this.participationRepository = participationRepository;
@@ -42,8 +42,8 @@ public class ActivityService {
      * It tries to add an activity to the repository.
      *
      * @param hoaId hoa ID of the HOA the activity belongs to.
-     * @param date Date of the activity.
-     * @param desc Description of the Activity.
+     * @param date  Date of the activity.
+     * @param desc  Description of the Activity.
      * @throws Exception This exception is thrown if we try to add an Activity that already exists. (I'll have to check this again because we do not generate activity Id)
      */
     @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
@@ -62,7 +62,7 @@ public class ActivityService {
         Activity activity = new Activity(hoaId, name, date, desc, createdBy);
         if (!hoaRepository.existsById(hoaId)) {
             throw new NoSuchHOAException("No HOAs with the id " + hoaId + " exists!");
-        } else if (!memberManagementRepository.existsMembershipByHoaIDAndUsername(hoaId, createdBy)) {
+        } else if (!memberManagementRepository.existsMembershipByHoaIdAndUsername(hoaId, createdBy)) {
             throw new NoAccessToHoaException(createdBy + " is not a member of the HOA " + hoaId);
         } else if (!activityRepository.existsActivityByName(activity.getName())) {
             activityRepository.save(activity);
@@ -100,7 +100,7 @@ public class ActivityService {
         } else {
             Activity activity = activityRepository.findByActivityId(activityId).get();
             int hoaId = activity.getHoaId();
-            if (!memberManagementRepository.existsMembershipByHoaIDAndUsername(hoaId, requestBy)) {
+            if (!memberManagementRepository.existsMembershipByHoaIdAndUsername(hoaId, requestBy)) {
                 throw new NoAccessToHoaException(requestBy + " is not a member of the HOA " + hoaId);
             }
             if (!activity.getCreatedBy().equals(requestBy)) {
@@ -117,7 +117,6 @@ public class ActivityService {
      * Gets the specified activity from the database.
      *
      * @param activityName activity name of the activity to be fetched
-     *
      * @return the activity retrieved from the database
      * @throws Exception throws an exception if no such activity was found
      */
@@ -126,7 +125,7 @@ public class ActivityService {
         if (activityRepository.findActivityByName(activityName).isPresent()) {
             Activity activity = activityRepository.findActivityByName(activityName).get();
             int hoaId = activity.getHoaId();
-            if (!memberManagementRepository.existsMembershipByHoaIDAndUsername(hoaId, requestBy)) {
+            if (!memberManagementRepository.existsMembershipByHoaIdAndUsername(hoaId, requestBy)) {
                 throw new NoAccessToHoaException(requestBy + " is not a member of the HOA " + hoaId);
             }
             return activity;
@@ -139,7 +138,7 @@ public class ActivityService {
     /**
      * This service adds the userId and activityId to the Participation repository.
      *
-     * @param username the unique username
+     * @param username   the unique username
      * @param activityId the unique activity id
      */
     public void participate(String username, int activityId) throws Exception {
@@ -152,7 +151,7 @@ public class ActivityService {
         } else {
             Activity activity = activityRepository.findByActivityId(activityId).get();
             int hoaId = activity.getHoaId();
-            if (!memberManagementRepository.existsMembershipByHoaIDAndUsername(hoaId, username)) {
+            if (!memberManagementRepository.existsMembershipByHoaIdAndUsername(hoaId, username)) {
                 throw new NoAccessToHoaException(username + " cannot participate as they are not a member of the HOA that the activity is part of");
             }
             participationRepository.save(new Participation(activityId, username));
@@ -165,7 +164,7 @@ public class ActivityService {
     /**
      * This service removes the userId and activityId to the Participation repository.
      *
-     * @param username the unique username
+     * @param username   the unique username
      * @param activityId the unique activity id
      */
     public void removeParticipate(String username, int activityId) throws Exception {
@@ -195,7 +194,7 @@ public class ActivityService {
         if (activities.isEmpty()) {
             throw new NoSuchActivityException("There are no activities after the mentioned date");
         }
-        if (!memberManagementRepository.existsMembershipByHoaIDAndUsername(hoaId, username)) {
+        if (!memberManagementRepository.existsMembershipByHoaIdAndUsername(hoaId, username)) {
             throw new NoAccessToHoaException(username + " cannot participate as they are not a member of the HOA that the activity is part of");
         }
         ActivityResponseModel[] res = new ActivityResponseModel[activities.size()];
@@ -218,7 +217,7 @@ public class ActivityService {
         if (activities.isEmpty()) {
             throw new NoSuchActivityException("There are no activities before the mentioned date");
         }
-        if (!memberManagementRepository.existsMembershipByHoaIDAndUsername(hoaId, username)) {
+        if (!memberManagementRepository.existsMembershipByHoaIdAndUsername(hoaId, username)) {
             throw new NoAccessToHoaException(username + " cannot participate as they are not a member of the HOA that the activity is part of");
         }
         ActivityResponseModel[] res = new ActivityResponseModel[activities.size()];

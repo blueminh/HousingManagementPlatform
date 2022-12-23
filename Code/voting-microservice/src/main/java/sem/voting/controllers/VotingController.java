@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,16 +14,24 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import sem.voting.authentication.AuthManager;
+import sem.voting.communication.HoaCommunication;
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalHandlingService;
 import sem.voting.domain.proposal.ProposalStage;
+import sem.voting.domain.proposal.ProposalType;
 import sem.voting.domain.proposal.Result;
 import sem.voting.domain.proposal.Vote;
+import sem.voting.domain.services.implementations.AddOptionException;
+import sem.voting.domain.services.implementations.BoardElectionOptionValidationService;
 import sem.voting.domain.services.implementations.BoardElectionsVoteValidationService;
-import sem.voting.domain.services.implementations.BoardElectionsVotingRightsService;
+import sem.voting.domain.services.implementations.RuleChangesOptionValidationService;
 import sem.voting.domain.services.implementations.RuleChangesVoteValidationService;
-import sem.voting.domain.services.implementations.RuleChangesVotingRightsService;
+import sem.voting.domain.services.implementations.VotingException;
+import sem.voting.domain.services.validators.InvalidRequestException;
+import sem.voting.domain.services.validators.MemberIsBoardMemberValidator;
+import sem.voting.domain.services.validators.NoBoardElectionValidator;
+import sem.voting.domain.services.validators.Validator;
 import sem.voting.models.AddOptionRequestModel;
 import sem.voting.models.AddOptionResponseModel;
 import sem.voting.models.CastVoteRequestModel;
@@ -51,7 +60,8 @@ public class VotingController {
      * @param proposalHandlingService Service to handle proposals
      */
     @Autowired
-    public VotingController(AuthManager authManager, ProposalHandlingService proposalHandlingService) {
+    public VotingController(AuthManager authManager,
+                            ProposalHandlingService proposalHandlingService) {
         this.authManager = authManager;
         this.proposalHandlingService = proposalHandlingService;
     }
@@ -61,11 +71,12 @@ public class VotingController {
      *
      * @param request model of the request
      * @return 200 if creation is successful
-     *      400 if request is not complete
+     * 400 if request is not complete
      */
+    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     @PostMapping("/propose")
     public ResponseEntity<ProposalCreationResponseModel> addProposal(
-            @RequestBody ProposalCreationRequestModel request) {
+        @RequestBody ProposalCreationRequestModel request) {
         if (request == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -78,30 +89,59 @@ public class VotingController {
 
         // Build proposal
         Proposal toAdd = new Proposal();
-        toAdd.setVotingDeadline(deadline);
         toAdd.setHoaId(request.getHoaId());
-        if (request.getOptions() != null) {
-            for (String s : request.getOptions()) {
-                toAdd.addOption(new Option(s));
-            }
-        }
-        toAdd.setTitle(request.getTitle());
-        toAdd.setMotion(request.getMotion());
         switch (request.getType()) {
             case BoardElection: {
                 toAdd.setVoteValidationService(new BoardElectionsVoteValidationService());
-                toAdd.setVotingRightsService(new BoardElectionsVotingRightsService());
+                toAdd.setOptionValidationService(new BoardElectionOptionValidationService());
                 break;
             }
             case HoaRuleChange: {
                 toAdd.setVoteValidationService(new RuleChangesVoteValidationService());
-                toAdd.setVotingRightsService(new RuleChangesVotingRightsService());
+                toAdd.setOptionValidationService(new RuleChangesOptionValidationService());
                 break;
             }
             default: {
                 return ResponseEntity.badRequest().build();
             }
         }
+        toAdd.setVotingDeadline(deadline);
+        if (request.getOptions() != null) {
+            for (String s : request.getOptions()) {
+                try {
+                    toAdd.addOption(new Option(s), authManager.getUsername());
+                } catch (AddOptionException e) {
+                    System.out.println(e.getMessage());
+                    return ResponseEntity.badRequest().build();
+                }
+            }
+        }
+        toAdd.setTitle(request.getTitle());
+        toAdd.setMotion(request.getMotion());
+
+        // Validate Proposal
+        Validator validator = new NoBoardElectionValidator(proposalHandlingService);
+        try {
+            // board elections can be started by any user if there is no current board member
+            if (HoaCommunication.checkHoaHasBoard(authManager.getUsername(), request.getHoaId())
+                && request.getType() == ProposalType.BoardElection) {
+                validator.addLast(new MemberIsBoardMemberValidator());
+            } else if (request.getType() == ProposalType.BoardElection) {
+                System.out.println("HOA doesn't have a board.");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.err.println("Could not determine the number of HOA board members.");
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            validator.handle(authManager.getUsername(), null, toAdd);
+        } catch (InvalidRequestException ex) {
+            System.err.println(authManager.getUsername() + " does not have the rights to start a new proposal:");
+            System.err.println(ex.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+
         toAdd = proposalHandlingService.save(toAdd);
         ProposalCreationResponseModel response = new ProposalCreationResponseModel(toAdd.getProposalId());
         return ResponseEntity.ok(response);
@@ -112,13 +152,13 @@ public class VotingController {
      *
      * @param request model of the request
      * @return 200 and the model of the response if everything went good
-     *      404 if the proposal was not found
-     *      409 if the option could not be added
-     *      401 otherwise
+     * 404 if the proposal was not found
+     * 409 if the option could not be added
+     * 401 otherwise
      */
     @PostMapping("/add-option")
     public ResponseEntity<AddOptionResponseModel> addOption(
-            @RequestBody AddOptionRequestModel request) {
+        @RequestBody AddOptionRequestModel request) {
         if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
             return ResponseEntity.badRequest().build();
         }
@@ -131,14 +171,15 @@ public class VotingController {
         AddOptionResponseModel response = new AddOptionResponseModel();
         response.setProposalId(proposal.get().getProposalId());
         response.setHoaId(proposal.get().getHoaId());
-        // ToDo: check validity of new option, either here or in Proposal
-        boolean added = proposal.get().addOption(new Option(request.getOption()));
+        try {
+            proposal.get().addOption(new Option(request.getOption()), authManager.getUsername());
+        } catch (AddOptionException e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
         proposal = Optional.of(proposalHandlingService.save(proposal.get()));
         response.setOptions(proposal.get().getAvailableOptions().stream()
-                .map(Option::toString).collect(Collectors.toList()));
-        if (!added) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-        }
+            .map(Option::toString).collect(Collectors.toList()));
         return ResponseEntity.ok(response);
     }
 
@@ -146,17 +187,25 @@ public class VotingController {
      * Endpoint to start voting on a proposal.
      *
      * @return 200 if transition was possible,
-     *      404 if the proposal was not found,
-     *      409 if the transition was not possible,
-     *      400 otherwise
+     * 404 if the proposal was not found,
+     * 409 if the transition was not possible,
+     * 400 otherwise
      */
     @PostMapping("/start")
     public ResponseEntity<ProposalStartVotingResponseModel> beginVoting(
-            @RequestBody ProposalGenericRequestModel request) {
+        @RequestBody ProposalGenericRequestModel request) {
         if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
             return ResponseEntity.badRequest().build();
         }
-        // ToDo: check if authentication and HOA are valid
+        try {
+            if (!HoaCommunication.checkUserIsBoardMember(authManager.getUsername(), request.getHoaId())) {
+                System.out.println("User is not a board member.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        } catch (Exception e) {
+            System.out.println("Cannot find if user " + authManager.getUsername() + " is a board member of HOA " + request.getHoaId());
+            return ResponseEntity.badRequest().build();
+        }
 
         Optional<Proposal> proposal = proposalHandlingService.getProposalById(request.getProposalId());
         if (proposal.isEmpty()) {
@@ -179,15 +228,16 @@ public class VotingController {
      *
      * @param request model of the request
      * @return 200 if it was possible to cast the vote,
-     *      404 if the proposal was not found,
-     *      401 if the user is not authorized to vote,
-     *      400 otherwise.
-     *      The response contains the information on the proposal being edited.
+     * 404 if the proposal was not found,
+     * 401 if the user is not authorized to vote,
+     * 400 otherwise.
+     * The response contains the information on the proposal being edited.
      */
     @PostMapping("/vote")
     public ResponseEntity<ProposalInformationResponseModel> castVote(
-            @RequestBody CastVoteRequestModel request) {
+        @RequestBody CastVoteRequestModel request) {
         if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
+
             return ResponseEntity.badRequest().build();
         }
         // ToDo: check if authentication and HOA are valid
@@ -197,12 +247,20 @@ public class VotingController {
             return ResponseEntity.notFound().build();
         }
         Option beingVoted = request.getOption().equals("") ? null : new Option(request.getOption());
-        Vote vote = new Vote(request.getUsername(), beingVoted);
-        if (!proposal.get().addVote(vote)) {
-            // Proposal needs to be saved because even if Vote wasn't successful, the status might have changed.
-            proposalHandlingService.save(proposal.get());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ProposalInformationResponseModel(proposal.get()));
+        Vote vote = new Vote(authManager.getUsername(), beingVoted);
+
+
+        try {
+            if (!proposal.get().addVote(vote)) {
+                // Proposal needs to be saved because even if Vote wasn't successful, the status might have changed.
+                proposalHandlingService.save(proposal.get());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProposalInformationResponseModel(proposal.get()));
+            }
+        } catch (VotingException e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+
         proposalHandlingService.save(proposal.get());
         return ResponseEntity.ok(new ProposalInformationResponseModel(proposal.get()));
     }
@@ -215,7 +273,7 @@ public class VotingController {
      */
     @PostMapping("/remove-vote")
     public ResponseEntity<ProposalInformationResponseModel> removeVote(
-            @RequestBody CastVoteRequestModel request) {
+        @RequestBody CastVoteRequestModel request) {
         request.setOption("");
         return castVote(request);
     }
@@ -225,12 +283,12 @@ public class VotingController {
      *
      * @param request model of the request
      * @return 200 if the results were computed correctly,
-     *      404 if the proposal was not found,
-     *      400 otherwise
+     * 404 if the proposal was not found,
+     * 400 otherwise
      */
     @PostMapping("/results")
     public ResponseEntity<ProposalResultsResponseModel> getResults(
-            @RequestBody ProposalGenericRequestModel request) {
+        @RequestBody ProposalGenericRequestModel request) {
         if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
             return ResponseEntity.badRequest().build();
         }
@@ -257,11 +315,11 @@ public class VotingController {
      *
      * @param request model of the request
      * @return 200 if the request is valid,
-     *      400 otherwise
+     * 400 otherwise
      */
     @PostMapping("/active")
     public ResponseEntity<List<ProposalInformationResponseModel>> listActiveProposals(
-            @RequestBody ProposalInfoRequestModel request) {
+        @RequestBody ProposalInfoRequestModel request) {
         if (request == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -279,11 +337,11 @@ public class VotingController {
      *
      * @param request model of the request
      * @return 200 if the request is valid,
-     *      400 otherwise
+     * 400 otherwise
      */
     @PostMapping("/history")
     public ResponseEntity<List<ProposalHistoryResponseModel>> listExpiredProposals(
-            @RequestBody ProposalInfoRequestModel request) {
+        @RequestBody ProposalInfoRequestModel request) {
         if (request == null) {
             return ResponseEntity.badRequest().build();
         }

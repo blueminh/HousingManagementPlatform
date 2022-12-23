@@ -1,12 +1,13 @@
 package sem.hoa.domain.services;
 
 import org.springframework.stereotype.Service;
-import sem.hoa.domain.entities.HOA;
+import sem.hoa.domain.entities.Hoa;
 import sem.hoa.domain.entities.Membership;
-import sem.hoa.domain.entities.MembershipID;
+import sem.hoa.domain.entities.MembershipId;
 import sem.hoa.exceptions.HoaJoiningException;
 
-import javax.swing.text.html.Option;
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,7 +20,7 @@ public class MemberManagementService {
     }
 
     /**
-     * When a user joins a HOA, adds a new membership entry to the database.
+     * When a user joins a Hoa, adds a new membership entry to the database.
      */
     public void addMembership(Membership membership) throws HoaJoiningException {
         try {
@@ -30,12 +31,12 @@ public class MemberManagementService {
     }
 
     /**
-     * When a user leaves a HOA, remove the membership entry from the database.
+     * When a user leaves a Hoa, remove the membership entry from the database.
      *
-     * @param membershipID the membershipID consists of username and hoaID
+     * @param membershipId the membershipId consists of username and hoaID
      */
-    public void removeMembership(MembershipID membershipID) throws Exception {
-        Optional<Membership> toBeRemoved = findByUsernameAndHoaID(membershipID.getUsername(), membershipID.getHoaID());
+    public void removeMembership(MembershipId membershipId) throws Exception {
+        Optional<Membership> toBeRemoved = findByUsernameAndHoaId(membershipId.getUsername(), membershipId.getHoaId());
         if (toBeRemoved.isPresent()) {
             memberManagementRepository.delete(toBeRemoved.get());
         } else {
@@ -43,21 +44,48 @@ public class MemberManagementService {
         }
     }
 
+    public Optional<Membership> findByUsernameAndHoaId(String username, int hoaId) {
+        return memberManagementRepository.findById(new MembershipId(username, hoaId));
+    }
+
     /**
-     * A user can create his/her own HOA.
+     * Find all board members of an HOA.
      *
-     * @param hoa the new HOA
+     * @param hoaId id of the hoa
+     * @return list of memberships for all the board members.
      */
-    public void createHOA(HOA hoa) {
+    public List<Membership> findBoardMembersByHoaId(int hoaId) {
+        return memberManagementRepository.findByHoaIdAndIsBoardMemberIsTrue(hoaId);
     }
 
-    // TODO: these methods are related to the voting system
-
-    public Optional<Membership> findByUsernameAndHoaID(String username, int hoaID) {
-        return memberManagementRepository.findById(new MembershipID(username, hoaID));
-    }
-
-    public boolean addressCheck(HOA hoa, Membership membership) {
+    public boolean addressCheck(Hoa hoa, Membership membership) {
         return hoa.getCountry().equals(membership.getCountry()) && hoa.getCity().equals(membership.getCity());
     }
+
+    /**
+     * Find the ID of the Hoa of which this user is a board-member.
+     *
+     * @param username username
+     * @return the ID of the Hoa or -1 if user is not a board member of any HOAs
+     */
+    public Integer isBoardMemberOf(String username) {
+        List<Membership> membership = memberManagementRepository.findByUsernameAndIsBoardMemberIsTrue(username);
+        if (membership.isEmpty()) {
+            return -1;
+        }
+        return membership.get(0).getHoaId();
+    }
+
+    /**
+     * Check if at least one member can be on the board.
+     *
+     * @param hoaId hoa ID
+     * @return true if at least one member has been in the HOA for more than 3 years.
+     */
+    public boolean hasPossibleBoardCandidates(int hoaId) {
+        final long yearInSeconds = 365 * 24 * 60 * 60;
+        return memberManagementRepository.existsByHoaIdAndJoiningDateLessThanEqual(hoaId,
+                Instant.now().minusSeconds(yearInSeconds * 3).getEpochSecond());
+    }
+
 }

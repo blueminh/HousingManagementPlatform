@@ -4,20 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 
 @EqualsAndHashCode
-@AllArgsConstructor
 @NoArgsConstructor
-public class MembershipID implements Serializable {
-    private static final long serialVersionUID = 0L;
+@AllArgsConstructor
+public class MembershipId implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    @EqualsAndHashCode.Include
     @Getter
+    @Setter
     private String username;
 
-    @EqualsAndHashCode.Include
     @Getter
-    private int hoaID;
+    @Setter
+    private int hoaId;
 }

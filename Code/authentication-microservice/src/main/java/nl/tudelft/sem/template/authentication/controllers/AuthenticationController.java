@@ -60,13 +60,13 @@ public class AuthenticationController {
      */
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponseModel> authenticate(@RequestBody AuthenticationRequestModel request)
-            throws Exception {
+        throws Exception {
 
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getNetId(),
-                            request.getPassword()));
+                new UsernamePasswordAuthenticationToken(
+                    request.getNetId(),
+                    request.getPassword()));
         } catch (DisabledException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "USER_DISABLED", e);
         } catch (BadCredentialsException e) {

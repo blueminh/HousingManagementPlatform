@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import sem.hoa.authentication.AuthManager;
-import sem.hoa.domain.entities.HOA;
+import sem.hoa.domain.entities.Hoa;
 import sem.hoa.domain.entities.Rule;
-import sem.hoa.domain.services.HOAService;
+import sem.hoa.domain.services.HoaService;
 import sem.hoa.domain.services.RuleService;
 import sem.hoa.dtos.rulemodels.AddRuleRequestModel;
 import sem.hoa.dtos.rulemodels.AddRuleResponseModel;
@@ -28,7 +28,7 @@ public class RuleController {
 
     private final transient AuthManager authManager;
     private final transient RuleService ruleService;
-    private final transient HOAService hoaService;
+    private final transient HoaService hoaService;
 
     /**
      * Constructor of the controller.
@@ -38,18 +38,18 @@ public class RuleController {
      * @param hoaService the service for hoa
      */
     @Autowired
-    public RuleController(AuthManager authManager, RuleService ruleService, HOAService hoaService) {
+    public RuleController(AuthManager authManager, RuleService ruleService, HoaService hoaService) {
         this.authManager = authManager;
         this.ruleService = ruleService;
         this.hoaService = hoaService;
     }
 
     /**
-     * Endpoint to display all the rules of an HOA.
+     * Endpoint to display all the rules of an Hoa.
      *
      * @param request model of the request
-     * @return 200 if the HOA was found
-     *      404 if the HOA was not found
+     * @return 200 if the Hoa was found
+     *      404 if the Hoa was not found
      *      400 otherwise
      *      The response contains a list of the rules
      */
@@ -58,7 +58,7 @@ public class RuleController {
         if (request == null) {
             return ResponseEntity.notFound().build();
         }
-        Optional<HOA> hoa = hoaService.findHOAByID(request.getHoaId());
+        Optional<Hoa> hoa = hoaService.findHoaById(request.getHoaId());
         if (hoa.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -70,20 +70,20 @@ public class RuleController {
     }
 
     /**
-     * Endpoint to add a rule to an HOA.
+     * Endpoint to add a rule to an Hoa.
      *
      * @param request model of the request
      * @return 200 if the rule was successfully added
-     *      404 if the HOA was not found
+     *      404 if the Hoa was not found
      *      400 otherwise
-     *      The response contains the id of the HOA and the list of rules
+     *      The response contains the id of the Hoa and the list of rules
      */
     @PostMapping("/add-rule")
     public ResponseEntity<AddRuleResponseModel> addRule(@RequestBody AddRuleRequestModel request) {
         if (request == null) {
             return ResponseEntity.badRequest().build();
         }
-        Optional<HOA> hoa = hoaService.findHOAByID(request.getHoaId());
+        Optional<Hoa> hoa = hoaService.findHoaById(request.getHoaId());
         if (hoa.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -98,7 +98,7 @@ public class RuleController {
     }
 
     /**
-     * Endpoint to change a rule in an HOA.
+     * Endpoint to change a rule in an Hoa.
      *
      * @param request model of the request
      *
@@ -138,7 +138,8 @@ public class RuleController {
             return ResponseEntity.badRequest().build();
         }
         Optional<Rule> rule = ruleService.findRuleById(request.getRuleId());
-        if (rule.isEmpty()) {
+        Optional<Hoa> hoa = hoaService.findHoaById(request.getHoaId());
+        if (rule.isEmpty() || hoa.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         ruleService.removeRuleById(request.getRuleId());

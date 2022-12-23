@@ -1,26 +1,27 @@
 package sem.hoa.domain.services;
 
 import org.springframework.stereotype.Service;
-import sem.hoa.domain.entities.HOA;
+import sem.hoa.domain.entities.Hoa;
 import sem.hoa.dtos.HoaModifyDTO;
 import sem.hoa.exceptions.HoaCreationException;
 
 import java.util.Optional;
 
 @Service
-public class HOAService {
-    private final transient HOARepository hoaRepository;
+public class HoaService {
+    private final transient HoaRepository hoaRepository;
 
-    public HOAService(HOARepository hoaRepository) {
+    public HoaService(HoaRepository hoaRepository) {
         this.hoaRepository = hoaRepository;
     }
 
     /**
-    * Adds the given HOA to the HOA repository.
-    *
-    * @param hoa = hoa to be added to the repository
-    */
-    public void createNewHOA(HOA hoa) throws HoaCreationException {
+     * Adds the given HOA to the HOA repository.
+     *
+     * @param hoa = hoa to be added to the repository
+     */
+    public void createNewHOA(Hoa hoa) throws HoaCreationException {
+        // TODO do some checks here
         try {
             if (!hoaRepository.findByHoaName(hoa.getHoaName()).isEmpty()) {
                 throw new HoaCreationException("HOA already exists");
@@ -33,13 +34,12 @@ public class HOAService {
         }
     }
 
-
-    public Optional<HOA> findHOAByName(String hoaName) {
+    public Optional<Hoa> findHoaByName(String hoaName) {
         return hoaRepository.findByHoaName(hoaName);
     }
 
-    public Optional<HOA> findHOAByID(int hoaID) {
-        return hoaRepository.findById(hoaID);
+    public Optional<Hoa> findHoaById(int hoaId) {
+        return hoaRepository.findById(hoaId);
     }
 
     public boolean hoaExistsByName(String hoaName) {
@@ -56,13 +56,13 @@ public class HOAService {
 
         //Checks if strings are null
         if (request.hoaName == null || request.userCity == null || request.userCountry == null
-                || request.userStreet == null || request.userPostalCode == null) {
+            || request.userStreet == null || request.userPostalCode == null) {
             System.err.println("one or more fields Invalid(null)");
             throw new Exception("Fields can not be Invalid(null)");
         }
         //checks if variables are valid
         if (request.hoaName.isBlank() || request.userCity.isBlank() || request.userCountry.isBlank()
-                || request.userStreet.isBlank() || request.userPostalCode.isBlank()) {
+            || request.userStreet.isBlank() || request.userPostalCode.isBlank()) {
             System.err.println("one or more fields were Empty");
             throw new Exception("Fields can not be Empty");
         }

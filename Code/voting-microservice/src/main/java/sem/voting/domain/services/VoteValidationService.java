@@ -1,6 +1,7 @@
 package sem.voting.domain.services;
 
 import java.io.Serializable;
+
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.Vote;
 

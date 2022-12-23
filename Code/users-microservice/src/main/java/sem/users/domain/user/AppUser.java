@@ -40,7 +40,6 @@ public class AppUser extends HasEvents {
     private FullName fullname;
 
 
-
     /**
      * Create new application user.
      *

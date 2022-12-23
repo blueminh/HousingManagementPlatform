@@ -60,14 +60,14 @@ public class JwtRequestFilterTests {
         String user = "user123";
         when(mockRequest.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(mockJwtTokenVerifier.validateToken(token)).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
+        when(mockJwtTokenVerifier.getUsernameFromToken(token)).thenReturn(user);
 
         // Act
         jwtRequestFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication().getName())
-                .isEqualTo(user);
+            .isEqualTo(user);
     }
 
     @Test
@@ -77,14 +77,14 @@ public class JwtRequestFilterTests {
         String user = "user123";
         when(mockRequest.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(mockJwtTokenVerifier.validateToken(token)).thenReturn(false);
-        when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
+        when(mockJwtTokenVerifier.getUsernameFromToken(token)).thenReturn(user);
 
         // Act
         jwtRequestFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
     }
 
     /**
@@ -95,27 +95,27 @@ public class JwtRequestFilterTests {
     @ParameterizedTest
     @MethodSource("tokenVerificationExceptionGenerator")
     public void tokenVerificationException(Class<? extends Throwable> throwable)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         // Arrange
         String token = "randomtoken123";
         String user = "user123";
         when(mockRequest.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(mockJwtTokenVerifier.validateToken(token)).thenThrow(throwable);
-        when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
+        when(mockJwtTokenVerifier.getUsernameFromToken(token)).thenReturn(user);
 
         // Act
         jwtRequestFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
     }
 
     private static Stream<Arguments> tokenVerificationExceptionGenerator() {
         return Stream.of(
-                Arguments.of(ExpiredJwtException.class),
-                Arguments.of(IllegalArgumentException.class),
-                Arguments.of(JwtException.class)
+            Arguments.of(ExpiredJwtException.class),
+            Arguments.of(IllegalArgumentException.class),
+            Arguments.of(JwtException.class)
 
         );
     }
@@ -130,7 +130,7 @@ public class JwtRequestFilterTests {
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
     }
 
     @Test
@@ -140,14 +140,14 @@ public class JwtRequestFilterTests {
         String user = "user123";
         when(mockRequest.getHeader("Authorization")).thenReturn("Bearer1 " + token);
         when(mockJwtTokenVerifier.validateToken(token)).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
+        when(mockJwtTokenVerifier.getUsernameFromToken(token)).thenReturn(user);
 
         // Act
         jwtRequestFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
     }
 
     @Test
@@ -157,13 +157,13 @@ public class JwtRequestFilterTests {
         String user = "user123";
         when(mockRequest.getHeader("Authorization")).thenReturn(token);
         when(mockJwtTokenVerifier.validateToken(token)).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
+        when(mockJwtTokenVerifier.getUsernameFromToken(token)).thenReturn(user);
 
         // Act
         jwtRequestFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);
 
         // Assert
         assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isNull();
+            .isNull();
     }
 }
