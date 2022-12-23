@@ -424,7 +424,7 @@ public class HoaControllerTests {
     }
 
     /**
-     * Leave an existing HOA, which user is not a part of
+     * Leave an existing HOA, which user is not a part of.
      */
     @Test
     public void leaveWrongHoa() throws Exception {
