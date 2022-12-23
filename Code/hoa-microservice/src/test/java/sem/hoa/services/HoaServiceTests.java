@@ -6,14 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import sem.hoa.authentication.AuthManager;
-import sem.hoa.authentication.JwtTokenVerifier;
-import sem.hoa.domain.entities.HOA;
-import sem.hoa.domain.services.HOARepository;
-import sem.hoa.domain.services.HOAService;
+import sem.hoa.domain.entities.Hoa;
+import sem.hoa.domain.services.HoaRepository;
+import sem.hoa.domain.services.HoaService;
 import sem.hoa.exceptions.HoaCreationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,10 +23,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class HoaServiceTests {
 
     @Autowired
-    private transient HOAService hoaServiceMock;
+    private transient HoaService hoaServiceMock;
 
     @Autowired
-    private transient HOARepository hoaRepoMock;
+    private transient HoaRepository hoaRepoMock;
 
     /**
      *  tests the normal behaviour of the service related
@@ -39,7 +35,7 @@ public class HoaServiceTests {
      */
     @Test
     public void createService() throws Exception {
-        HOA hoaT = new HOA("name", "country", "city");
+        Hoa hoaT = new Hoa("name", "country", "city");
         hoaServiceMock.createNewHOA(hoaT);
         assertThat(hoaRepoMock.findByHoaName(hoaT.getHoaName())).isPresent();
     }
@@ -51,9 +47,9 @@ public class HoaServiceTests {
      */
     @Test
     public void createServiceDup() throws Exception {
-        HOA hoaT = new HOA("name", "country", "city");
+        Hoa hoaT = new Hoa("name", "country", "city");
         hoaServiceMock.createNewHOA(hoaT);
-        HOA hoaD = new HOA("name", "diffCountry", "diffCity");
+        Hoa hoaD = new Hoa("name", "diffCountry", "diffCity");
 
         assertThatThrownBy(() -> hoaServiceMock.createNewHOA(hoaD))
                 .isInstanceOf(HoaCreationException.class);
