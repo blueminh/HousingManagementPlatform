@@ -21,6 +21,8 @@ public interface ActivityRepository extends JpaRepository<Activity, Integer> {
 
     boolean existsActivityByName(String name);
 
+    boolean existsActivityByNameAndHoaId(String name, int hoaId);
+
     boolean existsActivityByDateAfterAndHoaId(Date date, int hoaId);
 
     boolean existsActivityByDateBeforeAndHoaId(Date date, int hoaId);

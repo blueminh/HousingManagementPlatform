@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -414,6 +415,7 @@ public class IntegrationTests {
 
         when(mockPasswordEncoder.hash(newTestPassword)).thenReturn(new HashedPassword("hash"));
         when(mockPasswordEncoder.hash(currentTestPassword)).thenReturn(new HashedPassword("password123"));
+        when(mockAuthenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(BadCredentialsException.class);
         AppUser existingAppUser = new AppUser(testUsername, existingTestPassword, testFullName);
         userRepository.save(existingAppUser);
 

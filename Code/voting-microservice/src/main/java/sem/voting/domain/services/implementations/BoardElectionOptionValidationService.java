@@ -26,8 +26,7 @@ public class BoardElectionOptionValidationService implements OptionValidationSer
         validator.addLast(new MemberIsNotBoardMemberOfAnyHoaValidator());
         validator.addLast(new BoardMemberForLess10YearsValidator());
         try {
-            if (HoaCommunication.checkHoaHasBoard(userId, proposal.getHoaId())
-                    && HoaCommunication.checkHoaHasPossibleCandidates(userId, proposal.getHoaId())) {
+            if (HoaCommunication.checkHoaHasPossibleCandidates(userId, proposal.getHoaId())) {
                 // Limit of member longevity cannot apply on new HOAs
                 validator.addLast(new UserIsMemberForAtLeast3YearsValidator());
             }

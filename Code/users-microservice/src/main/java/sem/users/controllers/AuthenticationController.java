@@ -93,13 +93,21 @@ public class AuthenticationController {
     public ResponseEntity changePassword(@RequestBody ChangeUserInfoRequestModel request) {
 
         try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()));
+        } catch (DisabledException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "USER_DISABLED", e);
+        } catch (BadCredentialsException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", e);
+        }
+        try {
             registrationService.changePassword(new Username(request.getUsername()), new Password(request.getPassword()), new Password(request.getNewAttribute()));
         } catch (InvalidParameterException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "USER NOT FOUND", e);
-        } catch (BadCredentialsException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", e);
         }
 
         return ResponseEntity.ok().build();

@@ -28,15 +28,15 @@ public class ProposalHandlingService {
      *
      * @param proposalId Id of the proposal
      * @param hoaId      Id of the HOA
-     * @return true if the proposal refers to the HOA
+     * @return The correct proposal
      */
-    public boolean checkHoa(int proposalId, int hoaId) {
+    public Proposal checkHoa(int proposalId, int hoaId) {
         // ToDo check with the service if all permissions are satisfied
         Proposal p = proposalRepository.findById(proposalId).orElseGet(null);
         if (p == null) {
-            return false;
+            return null;
         }
-        return p.getHoaId() == hoaId;
+        return p.getHoaId() == hoaId ? p : null;
     }
 
     /**

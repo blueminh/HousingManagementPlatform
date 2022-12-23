@@ -11,6 +11,7 @@ import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import lombok.Getter;
@@ -28,9 +29,10 @@ import sem.voting.domain.services.implementations.VotingException;
 @NoArgsConstructor
 public class Proposal {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     @Getter
+    @Setter
     private int proposalId;
 
     @Getter
@@ -64,7 +66,7 @@ public class Proposal {
     @ElementCollection
     @Convert(converter = OptionAttributeConverter.class)
     @Getter
-    private Set<Option> availableOptions = new HashSet<>();
+    protected Set<Option> availableOptions = new HashSet<>();
 
     @ElementCollection
     @Convert(converter = OptionAttributeConverter.class, attributeName = "value")
@@ -138,7 +140,6 @@ public class Proposal {
     public boolean addOption(Option newOption, String userId) throws AddOptionException {
         checkDeadline();
         if (this.status != ProposalStage.UnderConstruction) {
-            // I'm not sure if Applying is the right word here
             throw new AddOptionException("Proposal is not accepting new options");
         }
 
