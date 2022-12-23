@@ -16,6 +16,7 @@ import sem.hoa.authentication.AuthManager;
 import sem.hoa.authentication.JwtTokenVerifier;
 import sem.hoa.domain.entities.Hoa;
 import sem.hoa.domain.entities.Membership;
+import sem.hoa.domain.entities.MembershipId;
 import sem.hoa.domain.services.HoaRepository;
 import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.domain.services.MemberManagementService;
@@ -28,6 +29,7 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -424,6 +426,77 @@ public class MemberControllerTest {
             response = resultActions.andReturn().getResponse().getContentAsString();
             String beginningOfTime = Date.from(Instant.ofEpochMilli(0)).toString();
             assertThat(response).isEqualTo(beginningOfTime);
+        } catch (Exception e) {
+            fail("Exception when making request");
+        }
+    }
+
+    @Test
+    public void update_user_role_ok() {
+        long currentTime = new Date().getTime();
+        final Membership membership1 = memberManagementRepository.save(new Membership(userName, hoa.getId(),
+            true, "country1", "city1", "street1", 1, "postal1", currentTime, currentTime));
+
+        final Membership membership2 = memberManagementRepository.save(new Membership("user2", hoa.getId(),
+            false, "country1", "city1", "street1", 2, "postal1", currentTime, -1L));
+
+        final Membership membership3 = memberManagementRepository.save(new Membership("user3", hoa.getId(),
+            false, "country1", "city1", "street1", 3, "postal1", currentTime, -1L));
+
+        try {
+            ResultActions resultActions = mockMvc.perform(post("/member/updateRole")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("toBeUpdated", "user2")
+                .param("hoaId", hoa.getId() + "")
+                .param("isBoardMember", "true")
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isOk());
+            Membership membership = memberManagementRepository.findById(new MembershipId("user2", 1)).get();
+            assertThat(membership.isBoardMember()).isTrue();
+            assertThat(membership.getJoiningBoardDate()).isNotEqualTo(-1L);
+        } catch (Exception e) {
+            fail("Exception when making request");
+        }
+    }
+
+    @Test
+    public void update_user_role_fail() {
+        long currentTime = new Date().getTime();
+        final Membership membership1 = memberManagementRepository.save(new Membership(userName, hoa.getId(),
+            false, "country1", "city1", "street1", 1, "postal1", currentTime, -1L));
+
+        final Membership membership2 = memberManagementRepository.save(new Membership("user2", hoa.getId(),
+            true, "country1", "city1", "street1", 2, "postal1", currentTime, currentTime));
+
+        final Membership membership3 = memberManagementRepository.save(new Membership("user3", 2,
+            false, "country1", "city1", "street1", 3, "postal1", currentTime, -1L));
+
+        try {
+            ResultActions resultActions = mockMvc.perform(post("/member/updateRole")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("toBeUpdated", "user2")
+                .param("hoaId", hoa.getId() + "")
+                .param("isBoardMember", "true")
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isBadRequest());
+            String response = resultActions.andReturn().getResponse().getContentAsString();
+            assertThat(response).isEqualTo("This user does not have the rights to update role of another user");
+
+
+            when(mockAuthenticationManager.getUsername()).thenReturn("user2");
+            resultActions = mockMvc.perform(post("/member/updateRole")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("toBeUpdated", "user3")
+                .param("hoaId", hoa.getId() + "")
+                .param("isBoardMember", "true")
+                .header("Authorization", "Bearer MockedToken"));
+
+            resultActions.andExpect(status().isBadRequest());
+            response = resultActions.andReturn().getResponse().getContentAsString();
+            assertThat(response).isEqualTo("User to be updated is not in this HOA");
+
         } catch (Exception e) {
             fail("Exception when making request");
         }
