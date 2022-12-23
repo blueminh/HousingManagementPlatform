@@ -54,7 +54,6 @@ import sem.voting.models.ProposalCreationResponseModel;
 @ActiveProfiles({"test",
         "mockTokenVerifier",
         "mockAuthenticationManager",
-        "mockProposalRepository",
         "mockProposalHandling"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
@@ -67,9 +66,6 @@ class VotingControllerTest {
 
     @Autowired
     private transient AuthManager mockAuthenticationManager;
-
-    @Autowired
-    private transient ProposalRepository proposalRepository;
 
     @Autowired
     private ProposalHandlingService proposalHandlingService;
@@ -109,7 +105,7 @@ class VotingControllerTest {
         returned.setTitle(model.getTitle());
         final int testProposalId = 3;
         returned.setProposalId(testProposalId);
-        when(proposalRepository.save(any(Proposal.class))).thenReturn(returned);
+        when(proposalHandlingService.save(any(Proposal.class))).thenReturn(returned);
 
         try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
             com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
@@ -265,7 +261,7 @@ class VotingControllerTest {
         returned.setTitle(model.getTitle());
         final int testProposalId = 3;
         returned.setProposalId(testProposalId);
-        when(proposalRepository.save(any(Proposal.class))).thenReturn(returned);
+        when(proposalHandlingService.save(any(Proposal.class))).thenReturn(returned);
 
         try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
             com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
