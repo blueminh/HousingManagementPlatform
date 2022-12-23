@@ -1,5 +1,6 @@
 package sem.hoa.dtos.rulemodels;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import sem.hoa.domain.entities.Rule;
 
@@ -10,6 +11,7 @@ import java.util.List;
  * Model that represents a response to adding a new rule to an HOA.
  */
 @Data
+@JsonIgnoreProperties
 public class AddRuleResponseModel {
 
     private int hoaId;
