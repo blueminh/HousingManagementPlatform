@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import sem.hoa.domain.notifications.NotificationService;
-import sem.hoa.dtos.NotificationRequestModel;
+import sem.hoa.models.NotificationRequestModel;
 import sem.hoa.models.NotificationResponseModel;
 
 import java.util.List;
