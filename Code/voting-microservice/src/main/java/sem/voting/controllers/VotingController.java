@@ -162,7 +162,6 @@ public class VotingController {
         if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
             return ResponseEntity.badRequest().build();
         }
-        // ToDo: check if authentication and HOA are valid
 
         Optional<Proposal> proposal = proposalHandlingService.getProposalById(request.getProposalId());
         if (proposal.isEmpty()) {

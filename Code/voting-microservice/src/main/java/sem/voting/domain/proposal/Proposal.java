@@ -66,7 +66,7 @@ public class Proposal {
     @ElementCollection
     @Convert(converter = OptionAttributeConverter.class)
     @Getter
-    private Set<Option> availableOptions = new HashSet<>();
+    protected Set<Option> availableOptions = new HashSet<>();
 
     @ElementCollection
     @Convert(converter = OptionAttributeConverter.class, attributeName = "value")

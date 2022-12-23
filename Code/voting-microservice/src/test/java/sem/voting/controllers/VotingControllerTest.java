@@ -11,6 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.sql.Date;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,10 +38,13 @@ import sem.voting.domain.proposal.ProposalHandlingService;
 import sem.voting.domain.proposal.ProposalRepository;
 import sem.voting.domain.proposal.ProposalType;
 import sem.voting.domain.services.OptionValidationService;
+import sem.voting.domain.services.implementations.AddOptionException;
 import sem.voting.domain.services.implementations.BoardElectionOptionValidationService;
 import sem.voting.domain.services.implementations.BoardElectionsVoteValidationService;
 import sem.voting.domain.services.implementations.RuleChangesVoteValidationService;
 import sem.voting.integration.utils.JsonUtil;
+import sem.voting.models.AddOptionRequestModel;
+import sem.voting.models.AddOptionResponseModel;
 import sem.voting.models.ProposalCreationRequestModel;
 import sem.voting.models.ProposalCreationResponseModel;
 
@@ -68,6 +73,12 @@ class VotingControllerTest {
 
     @Autowired
     private ProposalHandlingService proposalHandlingService;
+
+    private class TestProposal extends Proposal {
+        public void setOptions(Set<Option> newOptions) {
+            this.availableOptions = newOptions;
+        }
+    }
 
     @Test
     void addProposalBoardMember() throws Exception {
@@ -379,6 +390,138 @@ class VotingControllerTest {
 
             // Assert
             resultActions.andExpect(status().isBadRequest());
+        }
+    }
+
+    @Test
+    void addProposalNullRequest() throws Exception {
+        // Arrange
+        final String userName = "ExampleUser";
+        final int testHoaId = 0;
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/propose")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(null)));
+
+        // Assert
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void addProposalInvalidOption() throws Exception {
+        // Arrange
+        final String userName = "ExampleUser";
+        final int testHoaId = 0;
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
+        final String testTitle = "New Amazing Board Members";
+        final String testMotion = "Choose!";
+        final long weekInSeconds = 7 * 24 * 60 * 60;
+        final ProposalType testType = ProposalType.BoardElection;
+
+        ProposalCreationRequestModel model = new ProposalCreationRequestModel();
+        model.setTitle(testTitle);
+        model.setMotion(testMotion);
+        model.setDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
+        model.setHoaId(testHoaId);
+        model.setType(testType);
+        model.setOptions(List.of("anotherUser"));
+
+        try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
+            com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
+                    .thenReturn(true);
+            com.when(() -> HoaCommunication.checkHoaHasBoard(userName, testHoaId))
+                    .thenReturn(true);
+
+            // Act
+            ResultActions resultActions = mockMvc.perform(post("/propose")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", "Bearer MockedToken")
+                    .content(JsonUtil.serialize(model)));
+
+            // Assert
+            resultActions.andExpect(status().isBadRequest());
+        }
+    }
+
+    @Test
+    void addOptionOk() throws Exception {
+        // Arrange
+        final String userName = "ExampleUser";
+        final int testHoaId = 0;
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
+        final String testTitle = "New Amazing Board Members";
+        final String testMotion = "Choose!";
+        final long weekInSeconds = 7 * 24 * 60 * 60;
+        final int testProposalId = 3;
+
+        AddOptionRequestModel model = new AddOptionRequestModel();
+        model.setHoaId(testHoaId);
+        model.setOption(userName);
+        model.setProposalId(testProposalId);
+
+        Proposal current = new Proposal();
+        current.setHoaId(model.getHoaId());
+        current.setVotingDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
+        current.setOptionValidationService(new BoardElectionOptionValidationService());
+        current.setVoteValidationService(new BoardElectionsVoteValidationService());
+        current.setMotion(testMotion);
+        current.setTitle(testTitle);
+        current.setProposalId(testProposalId);
+        when(proposalHandlingService.getProposalById(testProposalId)).thenReturn(Optional.of(current));
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(true);
+
+        TestProposal returned = new TestProposal();
+        returned.setHoaId(model.getHoaId());
+        returned.setVotingDeadline(current.getVotingDeadline());
+        returned.setOptionValidationService(new BoardElectionOptionValidationService());
+        returned.setVoteValidationService(new BoardElectionsVoteValidationService());
+        returned.setMotion(current.getMotion());
+        returned.setTitle(current.getTitle());
+        returned.setProposalId(testProposalId);
+        returned.setOptions(Set.of(new Option(userName)));
+        when(proposalHandlingService.save(any(Proposal.class))).thenReturn(returned);
+
+        try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
+            com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
+                    .thenReturn(false);
+            com.when(() -> HoaCommunication.checkUserIsMemberOfThisHoa(userName, testHoaId))
+                    .thenReturn(true);
+            com.when(() -> HoaCommunication.checkUserIsNotBoardMemberOfAnyHoa(userName, testHoaId))
+                    .thenReturn(true);
+            com.when(() -> HoaCommunication.getJoiningBoardDate(userName, testHoaId))
+                    .thenReturn(-1L);
+            com.when(() -> HoaCommunication.checkHoaHasBoard(userName, testHoaId))
+                    .thenReturn(true);
+            com.when(() -> HoaCommunication.checkHoaHasPossibleCandidates(userName, testHoaId))
+                    .thenReturn(true);
+            final long yearInSeconds = 365 * 24 * 60 * 60;
+            com.when(() -> HoaCommunication.getJoiningDate(userName, testHoaId))
+                    .thenReturn(Instant.now().minusSeconds(4 * yearInSeconds).toEpochMilli());
+
+            // Act
+            ResultActions resultActions = mockMvc.perform(post("/add-option")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", "Bearer MockedToken")
+                    .content(JsonUtil.serialize(model)));
+
+            // Assert
+            resultActions.andExpect(status().isOk());
+
+            AddOptionResponseModel response =
+                    JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(),
+                            AddOptionResponseModel.class);
+
+            assertThat(response.getProposalId()).isEqualTo(testProposalId);
+            assertThat(response.getOptions()).containsExactly(userName);
         }
     }
 }

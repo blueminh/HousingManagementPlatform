@@ -4,6 +4,7 @@ import sem.voting.communication.HoaCommunication;
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -12,11 +13,11 @@ public class UserIsMemberForAtLeast3YearsValidator extends BaseValidator {
     public boolean handle(String username, Option option, Proposal proposal) throws InvalidRequestException {
         try {
             long joiningDate = HoaCommunication.getJoiningDate(username, proposal.getHoaId());
-            long duration = new Date().getTime() - joiningDate;
+            long duration = Instant.now().toEpochMilli() - joiningDate;
 
             final int daysInYear = 365;
-            final int minMembership = 3;
-            if (TimeUnit.MILLISECONDS.toDays(duration) / daysInYear < minMembership) {
+            final int minMembershipYears = 3;
+            if (TimeUnit.MILLISECONDS.toDays(duration) / daysInYear < minMembershipYears) {
                 throw new InvalidRequestException("User has not been a member for at least 3 years");
             }
             return super.checkNext(username, option, proposal);

@@ -85,7 +85,7 @@ public class MemberManagementService {
     public boolean hasPossibleBoardCandidates(int hoaId) {
         final long yearInSeconds = 365 * 24 * 60 * 60;
         return memberManagementRepository.existsByHoaIdAndJoiningDateLessThanEqual(hoaId,
-                Instant.now().minusSeconds(yearInSeconds * 3).getEpochSecond());
+                Instant.now().minusSeconds(yearInSeconds * 3).toEpochMilli());
     }
 
 }
