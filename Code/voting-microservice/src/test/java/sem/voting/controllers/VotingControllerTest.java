@@ -984,4 +984,22 @@ class VotingControllerTest {
             assertThat(response.getOptions()).containsExactly(userName);
         }
     }
+
+    @Test
+    void addOptionNullRequest() throws Exception {
+        // Arrange
+        final String userName = "ExampleUser";
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/add-option")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(null)));
+
+        // Assert
+        resultActions.andExpect(status().isBadRequest());
+    }
 }
