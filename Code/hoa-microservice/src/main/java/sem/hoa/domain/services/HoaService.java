@@ -3,7 +3,6 @@ package sem.hoa.domain.services;
 import org.springframework.stereotype.Service;
 import sem.hoa.domain.entities.Hoa;
 import sem.hoa.dtos.HoaModifyDTO;
-import sem.hoa.dtos.Pair;
 import sem.hoa.exceptions.HoaCreationException;
 
 import java.util.Optional;
@@ -24,7 +23,6 @@ public class HoaService {
     public void createNewHOA(Hoa hoa) throws HoaCreationException {
         // TODO do some checks here
         try {
-            //System.out.println(hoa.toString());
             if (!hoaRepository.findByHoaName(hoa.getHoaName()).isEmpty()) {
                 throw new HoaCreationException("HOA already exists");
             }
@@ -32,7 +30,7 @@ public class HoaService {
             System.out.println("new HOA created:" + hoa.getHoaName());
         } catch (Exception e) {
             System.err.println("HOA was not saved successfully");
-            throw new HoaCreationException("HOA was not saved successfully");
+            throw new HoaCreationException("HOA was not saved successfully: " + e.getMessage());
         }
     }
 

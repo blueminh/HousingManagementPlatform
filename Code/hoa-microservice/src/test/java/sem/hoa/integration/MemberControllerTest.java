@@ -20,6 +20,7 @@ import sem.hoa.domain.services.HoaRepository;
 import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.domain.services.MemberManagementService;
 
+import java.time.Instant;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -419,9 +420,10 @@ public class MemberControllerTest {
                 .param("hoaId", hoa.getId() + "")
                 .header("Authorization", "Bearer MockedToken"));
 
-            resultActions.andExpect(status().isBadRequest());
+            resultActions.andExpect(status().isOk());
             response = resultActions.andReturn().getResponse().getContentAsString();
-            assertThat(response).isEqualTo("User is not a board member of this Hoa");
+            String beginningOfTime = Date.from(Instant.ofEpochMilli(0)).toString();
+            assertThat(response).isEqualTo(beginningOfTime);
         } catch (Exception e) {
             fail("Exception when making request");
         }

@@ -16,11 +16,15 @@ import sem.users.authentication.JwtTokenGenerator;
 import sem.users.authentication.JwtUserDetailsService;
 import sem.users.domain.user.FullName;
 import sem.users.domain.user.Password;
+import sem.users.models.ChangeUserInfoRequestModel;
 import sem.users.services.RegistrationService;
 import sem.users.domain.user.Username;
 import sem.users.models.AuthenticationRequestModel;
 import sem.users.models.AuthenticationResponseModel;
 import sem.users.models.RegistrationRequestModel;
+
+import java.security.InvalidParameterException;
+import java.util.NoSuchElementException;
 
 @RestController
 public class AuthenticationController {
@@ -80,6 +84,28 @@ public class AuthenticationController {
     }
 
     /**
+     * Method to change a user's password.
+     *
+     * @param request a ChangeUserInfoRequestModel, containing the user's current credentials and the new password
+     * @return OK if successful, BAD_REQUEST or UNAUTHORIZED otherwise
+     */
+    @PostMapping("/changepassword")
+    public ResponseEntity changePassword(@RequestBody ChangeUserInfoRequestModel request) {
+
+        try {
+            registrationService.changePassword(new Username(request.getUsername()), new Password(request.getPassword()), new Password(request.getNewAttribute()));
+        } catch (InvalidParameterException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "USER NOT FOUND", e);
+        } catch (BadCredentialsException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", e);
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
      * Endpoint for registration.
      *
      * @param request The registration model
@@ -99,22 +125,6 @@ public class AuthenticationController {
         }
 
         return ResponseEntity.ok().build();
-    }
-
-    /**
-     * API endpoint to check if a user already exists in the system.
-     *
-     * @param request username to check
-     * @return OK if the user already exists, BAD REQUEST if the user does not exist in the system.
-     */
-    @PostMapping("/userexists")
-    public ResponseEntity userExists(@RequestBody AuthenticationRequestModel request) {
-        Username username = new Username(request.getUsername());
-        if (registrationService.userExists(username)) {
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.badRequest().build();
-
     }
 
 
