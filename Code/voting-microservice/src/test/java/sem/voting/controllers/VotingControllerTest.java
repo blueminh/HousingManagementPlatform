@@ -3,7 +3,6 @@ package sem.voting.controllers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -397,7 +396,6 @@ class VotingControllerTest {
     void addProposalNullRequest() throws Exception {
         // Arrange
         final String userName = "ExampleUser";
-        final int testHoaId = 0;
         when(mockAuthenticationManager.getUsername()).thenReturn(userName);
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
@@ -1043,7 +1041,6 @@ class VotingControllerTest {
         final String testTitle = "New Amazing Board Members";
         final String testMotion = "Choose!";
         final long weekInSeconds = 7 * 24 * 60 * 60;
-        final ProposalType testType = ProposalType.BoardElection;
 
         ProposalGenericRequestModel model = new ProposalGenericRequestModel();
         model.setProposalId(testProposalId);
@@ -1086,7 +1083,7 @@ class VotingControllerTest {
     }
 
     @Test
-    void checkHOAFail() throws Exception {
+    void startProposalCheckHOAFail() throws Exception {
         final String userName = "ExampleUser";
         final int testHoaId = 0;
         final int testProposalId = 3;
@@ -1097,7 +1094,6 @@ class VotingControllerTest {
         final String testTitle = "New Amazing Board Members";
         final String testMotion = "Choose!";
         final long weekInSeconds = 7 * 24 * 60 * 60;
-        final ProposalType testType = ProposalType.BoardElection;
 
         ProposalGenericRequestModel model = new ProposalGenericRequestModel();
         model.setProposalId(testProposalId);
@@ -1137,7 +1133,6 @@ class VotingControllerTest {
         final String testTitle = "New Amazing Board Members";
         final String testMotion = "Choose!";
         final long weekInSeconds = 7 * 24 * 60 * 60;
-        final ProposalType testType = ProposalType.BoardElection;
 
         ProposalGenericRequestModel model = new ProposalGenericRequestModel();
         model.setProposalId(testProposalId);
@@ -1171,5 +1166,24 @@ class VotingControllerTest {
             // Assert
             resultActions.andExpect(status().isUnauthorized());
         }
+    }
+
+    @Test
+    void startProposalNull() throws Exception {
+        final String userName = "ExampleUser";
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
+
+        ProposalGenericRequestModel model = null;
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/start")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(model)));
+
+        // Assert
+        resultActions.andExpect(status().isBadRequest());
     }
 }
