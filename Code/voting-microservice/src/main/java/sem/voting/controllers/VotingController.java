@@ -124,9 +124,9 @@ public class VotingController {
         try {
             // board elections can be started by any user if there is no current board member
             if (HoaCommunication.checkHoaHasBoard(authManager.getUsername(), request.getHoaId())
-                && request.getType() == ProposalType.BoardElection) {
+                || request.getType() != ProposalType.BoardElection) {
                 validator.addLast(new MemberIsBoardMemberValidator());
-            } else if (request.getType() == ProposalType.BoardElection) {
+            } else {
                 System.out.println("HOA doesn't have a board.");
             }
         } catch (Exception e) {
@@ -162,7 +162,6 @@ public class VotingController {
         if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
             return ResponseEntity.badRequest().build();
         }
-        // ToDo: check if authentication and HOA are valid
 
         Optional<Proposal> proposal = proposalHandlingService.getProposalById(request.getProposalId());
         if (proposal.isEmpty()) {
@@ -194,7 +193,14 @@ public class VotingController {
     @PostMapping("/start")
     public ResponseEntity<ProposalStartVotingResponseModel> beginVoting(
         @RequestBody ProposalGenericRequestModel request) {
-        if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
+        if (request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        Optional<Proposal> proposal = proposalHandlingService.getProposalById(request.getProposalId());
+        if (proposal.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
             return ResponseEntity.badRequest().build();
         }
         try {
@@ -207,10 +213,6 @@ public class VotingController {
             return ResponseEntity.badRequest().build();
         }
 
-        Optional<Proposal> proposal = proposalHandlingService.getProposalById(request.getProposalId());
-        if (proposal.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
         proposal.get().startVoting();
         proposal = Optional.of(proposalHandlingService.save(proposal.get()));
         ProposalStartVotingResponseModel response = new ProposalStartVotingResponseModel();
