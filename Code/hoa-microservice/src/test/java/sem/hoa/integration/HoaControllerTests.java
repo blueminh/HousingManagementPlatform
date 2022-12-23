@@ -191,7 +191,7 @@ public class HoaControllerTests {
     }
 
     /**
-     * Test when two different people join the HOA
+     * Test when two different people join the HOA.
      */
     @Test
     public void joinHoaTwo() throws Exception {
@@ -235,8 +235,9 @@ public class HoaControllerTests {
         assertThat(saved2Opt.get().getHouseNumber()).isEqualTo(request.getUserHouseNumber());
 
     }
+
     /**
-     * Try to join a non-existing HOA
+     * Try to join a non-existing HOA.
      */
     @Test
     public void joinHoaBadName() throws Exception {
@@ -277,7 +278,7 @@ public class HoaControllerTests {
     }
 
     /**
-     *  Test if the city of the applicant match to the HOA
+     *  Test if the city of the applicant match to the HOA.
      */
     @Test
     public void joinHoaBadCity() throws Exception {
@@ -296,7 +297,7 @@ public class HoaControllerTests {
     }
 
     /**
-     *  Test if the country of the applicant match to the HOA
+     *  Test if the country of the applicant match to the HOA.
      */
     @Test
     public void joinHoaBadCountry() throws Exception {
@@ -315,7 +316,7 @@ public class HoaControllerTests {
     }
 
     /**
-     *  Test if the country and city of the applicant match to the HOA
+     *  Test if the country and city of the applicant match to the HOA.
      */
     @Test
     public void joinHoaBadAddress() throws Exception {
