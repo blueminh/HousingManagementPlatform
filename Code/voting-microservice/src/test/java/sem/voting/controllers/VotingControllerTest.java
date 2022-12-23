@@ -123,7 +123,6 @@ class VotingControllerTest {
         }
     }
 
-
     @Test
     void addProposalNotBoardMember() throws Exception {
         // Arrange
@@ -160,6 +159,7 @@ class VotingControllerTest {
             resultActions.andExpect(status().isBadRequest());
         }
     }
+
     @Test
     void addElectionProposalNoBoardMemberNewHOA() throws Exception {
         // Arrange
