@@ -43,7 +43,7 @@ class CastVoteRequestModelTest {
     void testEquals() {
         String username = "abc";
         String option = "A";
-        CastVoteRequestModel a = new CastVoteRequestModel(1,1, username, option);
+        CastVoteRequestModel a = new CastVoteRequestModel(1, 1, username, option);
         CastVoteRequestModel b = new CastVoteRequestModel(1, 1, username, option);
         assertThat(a.equals(b)).isTrue();
     }
@@ -90,7 +90,7 @@ class CastVoteRequestModelTest {
     void testHashCodeSame() {
         String username = "abc";
         String option = "A";
-        CastVoteRequestModel a = new CastVoteRequestModel(1,1, username, option);
+        CastVoteRequestModel a = new CastVoteRequestModel(1, 1, username, option);
         CastVoteRequestModel b = new CastVoteRequestModel(1, 1, username, option);
         assertThat(a.hashCode() == b.hashCode()).isTrue();
     }
@@ -99,7 +99,7 @@ class CastVoteRequestModelTest {
     void testHashCodeNotSame() {
         String username = "abc";
         String option = "A";
-        CastVoteRequestModel a = new CastVoteRequestModel(1,2, username, option);
+        CastVoteRequestModel a = new CastVoteRequestModel(1, 2, username, option);
         CastVoteRequestModel b = new CastVoteRequestModel(1, 1, username, option);
         assertThat(a.hashCode() == b.hashCode()).isFalse();
     }
