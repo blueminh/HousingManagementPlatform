@@ -193,7 +193,14 @@ public class VotingController {
     @PostMapping("/start")
     public ResponseEntity<ProposalStartVotingResponseModel> beginVoting(
         @RequestBody ProposalGenericRequestModel request) {
-        if (request == null || !proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
+        if (request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        Optional<Proposal> proposal = proposalHandlingService.getProposalById(request.getProposalId());
+        if (proposal.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId())) {
             return ResponseEntity.badRequest().build();
         }
         try {
@@ -206,10 +213,6 @@ public class VotingController {
             return ResponseEntity.badRequest().build();
         }
 
-        Optional<Proposal> proposal = proposalHandlingService.getProposalById(request.getProposalId());
-        if (proposal.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
         proposal.get().startVoting();
         proposal = Optional.of(proposalHandlingService.save(proposal.get()));
         ProposalStartVotingResponseModel response = new ProposalStartVotingResponseModel();
