@@ -159,28 +159,21 @@ public class VotingController {
     @PostMapping("/add-option")
     public ResponseEntity<AddOptionResponseModel> addOption(
         @RequestBody AddOptionRequestModel request) {
-        if (request == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
-        if (proposal == null) {
-            return ResponseEntity.badRequest().build();
-        }
 
-        AddOptionResponseModel response = new AddOptionResponseModel();
-        response.setProposalId(proposal.getProposalId());
-        response.setHoaId(proposal.getHoaId());
         try {
+            Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
+            AddOptionResponseModel response = new AddOptionResponseModel();
+            response.setProposalId(proposal.getProposalId());
+            response.setHoaId(proposal.getHoaId());
             proposal.addOption(new Option(request.getOption()), authManager.getUsername());
+            proposal = proposalHandlingService.save(proposal);
+            response.setOptions(proposal.getAvailableOptions().stream()
+                    .map(Option::toString).collect(Collectors.toList()));
+            return ResponseEntity.ok(response);
         } catch (AddOptionException e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
-
-        proposal = proposalHandlingService.save(proposal);
-        response.setOptions(proposal.getAvailableOptions().stream()
-            .map(Option::toString).collect(Collectors.toList()));
-        return ResponseEntity.ok(response);
     }
 
     /**
@@ -194,34 +187,25 @@ public class VotingController {
     @PostMapping("/start")
     public ResponseEntity<ProposalStartVotingResponseModel> beginVoting(
         @RequestBody ProposalGenericRequestModel request) {
-        if (request == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
-        if (proposal == null) {
-            return ResponseEntity.notFound().build();
-        }
 
         try {
             if (!HoaCommunication.checkUserIsBoardMember(authManager.getUsername(), request.getHoaId())) {
                 System.out.println("User is not a board member.");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
+            Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
+            proposal.startVoting();
+            proposal = proposalHandlingService.save(proposal);
+            ProposalStartVotingResponseModel response =
+                    new ProposalStartVotingResponseModel(proposal.getProposalId(), proposal.getHoaId(), proposal.getStatus());
+            if (proposal.getStatus() != ProposalStage.Voting) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            }
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            System.out.println("Cannot find if user " + authManager.getUsername() + " is a board member of HOA " + request.getHoaId());
+            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
-
-        proposal.startVoting();
-        proposal = proposalHandlingService.save(proposal);
-        ProposalStartVotingResponseModel response = new ProposalStartVotingResponseModel();
-        response.setProposalId(proposal.getProposalId());
-        response.setHoaId(proposal.getHoaId());
-        response.setStatus(proposal.getStatus());
-        if (proposal.getStatus() != ProposalStage.Voting) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-        }
-        return ResponseEntity.ok(response);
     }
 
     /**
