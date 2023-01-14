@@ -5,7 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalStage;
 import sem.voting.domain.proposal.Result;
@@ -13,7 +14,8 @@ import sem.voting.domain.proposal.Result;
 /**
  * Model to represent a response on past proposals.
  */
-@Data
+@Getter
+@Setter
 public class ProposalHistoryResponseModel {
     private int proposalId;
     private int hoaId;
