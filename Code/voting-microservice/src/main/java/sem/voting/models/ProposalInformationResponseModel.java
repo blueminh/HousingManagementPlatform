@@ -2,6 +2,7 @@ package sem.voting.models;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
@@ -46,5 +47,23 @@ public class ProposalInformationResponseModel {
         } else {
             this.type = ProposalType.HoaRuleChange;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ProposalInformationResponseModel that = (ProposalInformationResponseModel) o;
+        return proposalId == that.proposalId && hoaId == that.hoaId && title.equals(that.title)
+                && motion.equals(that.motion) && deadline.equals(that.deadline) && status == that.status && Objects.equals(options, that.options) && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(proposalId, hoaId, title, motion, deadline, status, options, type);
     }
 }

@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @Entity
 @IdClass(MembershipId.class)
@@ -59,4 +60,21 @@ public class Membership {
     @Setter
     @Column(name = "joiningBoardDate")
     private Long joiningBoardDate;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Membership that = (Membership) o;
+        return hoaId == that.hoaId && username.equals(that.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, hoaId);
+    }
 }
