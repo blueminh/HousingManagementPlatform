@@ -3,9 +3,11 @@ package sem.voting.models;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalStage;
 import sem.voting.domain.proposal.Result;
@@ -13,7 +15,8 @@ import sem.voting.domain.proposal.Result;
 /**
  * Model to represent a response on past proposals.
  */
-@Data
+@Getter
+@Setter
 public class ProposalHistoryResponseModel {
     private int proposalId;
     private int hoaId;
@@ -51,5 +54,23 @@ public class ProposalHistoryResponseModel {
             options.add(r.getOption().toString());
             results.add(r.getVotes());
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ProposalHistoryResponseModel that = (ProposalHistoryResponseModel) o;
+        return proposalId == that.proposalId && hoaId == that.hoaId && Objects.equals(title, that.title) && Objects.equals(motion, that.motion)
+                && Objects.equals(deadline, that.deadline) && status == that.status && Objects.equals(options, that.options) && Objects.equals(results, that.results);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(proposalId, hoaId, title, motion, deadline, status, options, results);
     }
 }

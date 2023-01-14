@@ -11,7 +11,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import sem.hoa.authentication.AuthManager;
 import sem.hoa.authentication.JwtTokenVerifier;
@@ -22,7 +21,6 @@ import sem.hoa.domain.services.HoaRepository;
 import sem.hoa.domain.services.HoaService;
 import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.dtos.HoaModifyDTO;
-import sem.hoa.dtos.UserNameHoaNameDto;
 import sem.hoa.utils.JsonUtil;
 
 import java.util.Optional;
@@ -100,7 +98,7 @@ public class HoaControllerTests {
 
         Hoa saved = hoaRepoMock.findById(responded.getId()).orElseThrow();
 
-        Hoa given = new Hoa(request.hoaName, request.userCountry, request.userCity);
+        Hoa given = new Hoa(request.getHoaName(), request.getUserCountry(), request.getUserCity());
 
         assertThat(saved.getHoaName()).isEqualTo(given.getHoaName());
         assertThat(saved.getCity()).isEqualTo(given.getCity());
@@ -171,8 +169,8 @@ public class HoaControllerTests {
     @Test
     public void joinHoa() throws Exception {
 
-        hoaServiceMock.createNewHOA(new Hoa(request.hoaName, request.userCountry,
-                request.userCity));
+        hoaServiceMock.createNewHOA(new Hoa(request.getHoaName(), request.getUserCountry(),
+                request.getUserCity()));
 
         ResultActions resultActions = mockMvc.perform(post("/joining")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -198,8 +196,8 @@ public class HoaControllerTests {
     @Test
     public void joinHoaTwo() throws Exception {
 
-        hoaServiceMock.createNewHOA(new Hoa(request.hoaName, request.userCountry,
-                request.userCity));
+        hoaServiceMock.createNewHOA(new Hoa(request.getHoaName(), request.getUserCountry(),
+                request.getUserCity()));
 
         ResultActions resultActions = mockMvc.perform(post("/joining")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -250,7 +248,7 @@ public class HoaControllerTests {
                 .content(JsonUtil.serialize(request)));
 
         resultActions.andExpect(status().isBadRequest())
-                .andExpect(status().reason("No such HOA with this name: " + request.hoaName));
+                .andExpect(status().reason("No such HOA with this name: " + request.getHoaName()));
     }
 
     /**
@@ -259,8 +257,8 @@ public class HoaControllerTests {
     @Test
     public void joinHoaButAlreadyJoined() throws Exception {
 
-        hoaServiceMock.createNewHOA(new Hoa(request.hoaName, request.userCountry,
-                request.userCity));
+        hoaServiceMock.createNewHOA(new Hoa(request.getHoaName(), request.getUserCountry(),
+                request.getUserCity()));
 
         ResultActions resultActions = mockMvc.perform(post("/joining")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -284,8 +282,8 @@ public class HoaControllerTests {
      */
     @Test
     public void joinHoaBadCity() throws Exception {
-        hoaServiceMock.createNewHOA(new Hoa(request.hoaName, request.userCountry,
-                request.userCity));
+        hoaServiceMock.createNewHOA(new Hoa(request.getHoaName(), request.getUserCountry(),
+                request.getUserCity()));
 
         request.setUserCity("wrongCity");
 
@@ -303,8 +301,8 @@ public class HoaControllerTests {
      */
     @Test
     public void joinHoaBadCountry() throws Exception {
-        hoaServiceMock.createNewHOA(new Hoa(request.hoaName, request.userCountry,
-                request.userCity));
+        hoaServiceMock.createNewHOA(new Hoa(request.getHoaName(), request.getUserCountry(),
+                request.getUserCity()));
 
         request.setUserCountry("wrongCountry");
 
@@ -322,8 +320,8 @@ public class HoaControllerTests {
      */
     @Test
     public void joinHoaBadAddress() throws Exception {
-        hoaServiceMock.createNewHOA(new Hoa(request.hoaName, request.userCountry,
-                request.userCity));
+        hoaServiceMock.createNewHOA(new Hoa(request.getHoaName(), request.getUserCountry(),
+                request.getUserCity()));
 
         request.setUserCountry("wrongCountry");
         request.setUserCity("wrongCity");
@@ -342,8 +340,8 @@ public class HoaControllerTests {
      */
     @Test
     public void leaveHoaNormal() throws Exception {
-        hoaServiceMock.createNewHOA(new Hoa(request.hoaName, request.userCountry,
-                request.userCity));
+        hoaServiceMock.createNewHOA(new Hoa(request.getHoaName(), request.getUserCountry(),
+                request.getUserCity()));
 
         ResultActions resultActions = mockMvc.perform(post("/joining")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -377,7 +375,7 @@ public class HoaControllerTests {
 
         assertThat(saved2Opt.isPresent());
 
-        resultActions = mockMvc.perform(delete("/leave" + request.hoaName)
+        resultActions = mockMvc.perform(delete("/leave" + request.getHoaName())
                 .header("Authorization", "Bearer MockedToken")
                 );
 
@@ -399,8 +397,8 @@ public class HoaControllerTests {
                 .andExpect(status().reason("No such HOA with this name: wrongHoaName"));
 
         ///
-        hoaServiceMock.createNewHOA(new Hoa(request.hoaName, request.userCountry,
-                request.userCity));
+        hoaServiceMock.createNewHOA(new Hoa(request.getHoaName(), request.getUserCountry(),
+                request.getUserCity()));
 
         resultActions = mockMvc.perform(post("/joining")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -428,10 +426,10 @@ public class HoaControllerTests {
      */
     @Test
     public void leaveWrongHoa() throws Exception {
-        hoaServiceMock.createNewHOA(new Hoa(request.hoaName, request.userCountry,
-                request.userCity));
+        hoaServiceMock.createNewHOA(new Hoa(request.getHoaName(), request.getUserCountry(),
+                request.getUserCity()));
 
-        ResultActions resultActions = mockMvc.perform(delete("/leave" + request.hoaName)
+        ResultActions resultActions = mockMvc.perform(delete("/leave" + request.getHoaName())
                 .header("Authorization", "Bearer MockedToken"));
 
         resultActions.andExpect(status().isBadRequest())

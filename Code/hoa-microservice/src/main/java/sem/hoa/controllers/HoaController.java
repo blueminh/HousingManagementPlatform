@@ -74,14 +74,14 @@ public class HoaController {
             hoaService.checkHoaModifyDTO(request);
 
             //Creation
-            Hoa newHOA = new Hoa(request.hoaName, request.userCountry, request.userCity);
+            Hoa newHOA = new Hoa(request.getHoaName(), request.getUserCountry(), request.getUserCity());
 
             hoaService.createNewHOA(newHOA);
 
             memberManagementService
                 .addMembership(new Membership(authManager.getUsername(), newHOA.getId(), true,
-                    request.userCountry, request.userCity,
-                    request.userStreet, request.userHouseNumber, request.userPostalCode,
+                    request.getUserCountry(), request.getUserCity(),
+                    request.getUserStreet(), request.getUserHouseNumber(), request.getUserPostalCode(),
                     new Date().getTime(), new Date().getTime()));
 
             return ResponseEntity.ok(newHOA);
