@@ -48,18 +48,11 @@ public class ActivityService {
      */
     @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     public Integer addActivity(int hoaId, String name, Date date, String desc, String createdBy) throws Exception {
-        // Checks
-        if (!checkNameValidity(name)) {
-            throw new InvalidParameterException("Activity name (" + name + ") is invalid");
-        }
-        if (desc.length() == 0 || desc.length() > 100) {
-            throw new InvalidParameterException("Description too long or blank");
-        }
-        Date curDate = clock.getCurrentDate();
-        if (date.before(curDate)) {
-            throw new InvalidParameterException("Activity date before current time not possible");
-        }
+
+        checkParamValidity(name, date, desc);
+
         Activity activity = new Activity(hoaId, name, date, desc, createdBy);
+
         if (!hoaRepository.existsById(hoaId)) {
             throw new NoSuchHOAException("No HOAs with the id " + hoaId + " exists!");
         } else if (!memberManagementRepository.existsMembershipByHoaIdAndUsername(hoaId, createdBy)) {
@@ -75,16 +68,24 @@ public class ActivityService {
     }
 
     /**
-     * Private utility method that checks if the name of the activity is valid.
+     * Private utility method that checks if the name, the date and the description of the activity is valid.
      * It ensures that the length is between 1 and 30, and it only includes characters from a-z, A-Z and 0-9.
      * Special characters like - and _ are only allowed.
      *
      * @param name name to be checked for validity
      * @return true if it matches; false otherwise
      */
-    private static boolean checkNameValidity(String name) {
+    private void checkParamValidity(String name, Date date, String desc) {
         String regex = "[ a-zA-Z0-9_-]{1,30}";
-        return name.matches(regex);
+        if(name.matches(regex)){
+            throw new InvalidParameterException("Activity name (" + name + ") is invalid");
+        }
+        if (desc.length() == 0 || desc.length() > 100) {
+            throw new InvalidParameterException("Description too long or blank");
+        }
+        if (date.before(clock.getCurrentDate())) {
+            throw new InvalidParameterException("Activity date before current time not possible");
+        }
     }
 
     /**
