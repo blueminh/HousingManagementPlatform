@@ -97,30 +97,24 @@ public class HoaController {
      * @param request model to join an HOA
      * @return 200 if joined successfully
      */
-    // Membership
     @PostMapping("/joining")
     public ResponseEntity joiningHOA(@RequestBody HoaModifyDTO request) {
         try {
-            //CHECKS
-            hoaService.checkHoaModifyDTO(request);
+            hoaService.checkHoaModifyDTO(request);              //Checks
             if (!hoaService.hoaExistsByName(request.hoaName)) {
                 throw new HoaJoiningException("No such HOA with this name: " + request.hoaName);
             }
             Hoa hoa = hoaService.findHoaByName(request.hoaName).get();
-            if (memberManagementService
-                .findByUsernameAndHoaId(authManager.getUsername(), hoa.getId())
-                .isPresent()) {
-                throw new HoaJoiningException("User is already in this HOA"); //need explanation
+            if (memberManagementService.findByUsernameAndHoaId(authManager.getUsername(), hoa.getId()).isPresent()) {
+                throw new HoaJoiningException("User is already in this HOA");
             }
-            Membership membership = new Membership(authManager.getUsername(),
-                hoaService.findHoaByName(request.hoaName).get().getId(), false,
-                request.userCountry, request.userCity, request.userStreet,
-                request.userHouseNumber, request.userPostalCode,
-                new Date().getTime(), -1L);
+
+            Membership membership = new Membership(authManager.getUsername(), hoaService.findHoaByName(request.hoaName).get().getId(), false,
+                request.userCountry, request.userCity, request.userStreet, request.userHouseNumber, request.userPostalCode,
+                new Date().getTime(), -1L);         //Creation
             if (!memberManagementService.addressCheck(hoa, membership)) {
                 throw new HoaJoiningException("Address not compatible with HOA area");
             }
-            //CREATION
             memberManagementService.addMembership(membership);
             System.out.println("Member " + authManager.getUsername() + " added successfully to " + request.getHoaName());
         } catch (Exception e) {
@@ -138,12 +132,10 @@ public class HoaController {
     @DeleteMapping("/leave{hoaName}")
     public ResponseEntity leaveHOA(@PathVariable("hoaName") String hoaName) {
         try {
-
             Optional<Hoa> hoa = hoaService.findHoaByName(hoaName);
             if (hoa.isEmpty()) {
                 throw new Exception("No such HOA with this name: " + hoaName);
             }
-
             Optional<Membership> membership = memberManagementService
                     .findByUsernameAndHoaId(authManager.getUsername(), hoa.get().getId());
             if (membership.isEmpty()) {
