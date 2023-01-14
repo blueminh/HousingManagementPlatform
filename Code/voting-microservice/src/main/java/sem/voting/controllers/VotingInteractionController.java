@@ -59,30 +59,23 @@ public class VotingInteractionController {
     @PostMapping("/vote")
     public ResponseEntity<ProposalInformationResponseModel> castVote(
             @RequestBody CastVoteRequestModel request) {
-        if (request == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
-        if (proposal == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Option beingVoted = request.getOption().equals("") ? null : new Option(request.getOption());
-        Vote vote = new Vote(authManager.getUsername(), beingVoted);
 
         try {
+            Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
+
+            Option beingVoted = request.getOption().equals("") ? null : new Option(request.getOption());
+            Vote vote = new Vote(authManager.getUsername(), beingVoted);
             if (!proposal.addVote(vote)) {
                 // Proposal needs to be saved because even if Vote wasn't successful, the status might have changed.
                 proposal = proposalHandlingService.save(proposal);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProposalInformationResponseModel(proposal));
             }
+            proposal = proposalHandlingService.save(proposal);
+            return ResponseEntity.ok(new ProposalInformationResponseModel(proposal));
         } catch (VotingException e) {
             System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-
-        proposal = proposalHandlingService.save(proposal);
-        return ResponseEntity.ok(new ProposalInformationResponseModel(proposal));
     }
 
     /**
@@ -97,27 +90,20 @@ public class VotingInteractionController {
     @PostMapping("/add-option")
     public ResponseEntity<AddOptionResponseModel> addOption(
             @RequestBody AddOptionRequestModel request) {
-        if (request == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
-        if (proposal == null) {
-            return ResponseEntity.badRequest().build();
-        }
 
-        AddOptionResponseModel response = new AddOptionResponseModel();
-        response.setProposalId(proposal.getProposalId());
-        response.setHoaId(proposal.getHoaId());
         try {
+            Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
+            AddOptionResponseModel response = new AddOptionResponseModel();
+            response.setProposalId(proposal.getProposalId());
+            response.setHoaId(proposal.getHoaId());
             proposal.addOption(new Option(request.getOption()), authManager.getUsername());
+            proposal = proposalHandlingService.save(proposal);
+            response.setOptions(proposal.getAvailableOptions().stream()
+                    .map(Option::toString).collect(Collectors.toList()));
+            return ResponseEntity.ok(response);
         } catch (AddOptionException e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
-
-        proposal = proposalHandlingService.save(proposal);
-        response.setOptions(proposal.getAvailableOptions().stream()
-                .map(Option::toString).collect(Collectors.toList()));
-        return ResponseEntity.ok(response);
     }
 }
