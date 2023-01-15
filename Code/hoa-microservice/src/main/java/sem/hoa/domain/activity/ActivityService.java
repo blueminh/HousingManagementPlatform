@@ -78,7 +78,7 @@ public class ActivityService {
      */
     private void checkParamValidity(String name, Date date, String desc) {
         String regex = "[ a-zA-Z0-9_-]{1,30}";
-        if (name.matches(regex)) {
+        if (!name.matches(regex)) {
             throw new InvalidParameterException("Activity name (" + name + ") is invalid");
         }
         if (desc.length() == 0 || desc.length() > 100) {

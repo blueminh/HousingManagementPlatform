@@ -77,7 +77,7 @@ public class RegistrationService {
      * @param password The password of the user
      * @throws Exception if the user details have an incorrect length
      */
-    public void checkInputLength(Username username, Password password, FullName fullname) throws Exception{
+    public void checkInputLength(Username username, Password password, FullName fullname) throws Exception {
 
         if (username == null || password == null || fullname == null) {
             throw new InvalidParameterException("At least one of the properties is null!");
