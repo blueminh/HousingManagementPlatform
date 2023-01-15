@@ -101,16 +101,16 @@ public class HoaController {
     public ResponseEntity joiningHOA(@RequestBody HoaModifyDTO request) {
         try {
             hoaService.checkHoaModifyDTO(request);              //Checks
-            if (!hoaService.hoaExistsByName(request.hoaName)) {
-                throw new HoaJoiningException("No such HOA with this name: " + request.hoaName);
+            if (!hoaService.hoaExistsByName(request.getHoaName())) {
+                throw new HoaJoiningException("No such HOA with this name: " + request.getHoaName());
             }
-            Hoa hoa = hoaService.findHoaByName(request.hoaName).get();
+            Hoa hoa = hoaService.findHoaByName(request.getHoaName()).get();
             if (memberManagementService.findByUsernameAndHoaId(authManager.getUsername(), hoa.getId()).isPresent()) {
                 throw new HoaJoiningException("User is already in this HOA");
             }
 
-            Membership membership = new Membership(authManager.getUsername(), hoaService.findHoaByName(request.hoaName).get().getId(), false,
-                request.userCountry, request.userCity, request.userStreet, request.userHouseNumber, request.userPostalCode,
+            Membership membership = new Membership(authManager.getUsername(), hoaService.findHoaByName(request.getHoaName()).get().getId(), false,
+                request.getUserCountry(), request.getUserCity(), request.getUserStreet(), request.getUserHouseNumber(), request.getUserPostalCode(),
                 new Date().getTime(), -1L);         //Creation
             if (!memberManagementService.addressCheck(hoa, membership)) {
                 throw new HoaJoiningException("Address not compatible with HOA area");
