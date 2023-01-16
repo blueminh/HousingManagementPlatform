@@ -62,6 +62,9 @@ public class VotingInteractionController {
 
         try {
             Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
+            if (proposal == null) {
+                return ResponseEntity.notFound().build();
+            }
 
             Option beingVoted = request.getOption().equals("") ? null : new Option(request.getOption());
             Vote vote = new Vote(authManager.getUsername(), beingVoted);
@@ -93,6 +96,9 @@ public class VotingInteractionController {
 
         try {
             Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
+            if (proposal == null) {
+                return ResponseEntity.notFound().build();
+            }
             AddOptionResponseModel response = new AddOptionResponseModel();
             response.setProposalId(proposal.getProposalId());
             response.setHoaId(proposal.getHoaId());

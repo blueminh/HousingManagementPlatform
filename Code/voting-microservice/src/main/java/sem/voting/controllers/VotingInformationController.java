@@ -117,8 +117,7 @@ public class VotingInformationController {
      * 400 otherwise
      */
     @PostMapping("/start")
-    public ResponseEntity<ProposalStartVotingResponseModel> beginVoting(
-            @RequestBody ProposalGenericRequestModel request) {
+    public ResponseEntity<ProposalStartVotingResponseModel> beginVoting(@RequestBody ProposalGenericRequestModel request) {
 
         try {
             if (!HoaCommunication.checkUserIsBoardMember(authManager.getUsername(), request.getHoaId())) {
@@ -126,6 +125,10 @@ public class VotingInformationController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
+            if (proposal == null) {
+                return ResponseEntity.notFound().build();
+            }
+
             proposal.startVoting();
             proposal = proposalHandlingService.save(proposal);
             ProposalStartVotingResponseModel response =
