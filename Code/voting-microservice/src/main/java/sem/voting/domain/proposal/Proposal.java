@@ -61,6 +61,7 @@ public class Proposal {
     private Date votingDeadline;
 
     @Getter
+    @Setter
     private ProposalStage status = ProposalStage.UnderConstruction;
 
     @ElementCollection
@@ -85,39 +86,15 @@ public class Proposal {
      *
      * @return Set of Result (option-number tuple).
      */
-    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     public Set<Result> getResults() {
-        checkDeadline();
-        if (this.status != ProposalStage.Ended) {
-            return null;
-        }
-        Set<Result> results = new HashSet<>();
-        if (votes.isEmpty() || availableOptions.isEmpty()) {
-            return results;
-        }
-        Map<Option, Integer> myMap;
-        myMap = new HashMap<>();
-        for (String user : votes.keySet()) {
-            Option choice = votes.get(user);
-            int newVal = myMap.getOrDefault(choice, 0) + 1;
-            myMap.put(choice, newVal);
-        }
-        for (Option o : availableOptions) {
-            int val = myMap.getOrDefault(o, 0);
-            results.add(new Result(o, val));
-        }
-        return results;
+        return ProposalHelper.getResults(this, votes);
     }
 
     /**
      * Check if the deadline has been reached and update the proposal status accordingly.
      */
     public void checkDeadline() {
-        Date now = Date.from(Instant.now());
-        if (!now.before(this.votingDeadline)) {
-            // Voting has ended
-            this.status = ProposalStage.Ended;
-        }
+        ProposalHelper.checkDeadline(this);
     }
 
     /**
