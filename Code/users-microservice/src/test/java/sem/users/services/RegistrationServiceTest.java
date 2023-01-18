@@ -48,7 +48,7 @@ public class RegistrationServiceTest {
     void fullNameEmpty() {
         AppUser user = new AppUser(new Username("testname"), passwordHashingService.hash(new Password("test password")), new FullName(""));
         Exception e = assertThrows(InvalidParameterException.class, () -> registrationService.registerUser(user.getUsername(), new Password("test password"), user.getFullName()));
-        assertEquals("One of the parameters is empty!", e.getMessage());
+        assertEquals("At least one of the parameters is empty!", e.getMessage());
     }
 
     @Test
@@ -57,14 +57,14 @@ public class RegistrationServiceTest {
                                     passwordHashingService.hash(new Password("test password")),
                                     new FullName("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
         Exception e = assertThrows(InvalidParameterException.class, () -> registrationService.registerUser(user.getUsername(), new Password("test password"), user.getFullName()));
-        assertEquals("Full Name is too long! maximum 100 characters", e.getMessage());
+        assertEquals("At least one parameter is too long! maximum 100 characters", e.getMessage());
     }
 
     @Test
     void usernameEmpty() {
         AppUser user = new AppUser(new Username(""), passwordHashingService.hash(new Password("test password")), new FullName("firstname lastname"));
         Exception e = assertThrows(InvalidParameterException.class, () -> registrationService.registerUser(user.getUsername(), new Password("test password"), user.getFullName()));
-        assertEquals("One of the parameters is empty!", e.getMessage());
+        assertEquals("At least one of the parameters is empty!", e.getMessage());
     }
 
     @Test
@@ -72,14 +72,14 @@ public class RegistrationServiceTest {
         AppUser user = new AppUser(new Username("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
                 passwordHashingService.hash(new Password("test password")), new FullName("firstname lastname"));
         Exception e = assertThrows(InvalidParameterException.class, () -> registrationService.registerUser(user.getUsername(), new Password("test password"), user.getFullName()));
-        assertEquals("Username is too long! maximum 100 characters", e.getMessage());
+        assertEquals("At least one parameter is too long! maximum 100 characters", e.getMessage());
     }
 
     @Test
     void passwordEmpty() {
         AppUser user = new AppUser(new Username("username"), passwordHashingService.hash(new Password("")), new FullName("firstname lastname"));
         Exception e = assertThrows(InvalidParameterException.class, () -> registrationService.registerUser(user.getUsername(), new Password(""), user.getFullName()));
-        assertEquals("One of the parameters is empty!", e.getMessage());
+        assertEquals("At least one of the parameters is empty!", e.getMessage());
     }
 
     @Test
@@ -88,6 +88,6 @@ public class RegistrationServiceTest {
                 new Password("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")), new FullName("firstname lastname"));
         Exception e = assertThrows(InvalidParameterException.class, () -> registrationService.registerUser(user.getUsername(),
                 new Password("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), user.getFullName()));
-        assertEquals("Password is too long! maximum 100 characters", e.getMessage());
+        assertEquals("At least one parameter is too long! maximum 100 characters", e.getMessage());
     }
 }
