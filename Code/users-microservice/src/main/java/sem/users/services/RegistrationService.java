@@ -53,29 +53,11 @@ public class RegistrationService {
      */
     public AppUser registerUser(Username username, Password password, FullName fullname) throws Exception {
 
-        if (username.toString().length() < minlength || password.toString().length() < minlength || fullname.toString().length() < minlength) {
-            throw new InvalidParameterException("One of the parameters is empty!");
-        }
-
-        // Setting a 100 character limit to all attributes
-        if (username.toString().length() > maxlength) {
-            throw new InvalidParameterException("Username is too long! maximum 100 characters");
-        }
-        if (password.toString().length() > maxlength) {
-            throw new InvalidParameterException("Password is too long! maximum 100 characters");
-        }
-        if (fullname.toString().length() > maxlength) {
-            throw new InvalidParameterException("Full Name is too long! maximum 100 characters");
-        }
-
+        checkInputLength(username, password, fullname);
 
         if (!userRepository.existsByUsername(username)) {
             // Hash password
             HashedPassword hashedPassword = passwordHashingService.hash(password);
-
-            if (username == null || hashedPassword == null || fullname == null) {
-                throw new InvalidParameterException("At least one of the properties is null!");
-            }
 
             // Create new account
             AppUser user = new AppUser(username, hashedPassword, fullname);
@@ -85,6 +67,29 @@ public class RegistrationService {
             return user;
         } else {
             throw new UsernameAlreadyInUseException(username);
+        }
+    }
+
+    /**
+     * Checks the length of provided user details.
+     *
+     * @param username The username of the user
+     * @param password The password of the user
+     * @throws Exception if the user details have an incorrect length
+     */
+    public void checkInputLength(Username username, Password password, FullName fullname) throws Exception {
+
+        if (username == null || password == null || fullname == null) {
+            throw new InvalidParameterException("At least one of the properties is null!");
+        }
+
+        if (username.toString().length() < minlength || password.toString().length() < minlength || fullname.toString().length() < minlength) {
+            throw new InvalidParameterException("At least one of the parameters is empty!");
+        }
+
+        // Setting a 100 character limit to all attributes
+        if (username.toString().length() > maxlength || password.toString().length() > maxlength || fullname.toString().length() > maxlength) {
+            throw new InvalidParameterException("At least one parameter is too long! maximum 100 characters");
         }
     }
 

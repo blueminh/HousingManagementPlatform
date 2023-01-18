@@ -117,35 +117,26 @@ public class VotingInformationController {
      * 400 otherwise
      */
     @PostMapping("/start")
-    public ResponseEntity<ProposalStartVotingResponseModel> beginVoting(
-            @RequestBody ProposalGenericRequestModel request) {
-        if (request == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
-        if (proposal == null) {
-            return ResponseEntity.notFound().build();
-        }
-
+    public ResponseEntity<ProposalStartVotingResponseModel> beginVoting(@RequestBody ProposalGenericRequestModel request) {
         try {
-            if (!HoaCommunication.checkUserIsBoardMember(authManager.getUsername(), request.getHoaId())) {
+            Proposal proposal = proposalHandlingService.checkHoa(request.getProposalId(), request.getHoaId());
+            if (proposal == null) {
+                return ResponseEntity.notFound().build();
+            } else if (!HoaCommunication.checkUserIsBoardMember(authManager.getUsername(), request.getHoaId())) {
                 System.out.println("User is not a board member.");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
+            proposal.startVoting();
+            proposal = proposalHandlingService.save(proposal);
+            ProposalStartVotingResponseModel response =
+                    new ProposalStartVotingResponseModel(proposal.getProposalId(), proposal.getHoaId(), proposal.getStatus());
+            if (proposal.getStatus() != ProposalStage.Voting) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            }
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.out.println("Cannot find if user " + authManager.getUsername() + " is a board member of HOA " + request.getHoaId());
             return ResponseEntity.badRequest().build();
         }
-
-        proposal.startVoting();
-        proposal = proposalHandlingService.save(proposal);
-        ProposalStartVotingResponseModel response = new ProposalStartVotingResponseModel();
-        response.setProposalId(proposal.getProposalId());
-        response.setHoaId(proposal.getHoaId());
-        response.setStatus(proposal.getStatus());
-        if (proposal.getStatus() != ProposalStage.Voting) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-        }
-        return ResponseEntity.ok(response);
     }
 }
