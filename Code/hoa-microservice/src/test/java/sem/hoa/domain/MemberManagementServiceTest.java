@@ -55,7 +55,7 @@ public class MemberManagementServiceTest {
         // Assert
         Optional<Membership> savedMembership = memberManagementRepository.findById(new MembershipId("user1", hoa.getId()));
         assertThat(savedMembership.isPresent()).isTrue();
-        assertThat(savedMembership.get()).isEqualTo(membership);
+        assertThat(savedMembership.get().equals(membership));
     }
 
     @Test

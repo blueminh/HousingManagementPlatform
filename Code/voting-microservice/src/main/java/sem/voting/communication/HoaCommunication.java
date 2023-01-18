@@ -51,13 +51,13 @@ public class HoaCommunication {
      * receiving an error
      */
     private static String makeRequest(String userId, String url, Map<String, String> params) throws Exception {
-        // Get the secret
-        Properties properties = new Properties();
+
+        Properties properties = new Properties();   // Get the secret
         URL resourceUrl = Thread.currentThread().getContextClassLoader().getResource("application.properties");
         properties.load(new FileInputStream(Paths.get(resourceUrl.toURI()).toFile().getPath()));
 
-        // Generate authToken for the given userId
-        String authToken = getTokenFromId(userId, properties.getProperty("jwt.secret"));
+
+        String authToken = getTokenFromId(userId, properties.getProperty("jwt.secret"));    // Generate authToken for the given userId
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + authToken);

@@ -55,19 +55,19 @@ public class HoaService {
     public void checkHoaModifyDTO(HoaModifyDTO request) throws Exception {
 
         //Checks if strings are null
-        if (request.hoaName == null || request.userCity == null || request.userCountry == null
-            || request.userStreet == null || request.userPostalCode == null) {
+        if (request.getHoaName() == null || request.getUserCity() == null || request.getUserCountry() == null
+            || request.getUserStreet() == null || request.getUserPostalCode() == null) {
             System.err.println("one or more fields Invalid(null)");
             throw new Exception("Fields can not be Invalid(null)");
         }
         //checks if variables are valid
-        if (request.hoaName.isBlank() || request.userCity.isBlank() || request.userCountry.isBlank()
-            || request.userStreet.isBlank() || request.userPostalCode.isBlank()) {
+        if (request.getHoaName().isBlank() || request.getUserCity().isBlank() || request.getUserCountry().isBlank()
+            || request.getUserStreet().isBlank() || request.getUserPostalCode().isBlank()) {
             System.err.println("one or more fields were Empty");
             throw new Exception("Fields can not be Empty");
         }
         //checks if house number is valid
-        if (request.userHouseNumber < 0) {
+        if (request.getUserHouseNumber() < 0) {
             System.err.println("house Number was < 0");
             throw new Exception("House Number must be a positive integer");
         }
