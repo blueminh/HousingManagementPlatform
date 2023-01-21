@@ -1,7 +1,6 @@
 package sem.voting.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -25,15 +24,20 @@ import sem.voting.authentication.JwtTokenVerifier;
 import sem.voting.communication.HoaCommunication;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalHandlingService;
+import sem.voting.domain.proposal.ProposalStage;
 import sem.voting.domain.proposal.ProposalType;
 import sem.voting.domain.services.implementations.BoardElectionOptionValidationService;
 import sem.voting.domain.services.implementations.BoardElectionsVoteValidationService;
 import sem.voting.integration.utils.JsonUtil;
 import sem.voting.models.ProposalCreationRequestModel;
 import sem.voting.models.ProposalGenericRequestModel;
+import sem.voting.models.ProposalHistoryResponseModel;
+import sem.voting.models.ProposalInfoRequestModel;
+import sem.voting.models.ProposalInformationResponseModel;
 import sem.voting.models.ProposalStartVotingResponseModel;
 import java.sql.Date;
 import java.time.Instant;
+import java.util.List;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -53,6 +57,148 @@ class VotingInformationControllerTest {
 
     @Autowired
     private ProposalHandlingService proposalHandlingService;
+
+    @Test
+    void historyOk() throws Exception {
+        final String userName = "ExampleUser";
+        final int testHoaId = 0;
+        final int testProposalId = 0;
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
+
+        final String testTitle = "New Amazing Board Members";
+        final String testMotion = "Choose!";
+        final long weekInSeconds = 7 * 24 * 60 * 60;
+
+        ProposalInfoRequestModel model = new ProposalInfoRequestModel();
+        model.setHoaId(testHoaId);
+
+        Proposal returned = new Proposal();
+        returned.setHoaId(model.getHoaId());
+        returned.setVotingDeadline(Date.from(Instant.now().minusSeconds(weekInSeconds)));
+        returned.setOptionValidationService(new BoardElectionOptionValidationService());
+        returned.setVoteValidationService(new BoardElectionsVoteValidationService());
+        returned.setMotion(testMotion);
+        returned.setTitle(testTitle);
+        returned.setProposalId(testProposalId);
+        when(proposalHandlingService.getHistoryProposals(testHoaId)).thenReturn(List.of(returned));
+        when(proposalHandlingService.save(returned)).thenReturn(returned);
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/history")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(model)));
+
+        // Assert
+        resultActions.andExpect(status().isOk());
+
+        List<ProposalHistoryResponseModel> response =
+                JsonUtil.deserializeList(resultActions.andReturn().getResponse().getContentAsString(),
+                        ProposalHistoryResponseModel.class);
+
+        assertThat(response.size() == 1);
+        assertThat(response.get(0).getProposalId()).isEqualTo(testProposalId);
+        assertThat(response.get(0).getHoaId()).isEqualTo(testHoaId);
+        assertThat(response.get(0).getStatus() == ProposalStage.Ended);
+    }
+
+    @Test
+    void historyNull() throws Exception {
+        final String userName = "ExampleUser";
+        final int testHoaId = 0;
+        final int testProposalId = 0;
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
+
+        final String testTitle = "New Amazing Board Members";
+        final String testMotion = "Choose!";
+        final long weekInSeconds = 7 * 24 * 60 * 60;
+
+        ProposalInfoRequestModel model = null;
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/history")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(model)));
+
+        // Assert
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void activeOk() throws Exception {
+        final String userName = "ExampleUser";
+        final int testHoaId = 0;
+        final int testProposalId = 0;
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
+
+        final String testTitle = "New Amazing Board Members";
+        final String testMotion = "Choose!";
+        final long weekInSeconds = 7 * 24 * 60 * 60;
+
+        ProposalInfoRequestModel model = new ProposalInfoRequestModel();
+        model.setHoaId(testHoaId);
+
+        Proposal returned = new Proposal();
+        returned.setHoaId(model.getHoaId());
+        returned.setVotingDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
+        returned.setOptionValidationService(new BoardElectionOptionValidationService());
+        returned.setVoteValidationService(new BoardElectionsVoteValidationService());
+        returned.setMotion(testMotion);
+        returned.setTitle(testTitle);
+        returned.setProposalId(testProposalId);
+        when(proposalHandlingService.getActiveProposals(testHoaId)).thenReturn(List.of(returned));
+        when(proposalHandlingService.save(returned)).thenReturn(returned);
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/active")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(model)));
+
+        // Assert
+        resultActions.andExpect(status().isOk());
+
+        List<ProposalInformationResponseModel> response =
+                JsonUtil.deserializeList(resultActions.andReturn().getResponse().getContentAsString(),
+                        ProposalInformationResponseModel.class);
+
+        assertThat(response.size() == 1);
+        assertThat(response.get(0).getProposalId()).isEqualTo(testProposalId);
+        assertThat(response.get(0).getHoaId()).isEqualTo(testHoaId);
+        assertThat(response.get(0).getStatus() == ProposalStage.UnderConstruction);
+    }
+
+    @Test
+    void activeNull() throws Exception {
+        final String userName = "ExampleUser";
+        final int testHoaId = 0;
+        final int testProposalId = 0;
+        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
+
+        final String testTitle = "New Amazing Board Members";
+        final String testMotion = "Choose!";
+        final long weekInSeconds = 7 * 24 * 60 * 60;
+
+        ProposalInfoRequestModel model = null;
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/active")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(model)));
+
+        // Assert
+        resultActions.andExpect(status().isBadRequest());
+    }
 
     @Test
     void startProposalNotFound() throws Exception {
