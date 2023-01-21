@@ -118,6 +118,4 @@ public class VotingManagerController {
         ProposalCreationResponseModel response = new ProposalCreationResponseModel(toAdd.getProposalId());
         return ResponseEntity.ok(response);
     }
-
-
 }
