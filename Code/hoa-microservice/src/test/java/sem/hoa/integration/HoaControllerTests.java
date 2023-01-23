@@ -120,7 +120,7 @@ public class HoaControllerTests {
      *
      */
     @Test
-    public void createBadRequest() throws Exception {
+    public void createBadRequestCity() throws Exception {
 
         request.setUserCity("");
 
@@ -161,6 +161,138 @@ public class HoaControllerTests {
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(status().reason("Attempted to create HOA, but House Number must be a positive integer"));
 
+    }
+
+    @Test
+    public void createBadRequestName() throws Exception {
+
+        request.setHoaName("");
+
+        ResultActions resultActions = mockMvc.perform(post("/createHOA")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Attempted to create HOA, but Fields can not be Empty"));
+
+        request.setHoaName(null);
+
+        resultActions = mockMvc.perform(post("/createHOA")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Attempted to create HOA, but Fields can not be Invalid(null)"));
+
+        request.setHoaName("null");
+
+        resultActions = mockMvc.perform(post("/createHOA")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    public void createBadRequestPostalCode() throws Exception {
+
+        request.setUserPostalCode("");
+
+        ResultActions resultActions = mockMvc.perform(post("/createHOA")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Attempted to create HOA, but Fields can not be Empty"));
+
+        request.setUserPostalCode(null);
+
+        resultActions = mockMvc.perform(post("/createHOA")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Attempted to create HOA, but Fields can not be Invalid(null)"));
+
+        request.setUserPostalCode("null");
+
+        resultActions = mockMvc.perform(post("/createHOA")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    public void createBadRequestStreet() throws Exception {
+
+        request.setUserStreet("");
+
+        ResultActions resultActions = mockMvc.perform(post("/createHOA")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Attempted to create HOA, but Fields can not be Empty"));
+
+        request.setUserStreet(null);
+
+        resultActions = mockMvc.perform(post("/createHOA")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Attempted to create HOA, but Fields can not be Invalid(null)"));
+
+        request.setUserStreet("null");
+
+        resultActions = mockMvc.perform(post("/createHOA")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    public void createBadRequestCountry() throws Exception {
+
+        request.setUserCountry("");
+
+        ResultActions resultActions = mockMvc.perform(post("/createHOA")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Attempted to create HOA, but Fields can not be Empty"));
+
+        request.setUserCountry(null);
+
+        resultActions = mockMvc.perform(post("/createHOA")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Attempted to create HOA, but Fields can not be Invalid(null)"));
+
+        request.setUserCountry("null");
+
+        resultActions = mockMvc.perform(post("/createHOA")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isOk());
     }
 
     /**
