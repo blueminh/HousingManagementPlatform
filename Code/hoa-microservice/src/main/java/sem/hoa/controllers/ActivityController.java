@@ -98,8 +98,7 @@ public class ActivityController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
-        return null;
-        //return ResponseEntity.ok().build();
+        return ResponseEntity.ok().build();
     }
 
     /**
