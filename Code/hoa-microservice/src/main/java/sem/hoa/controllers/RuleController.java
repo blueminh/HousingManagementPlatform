@@ -92,7 +92,7 @@ public class RuleController {
         ruleService.saveRule(newRule);
         rules.add(newRule);
         AddRuleResponseModel response = new AddRuleResponseModel();
-        response.setHoaId(request.getHoaId());
+        //response.setHoaId(request.getHoaId());
         response.setRules(rules);
         return ResponseEntity.ok(response);
     }
