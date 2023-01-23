@@ -132,7 +132,7 @@ public class RuleControllerTest {
 
         resultActions.andExpect(status().isBadRequest());
     }
-    
+
     //added an assert statement that checks whether the hoa in the response is set properly
     @Test
     public void addTestAfterMutation() throws Exception {
