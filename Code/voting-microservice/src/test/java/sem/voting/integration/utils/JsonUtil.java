@@ -2,6 +2,7 @@ package sem.voting.integration.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 
 /**
  * The Json util for tests.
@@ -30,5 +31,18 @@ public class JsonUtil {
     public static <T> T deserialize(String json, Class<T> type) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(json, type);
+    }
+
+    /**
+     * Deserializes a json string into a list of objects.
+     *
+     * @param json The string to be deserialized.
+     * @param type The type of the desired object.
+     * @return The list of deserialized objects.
+     * @throws JsonProcessingException if an error occurs during deserialization.
+     */
+    public static <T> List<T> deserializeList(String json, Class<T> type) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(json, objectMapper.getTypeFactory().constructCollectionType(List.class, type));
     }
 }

@@ -5,13 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.sql.Date;
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,16 +27,20 @@ import sem.voting.communication.HoaCommunication;
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalHandlingService;
-import sem.voting.domain.proposal.ProposalType;
+import sem.voting.domain.proposal.ProposalStage;
+import sem.voting.domain.proposal.Vote;
+import sem.voting.domain.services.OptionValidationService;
+import sem.voting.domain.services.VoteValidationService;
 import sem.voting.domain.services.implementations.BoardElectionOptionValidationService;
 import sem.voting.domain.services.implementations.BoardElectionsVoteValidationService;
 import sem.voting.integration.utils.JsonUtil;
 import sem.voting.models.AddOptionRequestModel;
 import sem.voting.models.AddOptionResponseModel;
-import sem.voting.models.ProposalCreationRequestModel;
-import sem.voting.models.ProposalCreationResponseModel;
-import sem.voting.models.ProposalGenericRequestModel;
-import sem.voting.models.ProposalStartVotingResponseModel;
+import sem.voting.models.CastVoteRequestModel;
+import sem.voting.models.ProposalInformationResponseModel;
+import java.sql.Date;
+import java.time.Instant;
+import java.util.Set;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -49,7 +48,7 @@ import sem.voting.models.ProposalStartVotingResponseModel;
 @ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager", "mockProposalHandling"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-class VotingControllerTest {
+class VotingInteractionControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -68,8 +67,34 @@ class VotingControllerTest {
         }
     }
 
+    private class TestOptionValidation implements OptionValidationService {
+        private boolean returnVal;
+
+        public TestOptionValidation(boolean returnVal) {
+            this.returnVal = returnVal;
+        }
+
+        @Override
+        public boolean isOptionValid(String userId, Option option, Proposal proposal) {
+            return returnVal;
+        }
+    }
+
+    private class TestVoteValidation implements VoteValidationService {
+        private boolean returnVal;
+
+        public TestVoteValidation(boolean returnVal) {
+            this.returnVal = returnVal;
+        }
+
+        @Override
+        public boolean isVoteValid(Vote vote, Proposal proposal) {
+            return returnVal;
+        }
+    }
+
     @Test
-    void addProposalBoardMember() throws Exception {
+    void voteOk() throws Exception {
         // Arrange
         final String userName = "ExampleUser";
         final int testHoaId = 0;
@@ -79,51 +104,47 @@ class VotingControllerTest {
         final String testTitle = "New Amazing Board Members";
         final String testMotion = "Choose!";
         final long weekInSeconds = 7 * 24 * 60 * 60;
-        final ProposalType testType = ProposalType.BoardElection;
-
-        ProposalCreationRequestModel model = new ProposalCreationRequestModel();
-        model.setTitle(testTitle);
-        model.setMotion(testMotion);
-        model.setDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
-        model.setHoaId(testHoaId);
-        model.setType(testType);
-
-        Proposal returned = new Proposal();
-        returned.setHoaId(model.getHoaId());
-        returned.setVotingDeadline(model.getDeadline());
-        returned.setOptionValidationService(new BoardElectionOptionValidationService());
-        returned.setVoteValidationService(new BoardElectionsVoteValidationService());
-        returned.setMotion(model.getMotion());
-        returned.setTitle(model.getTitle());
         final int testProposalId = 3;
+        final String candidate = "ExampleUser2";
+
+        CastVoteRequestModel model = new CastVoteRequestModel();
+        model.setHoaId(testHoaId);
+        model.setOption(candidate);
+        model.setUsername(userName);
+        model.setProposalId(testProposalId);
+
+        TestProposal returned = new TestProposal();
+        returned.setHoaId(model.getHoaId());
+        returned.setVotingDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
+        returned.setOptionValidationService(new TestOptionValidation(true));
+        returned.setVoteValidationService(new TestVoteValidation(true));
+        returned.setMotion(testMotion);
+        returned.setTitle(testTitle);
         returned.setProposalId(testProposalId);
+        returned.setStatus(ProposalStage.Voting);
+        returned.setOptions(Set.of(new Option(candidate)));
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(returned);
         when(proposalHandlingService.save(any(Proposal.class))).thenReturn(returned);
 
-        try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
-            com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
-                    .thenReturn(true);
-            com.when(() -> HoaCommunication.checkHoaHasBoard(userName, testHoaId))
-                    .thenReturn(true);
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/vote")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(model)));
 
-            // Act
-            ResultActions resultActions = mockMvc.perform(post("/propose")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer MockedToken")
-                    .content(JsonUtil.serialize(model)));
+        // Assert
+        resultActions.andExpect(status().isOk());
 
-            // Assert
-            resultActions.andExpect(status().isOk());
+        ProposalInformationResponseModel response =
+                JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(),
+                        ProposalInformationResponseModel.class);
 
-            ProposalCreationResponseModel response =
-                    JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(),
-                            ProposalCreationResponseModel.class);
-
-            assertThat(response.getProposalId()).isEqualTo(testProposalId);
-        }
+        assertThat(response.getProposalId()).isEqualTo(testProposalId);
+        assertThat(response.getHoaId()).isEqualTo(testHoaId);
     }
 
     @Test
-    void addProposalNotBoardMember() throws Exception {
+    void voteInvalidVote() throws Exception {
         // Arrange
         final String userName = "ExampleUser";
         final int testHoaId = 0;
@@ -133,45 +154,39 @@ class VotingControllerTest {
         final String testTitle = "New Amazing Board Members";
         final String testMotion = "Choose!";
         final long weekInSeconds = 7 * 24 * 60 * 60;
-        final ProposalType testType = ProposalType.BoardElection;
-
-        ProposalCreationRequestModel model = new ProposalCreationRequestModel();
-        model.setTitle(testTitle);
-        model.setMotion(testMotion);
-        model.setDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
-        model.setHoaId(testHoaId);
-        model.setType(testType);
-
-        Proposal returned = new Proposal();
-        returned.setHoaId(model.getHoaId());
-        returned.setVotingDeadline(model.getDeadline());
-        returned.setOptionValidationService(new BoardElectionOptionValidationService());
-        returned.setVoteValidationService(new BoardElectionsVoteValidationService());
-        returned.setMotion(model.getMotion());
-        returned.setTitle(model.getTitle());
         final int testProposalId = 3;
+        final String candidate = "ExampleUser2";
+
+        CastVoteRequestModel model = new CastVoteRequestModel();
+        model.setHoaId(testHoaId);
+        model.setOption(candidate);
+        model.setUsername(userName);
+        model.setProposalId(testProposalId);
+
+        TestProposal returned = new TestProposal();
+        returned.setHoaId(model.getHoaId());
+        returned.setVotingDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
+        returned.setOptionValidationService(new TestOptionValidation(true));
+        returned.setVoteValidationService(new TestVoteValidation(false));
+        returned.setMotion(testMotion);
+        returned.setTitle(testTitle);
         returned.setProposalId(testProposalId);
+        returned.setStatus(ProposalStage.Voting);
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(returned);
         when(proposalHandlingService.save(any(Proposal.class))).thenReturn(returned);
 
-        try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
-            com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
-                    .thenReturn(false);
-            com.when(() -> HoaCommunication.checkHoaHasBoard(userName, testHoaId))
-                    .thenReturn(true);
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/vote")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(model)));
 
-            // Act
-            ResultActions resultActions = mockMvc.perform(post("/propose")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer MockedToken")
-                    .content(JsonUtil.serialize(model)));
-
-            // Assert
-            resultActions.andExpect(status().isBadRequest());
-        }
+        // Assert
+        resultActions.andExpect(status().isBadRequest());
     }
 
     @Test
-    void addElectionProposalNoBoardMemberNewHOA() throws Exception {
+    void voteNullProposal() throws Exception {
         // Arrange
         final String userName = "ExampleUser";
         final int testHoaId = 0;
@@ -181,219 +196,29 @@ class VotingControllerTest {
         final String testTitle = "New Amazing Board Members";
         final String testMotion = "Choose!";
         final long weekInSeconds = 7 * 24 * 60 * 60;
-        final ProposalType testType = ProposalType.BoardElection;
-
-        ProposalCreationRequestModel model = new ProposalCreationRequestModel();
-        model.setTitle(testTitle);
-        model.setMotion(testMotion);
-        model.setDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
-        model.setHoaId(testHoaId);
-        model.setType(testType);
-
-        Proposal returned = new Proposal();
-        returned.setHoaId(model.getHoaId());
-        returned.setVotingDeadline(model.getDeadline());
-        returned.setOptionValidationService(new BoardElectionOptionValidationService());
-        returned.setVoteValidationService(new BoardElectionsVoteValidationService());
-        returned.setMotion(model.getMotion());
-        returned.setTitle(model.getTitle());
         final int testProposalId = 3;
-        returned.setProposalId(testProposalId);
-        when(proposalHandlingService.save(any(Proposal.class))).thenReturn(returned);
+        final String candidate = "ExampleUser2";
 
-        try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
-            com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
-                    .thenReturn(false);
-            com.when(() -> HoaCommunication.checkHoaHasBoard(userName, testHoaId))
-                    .thenReturn(false);
-
-            // Act
-            ResultActions resultActions = mockMvc.perform(post("/propose")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer MockedToken")
-                    .content(JsonUtil.serialize(model)));
-
-            // Assert
-            resultActions.andExpect(status().isOk());
-
-            ProposalCreationResponseModel response =
-                    JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(),
-                            ProposalCreationResponseModel.class);
-
-            assertThat(response.getProposalId()).isEqualTo(testProposalId);
-        }
-    }
-
-    @Test
-    void addRuleProposalNoBoardMemberNewHOA() throws Exception {
-        // Arrange
-        final String userName = "ExampleUser";
-        final int testHoaId = 0;
-        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
-        final String testTitle = "New Amazing Board Members";
-        final String testMotion = "Choose!";
-        final long weekInSeconds = 7 * 24 * 60 * 60;
-        final ProposalType testType = ProposalType.HoaRuleChange;
-
-        ProposalCreationRequestModel model = new ProposalCreationRequestModel();
-        model.setTitle(testTitle);
-        model.setMotion(testMotion);
-        model.setDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
+        CastVoteRequestModel model = new CastVoteRequestModel();
         model.setHoaId(testHoaId);
-        model.setType(testType);
+        model.setOption(candidate);
+        model.setUsername(userName);
+        model.setProposalId(testProposalId);
 
-        Proposal returned = new Proposal();
-        returned.setHoaId(model.getHoaId());
-        returned.setVotingDeadline(model.getDeadline());
-        returned.setOptionValidationService(new BoardElectionOptionValidationService());
-        returned.setVoteValidationService(new BoardElectionsVoteValidationService());
-        returned.setMotion(model.getMotion());
-        returned.setTitle(model.getTitle());
-        final int testProposalId = 3;
-        returned.setProposalId(testProposalId);
-        when(proposalHandlingService.save(any(Proposal.class))).thenReturn(returned);
+        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(null);
 
-        try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
-            com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
-                    .thenReturn(false);
-            com.when(() -> HoaCommunication.checkHoaHasBoard(userName, testHoaId))
-                    .thenReturn(false);
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/vote")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(model)));
 
-            // Act
-            ResultActions resultActions = mockMvc.perform(post("/propose")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer MockedToken")
-                    .content(JsonUtil.serialize(model)));
-
-            // Assert
-            resultActions.andExpect(status().isBadRequest());
-        }
+        // Assert
+        resultActions.andExpect(status().isNotFound());
     }
 
     @Test
-    void addProposalInvalidDeadline() throws Exception {
-        // Arrange
-        final String userName = "ExampleUser";
-        final int testHoaId = 0;
-        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
-        final String testTitle = "New Amazing Board Members";
-        final String testMotion = "Choose!";
-        final ProposalType testType = ProposalType.BoardElection;
-
-        ProposalCreationRequestModel model = new ProposalCreationRequestModel();
-        model.setTitle(testTitle);
-        model.setMotion(testMotion);
-        model.setDeadline(Date.from(Instant.now().minusSeconds(1)));
-        model.setHoaId(testHoaId);
-        model.setType(testType);
-
-        try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
-            com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
-                    .thenReturn(true);
-            com.when(() -> HoaCommunication.checkHoaHasBoard(userName, testHoaId))
-                    .thenReturn(true);
-
-            // Act
-            ResultActions resultActions = mockMvc.perform(post("/propose")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer MockedToken")
-                    .content(JsonUtil.serialize(model)));
-
-            // Assert
-            resultActions.andExpect(status().isBadRequest());
-        }
-    }
-
-    @Test
-    void addProposalInvalidType() throws Exception {
-        // Arrange
-        final String userName = "ExampleUser";
-        final int testHoaId = 0;
-        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
-        final String testTitle = "New Amazing Board Members";
-        final String testMotion = "Choose!";
-        final long weekInSeconds = 7 * 24 * 60 * 60;
-        final ProposalType testType = ProposalType.BoardElection;
-
-        ProposalCreationRequestModel model = new ProposalCreationRequestModel();
-        model.setTitle(testTitle);
-        model.setMotion(testMotion);
-        model.setDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
-        model.setHoaId(testHoaId);
-        model.setType(testType);
-
-        String requestBody = JsonUtil.serialize(model)
-                .replaceFirst("BoardElection", "WrongType");
-
-        try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
-            com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
-                    .thenReturn(true);
-            com.when(() -> HoaCommunication.checkHoaHasBoard(userName, testHoaId))
-                    .thenReturn(true);
-
-            // Act
-            ResultActions resultActions = mockMvc.perform(post("/propose")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer MockedToken")
-                    .content(requestBody));
-
-            // Assert
-            resultActions.andExpect(status().isBadRequest());
-        }
-    }
-
-    @Test
-    void addProposalDuringElections() throws Exception {
-        // Arrange
-        final String userName = "ExampleUser";
-        final int testHoaId = 0;
-        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
-        final String testTitle = "New Amazing Board Members";
-        final String testMotion = "Choose!";
-        final long weekInSeconds = 7 * 24 * 60 * 60;
-        final ProposalType testType = ProposalType.BoardElection;
-
-        ProposalCreationRequestModel model = new ProposalCreationRequestModel();
-        model.setTitle(testTitle);
-        model.setMotion(testMotion);
-        model.setDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
-        model.setHoaId(testHoaId);
-        model.setType(testType);
-
-        Proposal boardElections = new Proposal();
-        boardElections.setVoteValidationService(new BoardElectionsVoteValidationService());
-        boardElections.setOptionValidationService(new BoardElectionOptionValidationService());
-        boardElections.setVotingDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
-        boardElections.setHoaId(testHoaId);
-        when(proposalHandlingService.getActiveProposals(testHoaId)).thenReturn(List.of(boardElections));
-
-        try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
-            com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
-                    .thenReturn(true);
-            com.when(() -> HoaCommunication.checkHoaHasBoard(userName, testHoaId))
-                    .thenReturn(true);
-
-            // Act
-            ResultActions resultActions = mockMvc.perform(post("/propose")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer MockedToken")
-                    .content(JsonUtil.serialize(model)));
-
-            // Assert
-            resultActions.andExpect(status().isBadRequest());
-        }
-    }
-
-    @Test
-    void addProposalNullRequest() throws Exception {
+    void voteNullRequest() throws Exception {
         // Arrange
         final String userName = "ExampleUser";
         when(mockAuthenticationManager.getUsername()).thenReturn(userName);
@@ -401,51 +226,13 @@ class VotingControllerTest {
         when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
 
         // Act
-        ResultActions resultActions = mockMvc.perform(post("/propose")
+        ResultActions resultActions = mockMvc.perform(post("/vote")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(null)));
 
         // Assert
         resultActions.andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void addProposalInvalidOption() throws Exception {
-        // Arrange
-        final String userName = "ExampleUser";
-        final int testHoaId = 0;
-        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
-        final String testTitle = "New Amazing Board Members";
-        final String testMotion = "Choose!";
-        final long weekInSeconds = 7 * 24 * 60 * 60;
-        final ProposalType testType = ProposalType.BoardElection;
-
-        ProposalCreationRequestModel model = new ProposalCreationRequestModel();
-        model.setTitle(testTitle);
-        model.setMotion(testMotion);
-        model.setDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
-        model.setHoaId(testHoaId);
-        model.setType(testType);
-        model.setOptions(List.of("anotherUser"));
-
-        try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
-            com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
-                    .thenReturn(true);
-            com.when(() -> HoaCommunication.checkHoaHasBoard(userName, testHoaId))
-                    .thenReturn(true);
-
-            // Act
-            ResultActions resultActions = mockMvc.perform(post("/propose")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer MockedToken")
-                    .content(JsonUtil.serialize(model)));
-
-            // Assert
-            resultActions.andExpect(status().isBadRequest());
-        }
     }
 
     @Test
@@ -987,189 +774,6 @@ class VotingControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(null)));
-
-        // Assert
-        resultActions.andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void startProposalNotFound() throws Exception {
-        when(mockAuthenticationManager.getUsername()).thenReturn("username");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("username");
-
-        final String testTitle = "New Amazing Board Members";
-        final String testMotion = "Choose!";
-        final long weekInSeconds = 7 * 24 * 60 * 60;
-        final ProposalType testType = ProposalType.BoardElection;
-
-        ProposalCreationRequestModel model = new ProposalCreationRequestModel();
-        model.setTitle(testTitle);
-        model.setMotion(testMotion);
-        model.setDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
-        model.setHoaId(0);
-        model.setType(testType);
-
-        // Act
-        ResultActions resultActions = mockMvc.perform(post("/start")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken")
-                .content(JsonUtil.serialize(model)));
-
-        // Assert
-        resultActions.andExpect(status().isNotFound());
-    }
-
-    @Test
-    void startProposalPass() throws Exception {
-        final String userName = "ExampleUser";
-        final int testHoaId = 0;
-        final int testProposalId = 3;
-        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
-
-        final String testTitle = "New Amazing Board Members";
-        final String testMotion = "Choose!";
-        final long weekInSeconds = 7 * 24 * 60 * 60;
-
-        ProposalGenericRequestModel model = new ProposalGenericRequestModel();
-        model.setProposalId(testProposalId);
-        model.setHoaId(testHoaId);
-
-        Proposal returned = new Proposal();
-        returned.setHoaId(model.getHoaId());
-        returned.setVotingDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
-        returned.setOptionValidationService(new BoardElectionOptionValidationService());
-        returned.setVoteValidationService(new BoardElectionsVoteValidationService());
-        returned.setMotion(testMotion);
-        returned.setTitle(testTitle);
-        returned.setProposalId(testProposalId);
-        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(returned);
-        when(proposalHandlingService.save(returned)).thenReturn(returned);
-
-        try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
-            com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
-                    .thenReturn(true);
-            com.when(() -> HoaCommunication.checkHoaHasBoard(userName, testHoaId))
-                    .thenReturn(true);
-
-            // Act
-            ResultActions resultActions = mockMvc.perform(post("/start")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer MockedToken")
-                    .content(JsonUtil.serialize(model)));
-
-            // Assert
-            resultActions.andExpect(status().isOk());
-
-            ProposalStartVotingResponseModel response =
-                    JsonUtil.deserialize(resultActions.andReturn().getResponse().getContentAsString(),
-                            ProposalStartVotingResponseModel.class);
-
-            assertThat(response.getProposalId()).isEqualTo(testProposalId);
-            assertThat(response.getHoaId()).isEqualTo(testHoaId);
-        }
-    }
-
-    @Test
-    void startProposalCheckHOAFail() throws Exception {
-        final String userName = "ExampleUser";
-        final int testHoaId = 0;
-        final int testProposalId = 3;
-        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
-
-        final String testTitle = "New Amazing Board Members";
-        final String testMotion = "Choose!";
-        final long weekInSeconds = 7 * 24 * 60 * 60;
-
-        ProposalGenericRequestModel model = new ProposalGenericRequestModel();
-        model.setProposalId(testProposalId);
-        model.setHoaId(testHoaId);
-
-        Proposal returned = new Proposal();
-        returned.setHoaId(model.getHoaId());
-        returned.setVotingDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
-        returned.setOptionValidationService(new BoardElectionOptionValidationService());
-        returned.setVoteValidationService(new BoardElectionsVoteValidationService());
-        returned.setMotion(testMotion);
-        returned.setTitle(testTitle);
-        returned.setProposalId(testProposalId);
-        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(returned);
-        when(proposalHandlingService.save(returned)).thenReturn(returned);
-
-        // Act
-        ResultActions resultActions = mockMvc.perform(post("/start")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken")
-                .content(JsonUtil.serialize(model)));
-
-        // Assert
-        resultActions.andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void startProposalUnauthorized() throws Exception {
-        final String userName = "ExampleUser";
-        final int testHoaId = 0;
-        final int testProposalId = 3;
-        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
-
-        final String testTitle = "New Amazing Board Members";
-        final String testMotion = "Choose!";
-        final long weekInSeconds = 7 * 24 * 60 * 60;
-
-        ProposalGenericRequestModel model = new ProposalGenericRequestModel();
-        model.setProposalId(testProposalId);
-        model.setHoaId(testHoaId);
-
-        Proposal returned = new Proposal();
-        returned.setHoaId(model.getHoaId());
-        returned.setVotingDeadline(Date.from(Instant.now().plusSeconds(weekInSeconds)));
-        returned.setOptionValidationService(new BoardElectionOptionValidationService());
-        returned.setVoteValidationService(new BoardElectionsVoteValidationService());
-        returned.setMotion(testMotion);
-        returned.setTitle(testTitle);
-        returned.setProposalId(testProposalId);
-        when(proposalHandlingService.checkHoa(testProposalId, testHoaId)).thenReturn(returned);
-        when(proposalHandlingService.save(returned)).thenReturn(returned);
-
-
-        try (MockedStatic<HoaCommunication> com = Mockito.mockStatic(HoaCommunication.class)) {
-            com.when(() -> HoaCommunication.checkUserIsBoardMember(userName, testHoaId))
-                    .thenReturn(false);
-            com.when(() -> HoaCommunication.checkHoaHasBoard(userName, testHoaId))
-                    .thenReturn(true);
-
-            // Act
-            ResultActions resultActions = mockMvc.perform(post("/start")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer MockedToken")
-                    .content(JsonUtil.serialize(model)));
-
-            // Assert
-            resultActions.andExpect(status().isUnauthorized());
-        }
-    }
-
-    @Test
-    void startProposalNull() throws Exception {
-        final String userName = "ExampleUser";
-        when(mockAuthenticationManager.getUsername()).thenReturn(userName);
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn(userName);
-
-        ProposalGenericRequestModel model = null;
-
-        // Act
-        ResultActions resultActions = mockMvc.perform(post("/start")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken")
-                .content(JsonUtil.serialize(model)));
 
         // Assert
         resultActions.andExpect(status().isBadRequest());
