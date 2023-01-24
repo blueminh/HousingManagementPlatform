@@ -1,6 +1,7 @@
 package sem.hoa.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 
@@ -15,6 +16,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "rule")
 @NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Rule {
 
