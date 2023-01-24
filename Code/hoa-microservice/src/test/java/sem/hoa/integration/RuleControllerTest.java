@@ -133,13 +133,9 @@ public class RuleControllerTest {
         resultActions.andExpect(status().isBadRequest());
     }
 
-
-    //small problem with the ids (dk how to fix it)
-    //The response it alright, but when deserialized the ids change, and I don't know why (the description stays
-    // the same though)
-    //smells a bit
+    //added an assert statement that checks whether the hoa in the response is set properly
     @Test
-    public void addTest() throws Exception {
+    public void addTestAfterMutation() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("ExampleUser");
@@ -163,7 +159,7 @@ public class RuleControllerTest {
         AddRuleResponseModel responseModel = JsonUtil
                 .deserialize(resultActions.andReturn().getResponse().getContentAsString(),
                         AddRuleResponseModel.class);
-
+        assertThat(responseModel.getHoaId()).isEqualTo(requestModel.getHoaId());
         assertThat(responseModel.getRules().get(0).getDescription()).isEqualTo(rule.get().getDescription());
     }
 
