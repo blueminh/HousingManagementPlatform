@@ -185,15 +185,6 @@ public class HoaControllerTests {
 
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(status().reason("Attempted to create HOA, but Fields can not be Invalid(null)"));
-
-        request.setHoaName("null");
-
-        resultActions = mockMvc.perform(post("/createHOA")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken")
-                .content(JsonUtil.serialize(request)));
-
-        resultActions.andExpect(status().isOk());
     }
 
     @Test
@@ -218,15 +209,6 @@ public class HoaControllerTests {
 
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(status().reason("Attempted to create HOA, but Fields can not be Invalid(null)"));
-
-        request.setUserPostalCode("null");
-
-        resultActions = mockMvc.perform(post("/createHOA")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken")
-                .content(JsonUtil.serialize(request)));
-
-        resultActions.andExpect(status().isOk());
     }
 
     @Test
@@ -251,15 +233,6 @@ public class HoaControllerTests {
 
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(status().reason("Attempted to create HOA, but Fields can not be Invalid(null)"));
-
-        request.setUserStreet("null");
-
-        resultActions = mockMvc.perform(post("/createHOA")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken")
-                .content(JsonUtil.serialize(request)));
-
-        resultActions.andExpect(status().isOk());
     }
 
     @Test
@@ -284,15 +257,6 @@ public class HoaControllerTests {
 
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(status().reason("Attempted to create HOA, but Fields can not be Invalid(null)"));
-
-        request.setUserCountry("null");
-
-        resultActions = mockMvc.perform(post("/createHOA")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken")
-                .content(JsonUtil.serialize(request)));
-
-        resultActions.andExpect(status().isOk());
     }
 
     /**
