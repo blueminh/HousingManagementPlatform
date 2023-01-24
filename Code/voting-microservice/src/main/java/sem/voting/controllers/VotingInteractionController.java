@@ -70,8 +70,8 @@ public class VotingInteractionController {
             Vote vote = new Vote(authManager.getUsername(), beingVoted);
             if (!proposal.addVote(vote)) {
                 // Proposal needs to be saved because even if Vote wasn't successful, the status might have changed.
-                proposal = proposalHandlingService.save(proposal);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ProposalInformationResponseModel(proposal));
+                proposalHandlingService.save(proposal);
+                return ResponseEntity.badRequest().build();
             }
             proposal = proposalHandlingService.save(proposal);
             return ResponseEntity.ok(new ProposalInformationResponseModel(proposal));
