@@ -260,6 +260,57 @@ public class HoaControllerTests {
     }
 
     /**
+     *  Try to join an HOA by passing a blank String or null or an int<0 as one of the variables
+     *  should return bad request and nothing should be saved.
+     *
+     */
+    @Test
+    public void joiningBadRequest() throws Exception {
+        hoaServiceMock.createNewHOA(new Hoa(request.getHoaName(), request.getUserCountry(),
+                request.getUserCity()));
+
+        request.setUserCity("");
+
+        ResultActions resultActions = mockMvc.perform(post("/joining")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Fields can not be Empty"));
+
+        request.setUserCity(null);
+
+        resultActions = mockMvc.perform(post("/joining")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("Fields can not be Invalid(null)"));
+
+        request.setUserCity("exUserCity");
+
+        resultActions = mockMvc.perform(post("/joining")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isOk());
+
+        request.setUserHouseNumber(-2);
+
+        resultActions = mockMvc.perform(post("/joining")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(request)));
+
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(status().reason("House Number must be a positive integer"));
+
+    }
+
+    /**
      * Test for normal joining of HOA.
      */
     @Test
