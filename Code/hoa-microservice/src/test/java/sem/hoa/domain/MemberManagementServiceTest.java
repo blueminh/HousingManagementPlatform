@@ -16,6 +16,7 @@ import sem.hoa.domain.services.MemberManagementRepository;
 import sem.hoa.domain.services.MemberManagementService;
 import sem.hoa.exceptions.HoaJoiningException;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
 
@@ -36,6 +37,30 @@ public class MemberManagementServiceTest {
 
     @Autowired
     private transient HoaRepository hoaRepository;
+
+    @Test
+    public void mutationPossibleCandidate() {
+        // Arrange
+        // This HOA has no candidates to join the board
+        final Hoa hoa = hoaRepository.save(new Hoa("hoa1", "country1", "city1"));
+        // join for 3 years - 1 day
+        // expect this guy to be false, but got a yes instead
+        final long yearInSeconds = 365 * 24 * 60 * 60;
+        final long joiningDate = Instant.now().minusSeconds(yearInSeconds * 3 - 24 * 60 * 60).toEpochMilli();
+        final Membership membership = new Membership("user1", hoa.getId(), false,
+            "country1", "city1", "street1", 1, "postal1",
+            joiningDate, -1L);
+
+        // Act
+        try {
+            memberManagementService.addMembership(membership);
+        } catch (HoaJoiningException e) {
+            fail("joining error");
+        }
+
+        // Assert
+        assertThat(memberManagementService.hasPossibleBoardCandidates(hoa.getId())).isFalse();
+    }
 
     @Test
     public void addMembership_ok() {
