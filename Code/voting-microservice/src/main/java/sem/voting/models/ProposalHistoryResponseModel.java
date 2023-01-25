@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import sem.voting.domain.proposal.Proposal;
 import sem.voting.domain.proposal.ProposalStage;
@@ -17,6 +18,7 @@ import sem.voting.domain.proposal.Result;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class ProposalHistoryResponseModel {
     private int proposalId;
     private int hoaId;

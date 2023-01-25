@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import sem.voting.domain.proposal.Option;
 import sem.voting.domain.proposal.Proposal;
@@ -18,6 +19,7 @@ import sem.voting.domain.services.implementations.BoardElectionOptionValidationS
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class ProposalInformationResponseModel {
     private int proposalId;
     private int hoaId;
